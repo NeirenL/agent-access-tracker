@@ -1,10 +1,17 @@
 # 🛡️ Agent Access Tracker
 
+[![Screenshot of the Agent Access Tracker page](docs/screenshot.png)](https://neirenl.github.io/agent-access-tracker/)
+
 **A public, sourced record of which platforms block or allow AI agents, and when.**
 
-🌐 **Live page:** https://neirenl.github.io/agent-access-tracker/
+🌐 **Live page:** https://neirenl.github.io/agent-access-tracker/<br>
+📅 **Last updated:** 2026-10-27
 
-AI agents now browse, click and buy on our behalf: cloud agents, agentic browsers, and agents that run on phones. Platforms are responding in different ways. Some block them, some welcome them, some set conditions. This project keeps a dated log of those decisions, with a source for every entry, so anyone can see where things stand.
+## 🧭 Why this exists
+
+AI agents now browse, compare and buy on people's behalf, and platforms are deciding, often quietly, whether to let them in.
+Those decisions are scattered across robots.txt files, terms of service, blog posts and lawsuits.
+This project collects them in one dated, sourced place, so anyone can see who blocks what and how it changes over time.
 
 ---
 
