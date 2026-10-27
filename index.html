@@ -160,7 +160,7 @@
       <button class="chip" data-filter="type" data-value="" aria-pressed="true">All</button>
       <button class="chip" data-filter="type" data-value="nube" aria-pressed="false">Cloud</button>
       <button class="chip" data-filter="type" data-value="navegador" aria-pressed="false">Browser</button>
-      <button class="chip" data-filter="type" data-value="telefono" aria-pressed="false">Phone</button>
+      <button class="chip" data-filter="type" data-value="teléfono" aria-pressed="false">Phone</button>
     </div>
   </div>
 
@@ -191,7 +191,10 @@ const STATUS = {
   'permite con condiciones': { label: 'Allows with conditions', cls: 'cond' },
   'opt-out': { label: 'Opt-out', cls: 'optout' },
 };
-const TYPE = { nube: 'Cloud', navegador: 'Browser', telefono: 'Phone' };
+// tipo_agente follows the same rule as .github/scripts/validate_csv.py:
+// exact official values, plus aliases that are converted to the official value.
+const TYPE = { nube: 'Cloud', navegador: 'Browser', 'teléfono': 'Phone' };
+const TYPE_ALIASES = { telefono: 'teléfono' };
 const VERIF = { oficial: 'Official', 'reportado por medios': 'Media report', 'reportado por usuarios': 'User reports' };
 
 const filters = { status: '', type: '' };
@@ -227,7 +230,7 @@ function toEvents(rows) {
     const e = { i };
     header.forEach((h, j) => { e[h] = (r[j] || '').trim(); });
     e.statusKey = norm(e.estado);
-    e.typeKey = norm(e.tipo_agente);
+    e.typeKey = TYPE_ALIASES[e.tipo_agente] || e.tipo_agente;
     e.platformKey = norm(e.plataforma);
     return e;
   });

@@ -20,6 +20,10 @@ ALLOWED = {
     "estado": {"bloquea", "permite", "permite con condiciones", "opt-out"},
     "verificacion": {"oficial", "reportado por medios", "reportado por usuarios"},
 }
+# Accepted spellings that mean an official value. Keep in sync with TYPE_ALIASES in index.html.
+ALIASES = {
+    "tipo_agente": {"telefono": "teléfono"},
+}
 REQUIRED = ["plataforma", "agente"]
 
 errors = []
@@ -30,8 +34,11 @@ def error(line, message):
 
 
 def fmt_allowed(column):
+    extras = [f'"{alias}" for "{value}"' for alias, value in ALIASES.get(column, {}).items()]
+    if "" in ALLOWED[column]:
+        extras.append("empty")
     return ", ".join(f'"{v}"' for v in sorted(ALLOWED[column]) if v) + (
-        " (or empty)" if "" in ALLOWED[column] else ""
+        f" (also accepted: {', '.join(extras)})" if extras else ""
     )
 
 
@@ -68,6 +75,8 @@ def main():
                 continue
 
             r = {col: value.strip() for col, value in zip(COLUMNS, row)}
+            for col, aliases in ALIASES.items():
+                r[col] = aliases.get(r[col], r[col])
 
             try:
                 datetime.strptime(r["fecha"], "%Y-%m-%d")

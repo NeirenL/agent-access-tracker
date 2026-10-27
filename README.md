@@ -20,7 +20,7 @@ The column names and values are kept in Spanish, the language the dataset was st
 | `plataforma` | Platform taking the action | e.g. `Amazon`, `LinkedIn` |
 | `agente` | The AI agent affected | e.g. `Comet`, `Grok Bot` |
 | `empresa_agente` | Company behind the agent | e.g. `Perplexity`, `xAI` |
-| `tipo_agente` | Where the agent runs | `nube` (cloud) · `navegador` (browser) · `teléfono` (phone) |
+| `tipo_agente` | Where the agent runs | `nube` (cloud) · `navegador` (browser) · `teléfono` (phone). `telefono` without the accent is also accepted and treated as `teléfono`. Leave empty if the source doesn't say. |
 | `estado` | The platform's stance | `bloquea` (blocks) · `permite` (allows) · `permite con condiciones` (allows with conditions) · `opt-out` |
 | `mecanismo` | How it is enforced | e.g. `robots.txt`, `Terms of Service`, `CAPTCHA`, `API` |
 | `verificacion` | How the event is confirmed | `oficial` (official) · `reportado por medios` (media report) · `reportado por usuarios` (user reports) |
