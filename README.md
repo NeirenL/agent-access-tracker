@@ -20,9 +20,9 @@ The column names and values are kept in Spanish, the language the dataset was st
 | `plataforma` | Platform taking the action | e.g. `Amazon`, `LinkedIn` |
 | `agente` | The AI agent affected | e.g. `Comet`, `Grok Bot` |
 | `empresa_agente` | Company behind the agent | e.g. `Perplexity`, `xAI` |
-| `tipo_agente` | Where the agent runs | `nube` (cloud) · `navegador` (browser) · `teléfono` (phone). `telefono` without the accent is also accepted and treated as `teléfono`. Leave empty if the source doesn't say. |
+| `tipo_agente` | Where the agent runs | `nube` (cloud) · `navegador` (browser) · `teléfono` (phone) · `crawler`. `telefono` without the accent is also accepted and treated as `teléfono`. Leave empty if the source doesn't say. |
 | `estado` | The platform's stance | `bloquea` (blocks) · `permite` (allows) · `permite con condiciones` (allows with conditions) · `opt-out` |
-| `mecanismo` | How it is enforced | e.g. `robots.txt`, `Terms of Service`, `CAPTCHA`, `API` |
+| `mecanismo` | How it is enforced | `robots.txt` · `términos de servicio` (terms of service) · `bloqueo técnico` (technical block) · `protocolo de permisos` (permission protocol) · `bloqueo de red/CDN` (network/CDN block) · `demanda` (lawsuit). `terminos de servicio` and `bloqueo tecnico` without accents are also accepted. Leave empty if the source doesn't say; put details in `notas`. |
 | `verificacion` | How the event is confirmed | `oficial` (official) · `reportado por medios` (media report) · `reportado por usuarios` (user reports) |
 | `fuente_url` | Link to the source | Full `https://` URL |
 | `notas` | Extra context | Free text (wrap in quotes if it contains commas) |
@@ -37,7 +37,7 @@ Know of a platform blocking or allowing an AI agent? **[Open an issue](https://g
 
 Entries without a verifiable source won't be added. If you spot an error or a dead link, open an issue too.
 
-Editing the CSV directly? Every push and pull request runs an automatic check on `data/events.csv` (exact columns, `YYYY-MM-DD` dates, allowed values, `https://` sources, no duplicates). If it fails, the log tells you which line to fix. `tipo_agente` may be left empty when the source doesn't say.
+Editing the CSV directly? Every push and pull request runs an automatic check on `data/events.csv` (exact columns, `YYYY-MM-DD` dates, allowed values, `https://` sources, no duplicates). If it fails, the log tells you which line to fix. `tipo_agente` and `mecanismo` may be left empty when the source doesn't say.
 
 Every Monday, an automated check visits each `fuente_url` and opens an issue if any link is broken.
 

@@ -36,6 +36,19 @@ body:
         - Cloud
         - Browser
         - Phone
+        - Crawler
+        - Not sure
+  - type: dropdown
+    id: mechanism
+    attributes:
+      label: How is it enforced?
+      options:
+        - robots.txt
+        - Terms of service
+        - Technical block
+        - Permission protocol
+        - Network/CDN block
+        - Lawsuit
         - Not sure
   - type: input
     id: date
@@ -56,4 +69,4 @@ body:
     id: notes
     attributes:
       label: Notes
-      description: How is it enforced (robots.txt, terms, CAPTCHA...)? Anything else useful.
+      description: Details about how it's enforced, or anything else useful.

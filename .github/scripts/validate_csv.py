@@ -15,14 +15,23 @@ COLUMNS = [
     "estado", "mecanismo", "verificacion", "fuente_url", "notas",
 ]
 ALLOWED = {
-    # Empty is allowed for tipo_agente when the source doesn't say.
-    "tipo_agente": {"", "nube", "navegador", "teléfono"},
+    # Empty is allowed for tipo_agente and mecanismo when the source doesn't say.
+    "tipo_agente": {"", "nube", "navegador", "teléfono", "crawler"},
     "estado": {"bloquea", "permite", "permite con condiciones", "opt-out"},
+    "mecanismo": {
+        "", "robots.txt", "términos de servicio", "bloqueo técnico",
+        "protocolo de permisos", "bloqueo de red/CDN", "demanda",
+    },
     "verificacion": {"oficial", "reportado por medios", "reportado por usuarios"},
 }
-# Accepted spellings that mean an official value. Keep in sync with TYPE_ALIASES in index.html.
+# Accepted spellings that mean an official value.
+# Keep in sync with TYPE_ALIASES and MECH_ALIASES in index.html.
 ALIASES = {
     "tipo_agente": {"telefono": "teléfono"},
+    "mecanismo": {
+        "terminos de servicio": "términos de servicio",
+        "bloqueo tecnico": "bloqueo técnico",
+    },
 }
 REQUIRED = ["plataforma", "agente"]
 

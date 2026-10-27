@@ -161,6 +161,7 @@
       <button class="chip" data-filter="type" data-value="nube" aria-pressed="false">Cloud</button>
       <button class="chip" data-filter="type" data-value="navegador" aria-pressed="false">Browser</button>
       <button class="chip" data-filter="type" data-value="teléfono" aria-pressed="false">Phone</button>
+      <button class="chip" data-filter="type" data-value="crawler" aria-pressed="false">Crawler</button>
     </div>
   </div>
 
@@ -191,10 +192,21 @@ const STATUS = {
   'permite con condiciones': { label: 'Allows with conditions', cls: 'cond' },
   'opt-out': { label: 'Opt-out', cls: 'optout' },
 };
-// tipo_agente follows the same rule as .github/scripts/validate_csv.py:
+// tipo_agente and mecanismo follow the same rule as .github/scripts/validate_csv.py:
 // exact official values, plus aliases that are converted to the official value.
-const TYPE = { nube: 'Cloud', navegador: 'Browser', 'teléfono': 'Phone' };
+// Any other value is shown as written.
+const TYPE = { nube: 'Cloud', navegador: 'Browser', 'teléfono': 'Phone', crawler: 'Crawler' };
 const TYPE_ALIASES = { telefono: 'teléfono' };
+const MECH = {
+  'robots.txt': 'robots.txt',
+  'términos de servicio': 'Terms of service',
+  'bloqueo técnico': 'Technical block',
+  'protocolo de permisos': 'Permission protocol',
+  'bloqueo de red/CDN': 'Network/CDN block',
+  'demanda': 'Lawsuit',
+};
+const MECH_ALIASES = { 'terminos de servicio': 'términos de servicio', 'bloqueo tecnico': 'bloqueo técnico' };
+const COLUMNS = ['fecha', 'plataforma', 'agente', 'empresa_agente', 'tipo_agente', 'estado', 'mecanismo', 'verificacion', 'fuente_url', 'notas'];
 const VERIF = { oficial: 'Official', 'reportado por medios': 'Media report', 'reportado por usuarios': 'User reports' };
 
 const filters = { status: '', type: '' };
@@ -228,9 +240,11 @@ function toEvents(rows) {
   const header = rows[0].map(norm);
   return rows.slice(1).map((r, i) => {
     const e = { i };
+    COLUMNS.forEach(c => { e[c] = ''; }); // a missing column shows as empty instead of breaking the page
     header.forEach((h, j) => { e[h] = (r[j] || '').trim(); });
     e.statusKey = norm(e.estado);
     e.typeKey = TYPE_ALIASES[e.tipo_agente] || e.tipo_agente;
+    e.mechKey = MECH_ALIASES[e.mecanismo] || e.mecanismo;
     e.platformKey = norm(e.plataforma);
     return e;
   });
@@ -261,6 +275,7 @@ function badge(e) {
 }
 
 const typeLabel = e => esc(TYPE[e.typeKey] || e.tipo_agente || '');
+const mechLabel = e => esc(MECH[e.mechKey] || e.mecanismo || '');
 const verifLabel = e => esc(VERIF[norm(e.verificacion)] || e.verificacion || '');
 
 function sourceLink(e, text) {
@@ -308,7 +323,7 @@ function renderTimeline() {
     const meta = [
       e.agente && `<span>Agent: <b>${agentLine(e)}</b></span>`,
       e.tipo_agente && `<span>Type: <b>${typeLabel(e)}</b></span>`,
-      e.mecanismo && `<span>Mechanism: <b>${esc(e.mecanismo)}</b></span>`,
+      e.mecanismo && `<span>Mechanism: <b>${mechLabel(e)}</b></span>`,
       e.verificacion && `<span>Verification: <b>${verifLabel(e)}</b></span>`,
       sourceLink(e) && `<span>${sourceLink(e)}</span>`,
     ].filter(Boolean).join('');
@@ -337,7 +352,8 @@ fetch('data/events.csv', { cache: 'no-cache' })
     renderCounter();
     render();
   })
-  .catch(() => {
+  .catch(err => {
+    console.error(err);
     const msg = '<div class="error">Could not load data/events.csv. If you opened this file directly from your computer, view it through GitHub Pages or a local web server instead.</div>';
     document.getElementById('table').innerHTML = msg;
     document.getElementById('timeline').innerHTML = '';
