@@ -1,0 +1,33 @@
+name: Check source links
+
+on:
+  schedule:
+    - cron: "0 12 * * 1" # every Monday at 12:00 UTC
+  workflow_dispatch: # also allows running it manually from the Actions tab
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check every fuente_url
+        id: check
+        run: python3 .github/scripts/check_links.py data/events.csv report.md
+
+      - name: Open or update an issue
+        if: steps.check.outputs.broken == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh label create broken-links --color d73a4a --description "A source URL no longer works" --force
+          existing=$(gh issue list --label broken-links --state open --json number --jq '.[0].number')
+          if [ -n "$existing" ]; then
+            gh issue comment "$existing" --body-file report.md
+          else
+            gh issue create --title "Broken source links found" --label broken-links --body-file report.md
+          fi

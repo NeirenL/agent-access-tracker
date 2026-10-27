@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agent Access Tracker</title>
+<meta name="description" content="A public record of which platforms block or allow AI agents, with dates and sources.">
+<meta name="color-scheme" content="dark">
+<style>
+  :root {
+    --bg: #0b0d12;
+    --surface: #12161f;
+    --surface-2: #181d29;
+    --border: #232a3a;
+    --text: #e6e9ef;
+    --muted: #8b93a7;
+    --block: #ff5d6c;
+    --allow: #3ddc97;
+    --cond: #f5b84b;
+    --optout: #8ea2ff;
+    --radius: 12px;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 15px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  a { color: inherit; }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 32px 16px 64px; }
+
+  header h1 { margin: 0 0 6px; font-size: 1.6rem; letter-spacing: -0.01em; }
+  header p { margin: 0; color: var(--muted); max-width: 60ch; }
+
+  .counter {
+    margin: 28px 0 32px;
+    padding: 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 8px 18px;
+    font-size: clamp(1.5rem, 5vw, 2.4rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .counter .n { font-variant-numeric: tabular-nums; }
+  .counter .blocks .n { color: var(--block); }
+  .counter .allows .n { color: var(--allow); }
+  .counter .sep { color: var(--border); font-weight: 400; }
+  .counter small { display: block; width: 100%; font-size: 0.85rem; font-weight: 400; color: var(--muted); letter-spacing: 0; }
+
+  .filters { display: grid; gap: 12px; margin-bottom: 28px; }
+  .filter-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+  .filter-row .label { color: var(--muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; min-width: 92px; }
+  .chip {
+    font: inherit; font-size: 0.85rem;
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+  }
+  .chip:hover { color: var(--text); }
+  .chip[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+  .chip:focus-visible { outline: 2px solid var(--optout); outline-offset: 2px; }
+
+  h2 { font-size: 1.05rem; margin: 36px 0 12px; }
+  h2 .count { color: var(--muted); font-weight: 400; }
+
+  .badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 0.8rem; font-weight: 600;
+    padding: 2px 10px; border-radius: 999px;
+    white-space: nowrap;
+    background: var(--surface-2);
+  }
+  .badge::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+  .badge.block { color: var(--block); }
+  .badge.allow { color: var(--allow); }
+  .badge.cond { color: var(--cond); }
+  .badge.optout { color: var(--optout); }
+  .badge.unknown { color: var(--muted); }
+
+  table { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+  th, td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 600; background: var(--surface-2); }
+  tr:last-child td { border-bottom: 0; }
+  td.platform { font-weight: 600; }
+  .sub { color: var(--muted); font-size: 0.85rem; }
+  .src { color: var(--optout); text-decoration: none; }
+  .src:hover { text-decoration: underline; }
+
+  .timeline { list-style: none; margin: 0; padding: 0 0 0 18px; border-left: 2px solid var(--border); }
+  .event { position: relative; margin: 0 0 18px; padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
+  .event::before {
+    content: ""; position: absolute; left: -26px; top: 20px;
+    width: 12px; height: 12px; border-radius: 50%;
+    background: var(--bg); border: 2px solid var(--muted);
+  }
+  .event.block::before { border-color: var(--block); }
+  .event.allow::before { border-color: var(--allow); }
+  .event.cond::before { border-color: var(--cond); }
+  .event.optout::before { border-color: var(--optout); }
+  .event .top { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+  .event .date { color: var(--muted); font-size: 0.85rem; font-variant-numeric: tabular-nums; }
+  .event .title { font-weight: 600; }
+  .event .meta { display: flex; flex-wrap: wrap; gap: 4px 16px; margin-top: 8px; color: var(--muted); font-size: 0.85rem; }
+  .event .meta b { color: var(--text); font-weight: 500; }
+  .event .notes { margin: 8px 0 0; font-size: 0.9rem; }
+
+  .empty, .error { padding: 20px; color: var(--muted); background: var(--surface); border: 1px dashed var(--border); border-radius: var(--radius); }
+  .error { color: var(--block); }
+
+  footer { margin-top: 48px; color: var(--muted); font-size: 0.85rem; display: flex; flex-wrap: wrap; gap: 8px 20px; }
+
+  @media (max-width: 640px) {
+    .wrap { padding-top: 24px; }
+    .filter-row .label { width: 100%; }
+    table, thead, tbody, tr, td { display: block; }
+    thead { display: none; }
+    table { background: none; border: 0; }
+    tr { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 10px; padding: 6px 0; }
+    td { border: 0; padding: 6px 14px; display: flex; gap: 12px; }
+    td::before { content: attr(data-label); flex: 0 0 76px; color: var(--muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; padding-top: 2px; }
+    td > div { min-width: 0; overflow-wrap: anywhere; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Agent Access Tracker</h1>
+    <p>A public record of which platforms block or allow AI agents, with dates and sources.</p>
+  </header>
+
+  <div class="counter" id="counter" aria-live="polite">
+    <span class="blocks"><span class="n" id="n-blocks">–</span> blocks</span>
+    <span class="sep">·</span>
+    <span class="allows"><span class="n" id="n-allows">–</span> platforms allowing agents</span>
+    <small>Based on the most recent event for each platform. "Allowing" includes "allows with conditions".</small>
+  </div>
+
+  <div class="filters">
+    <div class="filter-row" role="group" aria-label="Filter by status">
+      <span class="label">Status</span>
+      <button class="chip" data-filter="status" data-value="" aria-pressed="true">All</button>
+      <button class="chip" data-filter="status" data-value="bloquea" aria-pressed="false">Blocks</button>
+      <button class="chip" data-filter="status" data-value="permite" aria-pressed="false">Allows</button>
+      <button class="chip" data-filter="status" data-value="permite con condiciones" aria-pressed="false">Allows with conditions</button>
+      <button class="chip" data-filter="status" data-value="opt-out" aria-pressed="false">Opt-out</button>
+    </div>
+    <div class="filter-row" role="group" aria-label="Filter by agent type">
+      <span class="label">Agent type</span>
+      <button class="chip" data-filter="type" data-value="" aria-pressed="true">All</button>
+      <button class="chip" data-filter="type" data-value="nube" aria-pressed="false">Cloud</button>
+      <button class="chip" data-filter="type" data-value="navegador" aria-pressed="false">Browser</button>
+      <button class="chip" data-filter="type" data-value="telefono" aria-pressed="false">Phone</button>
+    </div>
+  </div>
+
+  <section>
+    <h2>Current status by platform <span class="count" id="table-count"></span></h2>
+    <div id="table"></div>
+  </section>
+
+  <section>
+    <h2>Timeline <span class="count" id="timeline-count"></span></h2>
+    <div id="timeline"></div>
+  </section>
+
+  <footer>
+    <a href="data/events.csv">Download data (CSV)</a>
+    <a href="https://github.com/NeirenL/agent-access-tracker">GitHub repository</a>
+    <a href="https://github.com/NeirenL/agent-access-tracker/issues/new/choose">Report a case</a>
+    <span>Data licensed under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></span>
+  </footer>
+</div>
+
+<noscript><p style="text-align:center;color:#8b93a7">This page needs JavaScript to read the data file.</p></noscript>
+
+<script>
+const STATUS = {
+  'bloquea': { label: 'Blocks', cls: 'block' },
+  'permite': { label: 'Allows', cls: 'allow' },
+  'permite con condiciones': { label: 'Allows with conditions', cls: 'cond' },
+  'opt-out': { label: 'Opt-out', cls: 'optout' },
+};
+const TYPE = { nube: 'Cloud', navegador: 'Browser', telefono: 'Phone' };
+const VERIF = { oficial: 'Official', 'reportado por medios': 'Media report', 'reportado por usuarios': 'User reports' };
+
+const filters = { status: '', type: '' };
+let events = [];
+
+// Lowercase, trim and drop accents so "Teléfono" matches "telefono".
+const norm = s => (s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').trim().toLowerCase();
+
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+function parseCSV(text) {
+  const rows = [];
+  let row = [], field = '', quoted = false;
+  text = text.replace(/^﻿/, '');
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (quoted) {
+      if (c === '"') {
+        if (text[i + 1] === '"') { field += '"'; i++; } else quoted = false;
+      } else field += c;
+    } else if (c === '"') quoted = true;
+    else if (c === ',') { row.push(field); field = ''; }
+    else if (c === '\n') { row.push(field); rows.push(row); row = []; field = ''; }
+    else if (c !== '\r') field += c;
+  }
+  if (field || row.length) { row.push(field); rows.push(row); }
+  return rows.filter(r => r.some(v => v.trim()));
+}
+
+function toEvents(rows) {
+  const header = rows[0].map(norm);
+  return rows.slice(1).map((r, i) => {
+    const e = { i };
+    header.forEach((h, j) => { e[h] = (r[j] || '').trim(); });
+    e.statusKey = norm(e.estado);
+    e.typeKey = norm(e.tipo_agente);
+    e.platformKey = norm(e.plataforma);
+    return e;
+  });
+}
+
+// Newest first; for same-day events, the row added later wins.
+const byNewest = (a, b) => (b.fecha || '').localeCompare(a.fecha || '') || b.i - a.i;
+
+function latestPerPlatform(list) {
+  const seen = new Map();
+  for (const e of [...list].sort(byNewest)) {
+    if (e.platformKey && !seen.has(e.platformKey)) seen.set(e.platformKey, e);
+  }
+  return [...seen.values()];
+}
+
+const matches = e => (!filters.status || e.statusKey === filters.status) && (!filters.type || e.typeKey === filters.type);
+
+function fmtDate(s) {
+  const d = new Date(s + 'T00:00:00Z');
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(s) || isNaN(d)) return esc(s);
+  return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' });
+}
+
+function badge(e) {
+  const s = STATUS[e.statusKey];
+  return `<span class="badge ${s ? s.cls : 'unknown'}">${esc(s ? s.label : e.estado || 'Unknown')}</span>`;
+}
+
+const typeLabel = e => esc(TYPE[e.typeKey] || e.tipo_agente || '');
+const verifLabel = e => esc(VERIF[norm(e.verificacion)] || e.verificacion || '');
+
+function sourceLink(e, text) {
+  if (!/^https?:\/\//i.test(e.fuente_url)) return '';
+  let host = text;
+  if (!host) { try { host = new URL(e.fuente_url).hostname.replace(/^www\./, ''); } catch { host = 'Source'; } }
+  return `<a class="src" href="${esc(e.fuente_url)}" target="_blank" rel="noopener noreferrer">${esc(host)} ↗</a>`;
+}
+
+function agentLine(e) {
+  return esc(e.agente) + (e.empresa_agente ? ` <span class="sub">(${esc(e.empresa_agente)})</span>` : '');
+}
+
+function renderCounter() {
+  const current = latestPerPlatform(events);
+  document.getElementById('n-blocks').textContent = current.filter(e => e.statusKey === 'bloquea').length;
+  document.getElementById('n-allows').textContent = current.filter(e => e.statusKey === 'permite' || e.statusKey === 'permite con condiciones').length;
+}
+
+function renderTable() {
+  const rows = latestPerPlatform(events).filter(matches).sort((a, b) => a.plataforma.localeCompare(b.plataforma));
+  document.getElementById('table-count').textContent = `(${rows.length})`;
+  const el = document.getElementById('table');
+  if (!rows.length) { el.innerHTML = '<div class="empty">No platforms match these filters.</div>'; return; }
+  el.innerHTML = `<table>
+    <thead><tr><th>Platform</th><th>Status</th><th>Agent</th><th>Type</th><th>Since</th><th>Source</th></tr></thead>
+    <tbody>${rows.map(e => `<tr>
+      <td class="platform" data-label="Platform"><div>${esc(e.plataforma)}</div></td>
+      <td data-label="Status"><div>${badge(e)}</div></td>
+      <td data-label="Agent"><div>${agentLine(e)}</div></td>
+      <td data-label="Type"><div>${typeLabel(e)}</div></td>
+      <td data-label="Since"><div>${fmtDate(e.fecha)}</div></td>
+      <td data-label="Source"><div>${sourceLink(e)}</div></td>
+    </tr>`).join('')}</tbody>
+  </table>`;
+}
+
+function renderTimeline() {
+  const list = events.filter(matches).sort(byNewest);
+  document.getElementById('timeline-count').textContent = `(${list.length})`;
+  const el = document.getElementById('timeline');
+  if (!list.length) { el.innerHTML = '<div class="empty">No events match these filters.</div>'; return; }
+  el.innerHTML = `<ol class="timeline">${list.map(e => {
+    const cls = (STATUS[e.statusKey] || {}).cls || '';
+    const meta = [
+      e.agente && `<span>Agent: <b>${agentLine(e)}</b></span>`,
+      e.tipo_agente && `<span>Type: <b>${typeLabel(e)}</b></span>`,
+      e.mecanismo && `<span>Mechanism: <b>${esc(e.mecanismo)}</b></span>`,
+      e.verificacion && `<span>Verification: <b>${verifLabel(e)}</b></span>`,
+      sourceLink(e) && `<span>${sourceLink(e)}</span>`,
+    ].filter(Boolean).join('');
+    return `<li class="event ${cls}">
+      <div class="top"><span class="date">${fmtDate(e.fecha)}</span><span class="title">${esc(e.plataforma)}</span>${badge(e)}</div>
+      <div class="meta">${meta}</div>
+      ${e.notas ? `<p class="notes">${esc(e.notas)}</p>` : ''}
+    </li>`;
+  }).join('')}</ol>`;
+}
+
+function render() { renderTable(); renderTimeline(); }
+
+document.querySelectorAll('.chip').forEach(btn => btn.addEventListener('click', () => {
+  const key = btn.dataset.filter;
+  filters[key] = btn.dataset.value;
+  document.querySelectorAll(`.chip[data-filter="${key}"]`).forEach(b => b.setAttribute('aria-pressed', String(b === btn)));
+  render();
+}));
+
+fetch('data/events.csv', { cache: 'no-cache' })
+  .then(r => { if (!r.ok) throw new Error(r.status); return r.text(); })
+  .then(text => {
+    const rows = parseCSV(text);
+    events = rows.length > 1 ? toEvents(rows) : [];
+    renderCounter();
+    render();
+  })
+  .catch(() => {
+    const msg = '<div class="error">Could not load data/events.csv. If you opened this file directly from your computer, view it through GitHub Pages or a local web server instead.</div>';
+    document.getElementById('table').innerHTML = msg;
+    document.getElementById('timeline').innerHTML = '';
+  });
+</script>
+</body>
+</html>

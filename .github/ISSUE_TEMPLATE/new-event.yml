@@ -1,0 +1,59 @@
+name: Report a new case
+description: A platform blocked, allowed or set conditions for an AI agent
+title: "[New case] <Platform> / <Agent>"
+labels: ["new-case"]
+body:
+  - type: input
+    id: platform
+    attributes:
+      label: Platform
+      placeholder: e.g. Amazon
+    validations:
+      required: true
+  - type: input
+    id: agent
+    attributes:
+      label: Agent and company
+      placeholder: e.g. Comet (Perplexity)
+    validations:
+      required: true
+  - type: dropdown
+    id: status
+    attributes:
+      label: What happened?
+      options:
+        - Blocks
+        - Allows
+        - Allows with conditions
+        - Opt-out
+    validations:
+      required: true
+  - type: dropdown
+    id: type
+    attributes:
+      label: Agent type
+      options:
+        - Cloud
+        - Browser
+        - Phone
+        - Not sure
+  - type: input
+    id: date
+    attributes:
+      label: Date (YYYY-MM-DD)
+      placeholder: "2026-01-31"
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: Source URL
+      description: Official announcements, terms of service or reputable media are best.
+      placeholder: https://
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+      description: How is it enforced (robots.txt, terms, CAPTCHA...)? Anything else useful.

@@ -1,0 +1,2 @@
+fecha,plataforma,agente,empresa_agente,tipo_agente,estado,mecanismo,verificacion,fuente_url,notas
+2026-10-26,Example Platform,Example Agent,Example AI Inc.,navegador,bloquea,robots.txt,oficial,https://example.com,"EXAMPLE ROW: replace or delete it when adding real cases"
