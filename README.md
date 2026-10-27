@@ -1,10 +1,13 @@
-# 🛡️ Agent Access Tracker
+[![Agent Access Tracker banner](docs/banner.png)](https://neirenl.github.io/agent-access-tracker/)
 
-[![Screenshot of the Agent Access Tracker page](docs/screenshot.png)](https://neirenl.github.io/agent-access-tracker/)
+# 🛡️ Agent Access Tracker
 
 **A public, sourced record of which platforms block or allow AI agents, and when.**
 
-🌐 **Live page:** https://neirenl.github.io/agent-access-tracker/<br>
+🌐 **Live page:** https://neirenl.github.io/agent-access-tracker/
+
+<a href="https://neirenl.github.io/agent-access-tracker/"><img src="docs/screenshot.png" alt="Screenshot of the Agent Access Tracker page" width="100%"></a>
+
 📅 **Last updated:** 2026-10-27
 
 ## 🧭 Why this exists
