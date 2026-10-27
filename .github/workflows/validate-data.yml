@@ -1,0 +1,17 @@
+name: Validate data
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate data/events.csv
+        run: python3 .github/scripts/validate_csv.py data/events.csv

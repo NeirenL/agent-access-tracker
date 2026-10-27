@@ -37,6 +37,8 @@ Know of a platform blocking or allowing an AI agent? **[Open an issue](https://g
 
 Entries without a verifiable source won't be added. If you spot an error or a dead link, open an issue too.
 
+Editing the CSV directly? Every push and pull request runs an automatic check on `data/events.csv` (exact columns, `YYYY-MM-DD` dates, allowed values, `https://` sources, no duplicates). If it fails, the log tells you which line to fix. `tipo_agente` may be left empty when the source doesn't say.
+
 Every Monday, an automated check visits each `fuente_url` and opens an issue if any link is broken.
 
 ## 📄 License
