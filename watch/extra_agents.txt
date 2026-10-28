@@ -2,3 +2,11 @@
 # (https://github.com/ai-robots-txt/ai.robots.txt). Format: Name | Operator. Lines starting with # are ignored.
 GoogleAgent-Shopping | Google
 Grok-DeepSearch | xAI
+# Watchlist agents from data/agents.csv. Their makers publish no robots.txt name, so these are the
+# product names, in case a site starts listing them.
+Claude Duet | Anthropic
+Dots | OpenAI
+Hermes Agent | Nous Research
+Gemini Spark | Google
+Perplexity Computer | Perplexity
+Instinct | Spear Street Technology
