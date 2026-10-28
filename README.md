@@ -73,6 +73,8 @@ Editing the CSV directly? Every push and pull request runs an automatic check on
 
 Every Monday, an automated check visits each `fuente_url` and opens an issue if any link is broken.
 
+Every Monday, the robots.txt watcher in [`watch/`](watch/) also checks the sites listed in `watch/sites.txt` and saves their robots.txt snapshots in [`snapshots/`](snapshots/). It opens an issue when the rules for AI agents change, and never edits `data/events.csv` itself.
+
 ## 📄 License
 
 The data and content in this repository are licensed under [**Creative Commons Attribution 4.0 International (CC BY 4.0)**](https://creativecommons.org/licenses/by/4.0/). You are free to share and adapt them for any purpose, as long as you give appropriate credit:
