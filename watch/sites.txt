@@ -1,36 +1,42 @@
 # Sites whose robots.txt is checked every week.
-# Format: domain | Platform name (the name is optional; it is used in the proposed CSV rows).
+# Format: domain | Platform name | Country (name and country are optional; they are used in the proposed CSV rows).
+# Country: two-letter code of the operational headquarters of the company that operates the site or app
+# (not the holding company or the legal seat), e.g. US, MX, CN. Same value and rule as the pais column.
+# GLOBAL only if there is no clear operator. TO DECIDE means it still needs a human review.
 # Lines starting with # are ignored.
-amazon.com | Amazon
-walmart.com | Walmart
-target.com | Target
-bestbuy.com | Best Buy
-ebay.com | eBay
-etsy.com | Etsy
-costco.com | Costco
-homedepot.com | The Home Depot
-mercadolibre.com.mx | Mercado Libre
-linkedin.com | LinkedIn
-reddit.com | Reddit
-youtube.com | YouTube
-booking.com | Booking.com
-expedia.com | Expedia
-airbnb.com | Airbnb
-ticketmaster.com | Ticketmaster
-theguardian.com | The Guardian
-wsj.com | The Wall Street Journal
-nypost.com | New York Post
-britannica.com | Encyclopædia Britannica
-x.com | X
-quora.com | Quora
-medium.com | Medium
-temu.com | Temu
-zillow.com | Zillow
-instacart.com | Instacart
-nytimes.com | The New York Times
-stackoverflow.com | Stack Overflow
-douyin.com | Douyin
-zhihu.com | Zhihu
-xiaohongshu.com | Xiaohongshu
-baidu.com | Baidu
-opentable.com | OpenTable
+amazon.com | Amazon | US
+walmart.com | Walmart | US
+target.com | Target | US
+bestbuy.com | Best Buy | US
+ebay.com | eBay | US
+etsy.com | Etsy | US
+costco.com | Costco | US
+homedepot.com | The Home Depot | US
+mercadolibre.com.mx | Mercado Libre | MX
+linkedin.com | LinkedIn | US
+reddit.com | Reddit | US
+youtube.com | YouTube | US
+booking.com | Booking.com | NL
+expedia.com | Expedia | US
+airbnb.com | Airbnb | US
+ticketmaster.com | Ticketmaster | US
+theguardian.com | The Guardian | GB
+wsj.com | The Wall Street Journal | US
+nypost.com | New York Post | US
+britannica.com | Encyclopædia Britannica | US
+x.com | X | US
+quora.com | Quora | US
+medium.com | Medium | US
+# Temu: operated by PDD, the same company as Pinduoduo.
+# Legal note: contracting entity varies by region (Elementary Innovation Pte. Ltd., Singapore; Whaleco Inc.)
+temu.com | Temu | CN
+zillow.com | Zillow | US
+instacart.com | Instacart | US
+nytimes.com | The New York Times | US
+# Stack Overflow: operated by Stack Exchange, Inc., New York (https://stackoverflow.com/legal/terms-of-service/public).
+stackoverflow.com | Stack Overflow | US
+douyin.com | Douyin | CN
+zhihu.com | Zhihu | CN
+xiaohongshu.com | Xiaohongshu | CN
+baidu.com | Baidu | CN
+opentable.com | OpenTable | US

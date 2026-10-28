@@ -175,7 +175,7 @@ def fence(rules):
     return "```\n" + ("\n".join(rules) if rules else NOT_LISTED) + "\n```"
 
 
-def issue_for(domain, name, url, changes, agents, today, all_robots=None):
+def issue_for(domain, name, pais, url, changes, agents, today, all_robots=None):
     """Issue text. `all_robots` is (before, after) when the User-agent: * whole-site block changed."""
     what = [c[0] for c in changes] + (["User-agent: *"] if all_robots else [])
     lines = [
@@ -199,16 +199,17 @@ def issue_for(domain, name, url, changes, agents, today, all_robots=None):
             "",
         ]
         estado = "bloquea" if all_robots[1] else "TO DECIDE"
-        rows.append(csv_row([today, name, "All robots (User-agent: *)", "", "", estado, "robots.txt", "oficial", url, NOTE]))
+        rows.append(csv_row([today, name, pais, "All robots (User-agent: *)", "", "", estado, "robots.txt", "oficial", url, NOTE]))
     for agent, before, after in changes:
         operator = next((op for n, op in agents.values() if n == agent), "")
         lines += [f"#### {agent}" + (f" ({operator})" if operator else ""), "**Before**", fence(before), "**After**", fence(after), ""]
         estado = proposed_estado(after) if after else "TO DECIDE"
-        rows.append(csv_row([today, name, agent, operator, "", estado, "robots.txt", "oficial", url, NOTE]))
+        rows.append(csv_row([today, name, pais, agent, operator, "", estado, "robots.txt", "oficial", url, NOTE]))
     lines += [
         "### Proposed rows for `data/events.csv`",
         "Review before adding anything. `TO DECIDE` means the change is not a clear whole-site block "
         "(partial rules, an Allow, or the agent was removed): pick the right `estado` by hand. "
+        "`pais` comes from watch/sites.txt; `TO DECIDE` there means the site has no country yet. "
         "`tipo_agente` is left empty on purpose.",
         "",
         "```csv",
@@ -234,7 +235,8 @@ def main():
 
     def watched_both_weeks(agent):
         return agent.lower() in agents and (previous_watched is None or agent.lower() in previous_watched)
-    sites = [(row[0].lower(), row[1] if len(row) > 1 else row[0]) for row in read_list(SITES_FILE)]
+    sites = [(row[0].lower(), row[1] if len(row) > 1 and row[1] else row[0], row[2].upper() if len(row) > 2 and row[2] else "TO DECIDE")
+             for row in read_list(SITES_FILE)]
     if args.only:
         sites = [s for s in sites if s[0] in {d.lower() for d in args.only}]
 
@@ -243,7 +245,7 @@ def main():
     issues_dir.mkdir(parents=True, exist_ok=True)
 
     results = []  # (domain, status text, ai agent count, whole-site blocks)
-    for n, (domain, name) in enumerate(sites):
+    for n, (domain, name, pais) in enumerate(sites):
         if n:
             time.sleep(PAUSE_SECONDS)
         url = f"https://{domain}/robots.txt"
@@ -285,7 +287,7 @@ def main():
         all_change = (previous_all, all_blocked) if previous_all is not None and previous_all != all_blocked else None
         if changes or all_change:
             (issues_dir / f"{domain}.md").write_text(
-                issue_for(domain, name, final_url, changes, agents, today, all_change), encoding="utf-8"
+                issue_for(domain, name, pais, final_url, changes, agents, today, all_change), encoding="utf-8"
             )
             what = [c[0] for c in changes] + (["User-agent: *"] if all_change else [])
             results.append((domain, f"🔔 changed: {', '.join(what)}", len(rules), blocks, all_cell))

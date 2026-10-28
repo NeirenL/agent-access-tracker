@@ -5,13 +5,14 @@ annotations so they show up on the file in pull requests.
 """
 import csv
 import os
+import re
 import sys
 from datetime import datetime
 
 CSV_PATH = sys.argv[1] if len(sys.argv) > 1 else "data/events.csv"
 
 COLUMNS = [
-    "fecha", "plataforma", "agente", "empresa_agente", "tipo_agente",
+    "fecha", "plataforma", "pais", "agente", "empresa_agente", "tipo_agente",
     "estado", "mecanismo", "verificacion", "fuente_url", "notas",
 ]
 ALLOWED = {
@@ -34,6 +35,10 @@ ALIASES = {
     },
 }
 REQUIRED = ["plataforma", "agente"]
+# pais: two-letter ISO 3166-1 code of the operational headquarters of the company that operates
+# the site or app, not the holding company or legal seat (e.g. US, MX, CN), or GLOBAL when there
+# is no clear operator. A different legal seat goes in notas.
+PAIS_RE = re.compile(r"^(?:[A-Z]{2}|GLOBAL)$")
 
 errors = []
 
@@ -69,6 +74,7 @@ def main():
 
         seen_rows = {}
         seen_keys = {}
+        platform_pais = {}  # platform -> (pais, line where it was first seen)
         count = 0
         prev_end = reader.line_num
         for row in reader:
@@ -101,6 +107,14 @@ def main():
             for col in ALLOWED:
                 if r[col] not in ALLOWED[col]:
                     error(line, f'{col} "{r[col]}" is not allowed. Use one of: {fmt_allowed(col)}')
+
+            if not PAIS_RE.match(r["pais"]):
+                error(line, f'pais "{r["pais"]}" must be a two-letter uppercase country code (e.g. US, MX, CN) or GLOBAL')
+            elif r["plataforma"]:
+                first = platform_pais.setdefault(r["plataforma"].casefold(), (r["pais"], line))
+                if first[0] != r["pais"]:
+                    error(line, f'pais "{r["pais"]}" differs from "{first[0]}" used for {r["plataforma"]} on line {first[1]}; '
+                                "a platform keeps the same country in every row")
 
             if not r["fuente_url"].startswith("https://") or len(r["fuente_url"]) <= len("https://"):
                 error(line, f'fuente_url "{r["fuente_url"]}" must start with https://')

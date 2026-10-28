@@ -28,6 +28,7 @@ The column names and values are kept in Spanish, the language the dataset was st
 |---|---|---|
 | `fecha` | Date of the event | `YYYY-MM-DD` |
 | `plataforma` | Platform taking the action | e.g. `Amazon`, `LinkedIn` |
+| `pais` | Country of the operational headquarters of the company that **operates the site or app** (not the holding company or its legal seat, not the agent's country, and not where the platform is used). If the legal seat is elsewhere, it goes in `notas`. | Two-letter [ISO 3166-1](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) code, e.g. `US`, `MX`, `CN`. `GLOBAL` only if there is no clear operator. A platform keeps the same country in every row. |
 | `agente` | The AI agent affected | e.g. `Comet`, `Grok Bot` |
 | `empresa_agente` | Company behind the agent | e.g. `Perplexity`, `xAI` |
 | `tipo_agente` | Where the agent runs | `nube` (cloud) · `navegador` (browser) · `teléfono` (phone) · `crawler`. `telefono` without the accent is also accepted and treated as `teléfono`. Leave empty if the source doesn't say. |

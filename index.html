@@ -112,6 +112,12 @@
   .agent-chip.cond .dot { background: var(--cond); }
   .agent-chip.optout .dot { background: var(--optout); }
   .agent-chip time { color: var(--muted); white-space: nowrap; }
+  .cc {
+    display: inline-block; margin-left: 6px; padding: 0 6px;
+    border: 1px solid var(--border); border-radius: 6px;
+    font-size: 0.7rem; font-weight: 600; letter-spacing: 0.04em; line-height: 1.6;
+    color: var(--muted); vertical-align: 2px; white-space: nowrap;
+  }
   .src { color: var(--optout); text-decoration: none; }
   .src:hover { text-decoration: underline; }
 
@@ -182,6 +188,10 @@
       <button class="chip" data-filter="type" data-value="teléfono" aria-pressed="false">Phone</button>
       <button class="chip" data-filter="type" data-value="crawler" aria-pressed="false">Crawler</button>
     </div>
+    <div class="filter-row" role="group" aria-label="Filter by platform country" id="country-filters">
+      <span class="label">Country</span>
+      <button class="chip" data-filter="country" data-value="" aria-pressed="true">All</button>
+    </div>
   </div>
 
   <section>
@@ -225,10 +235,10 @@ const MECH = {
   'demanda': 'Lawsuit',
 };
 const MECH_ALIASES = { 'terminos de servicio': 'términos de servicio', 'bloqueo tecnico': 'bloqueo técnico' };
-const COLUMNS = ['fecha', 'plataforma', 'agente', 'empresa_agente', 'tipo_agente', 'estado', 'mecanismo', 'verificacion', 'fuente_url', 'notas'];
+const COLUMNS = ['fecha', 'plataforma', 'pais', 'agente', 'empresa_agente', 'tipo_agente', 'estado', 'mecanismo', 'verificacion', 'fuente_url', 'notas'];
 const VERIF = { oficial: 'Official', 'reportado por medios': 'Media report', 'reportado por usuarios': 'User reports' };
 
-const filters = { status: '', type: '' };
+const filters = { status: '', type: '', country: '' };
 let events = [];
 
 // Lowercase, trim and drop accents so "Teléfono" matches "telefono".
@@ -265,6 +275,7 @@ function toEvents(rows) {
     e.typeKey = TYPE_ALIASES[e.tipo_agente] || e.tipo_agente;
     e.mechKey = MECH_ALIASES[e.mecanismo] || e.mecanismo;
     e.platformKey = norm(e.plataforma);
+    e.countryKey = (e.pais || '').toUpperCase();
     return e;
   });
 }
@@ -281,7 +292,17 @@ function latestPerPlatform(list) {
 }
 
 const typeMatches = e => !filters.type || e.typeKey === filters.type;
-const matches = e => (!filters.status || e.statusKey === filters.status) && typeMatches(e);
+const countryMatches = e => !filters.country || e.countryKey === filters.country;
+const matches = e => (!filters.status || e.statusKey === filters.status) && typeMatches(e) && countryMatches(e);
+
+// pais is a two-letter country code of the platform, or GLOBAL.
+const regionNames = (() => { try { return new Intl.DisplayNames(['en'], { type: 'region' }); } catch { return null; } })();
+function countryName(code) {
+  if (code === 'GLOBAL') return 'Global';
+  try { return (regionNames && regionNames.of(code)) || code; } catch { return code; }
+}
+const countryCode = c => c === 'GLOBAL' ? 'Global' : c;
+const countryTag = e => e.countryKey ? `<span class="cc" title="${esc(countryName(e.countryKey))}">${esc(countryCode(e.countryKey))}</span>` : '';
 
 // Every event of each platform: newest first, same-day events in alphabetical order by agent.
 const byDateThenAgent = (a, b) =>
@@ -348,7 +369,7 @@ function renderTable() {
   // the Agents column lists every event of that platform.
   const groups = eventsByPlatform(events);
   const rows = latestPerPlatform(events)
-    .filter(e => (!filters.status || e.statusKey === filters.status) && groups.get(e.platformKey).some(typeMatches))
+    .filter(e => (!filters.status || e.statusKey === filters.status) && countryMatches(e) && groups.get(e.platformKey).some(typeMatches))
     .sort((a, b) => a.plataforma.localeCompare(b.plataforma));
   document.getElementById('table-count').textContent = `(${rows.length})`;
   const el = document.getElementById('table');
@@ -359,7 +380,7 @@ function renderTable() {
       const group = groups.get(e.platformKey).filter(typeMatches);
       const types = [...new Set(group.map(typeLabel).filter(Boolean))].join(', ');
       return `<tr>
-      <td class="platform" data-label="Platform"><div>${esc(e.plataforma)}</div></td>
+      <td class="platform" data-label="Platform"><div>${esc(e.plataforma)}${countryTag(e)}</div></td>
       <td data-label="Status"><div>${badge(e)}</div></td>
       <td data-label="Agents"><div>${agentChips(group)}</div></td>
       <td data-label="Type"><div>${types}</div></td>
@@ -385,7 +406,7 @@ function renderTimeline() {
       sourceLink(e) && `<span>${sourceLink(e)}</span>`,
     ].filter(Boolean).join('');
     return `<li class="event ${cls}">
-      <div class="top"><span class="date">${fmtDate(e.fecha)}</span><span class="title">${esc(e.plataforma)}</span>${badge(e)}</div>
+      <div class="top"><span class="date">${fmtDate(e.fecha)}</span><span class="title">${esc(e.plataforma)}${countryTag(e)}</span>${badge(e)}</div>
       <div class="meta">${meta}</div>
       ${e.notas ? `<p class="notes">${esc(e.notas)}</p>` : ''}
     </li>`;
@@ -394,12 +415,27 @@ function renderTimeline() {
 
 function render() { renderTable(); renderTimeline(); }
 
-document.querySelectorAll('.chip').forEach(btn => btn.addEventListener('click', () => {
+// One chip per country in the data, most platforms first; GLOBAL goes last.
+function renderCountryFilters() {
+  const perCountry = new Map();
+  for (const e of latestPerPlatform(events)) {
+    if (e.countryKey) perCountry.set(e.countryKey, (perCountry.get(e.countryKey) || 0) + 1);
+  }
+  const codes = [...perCountry.keys()].sort((a, b) =>
+    (a === 'GLOBAL') - (b === 'GLOBAL') || perCountry.get(b) - perCountry.get(a) || a.localeCompare(b));
+  document.getElementById('country-filters').insertAdjacentHTML('beforeend', codes.map(c =>
+    `<button class="chip" data-filter="country" data-value="${esc(c)}" aria-pressed="false" title="${esc(countryName(c))}">${esc(countryCode(c))}</button>`
+  ).join(''));
+}
+
+document.querySelector('.filters').addEventListener('click', ev => {
+  const btn = ev.target.closest('.chip');
+  if (!btn) return;
   const key = btn.dataset.filter;
   filters[key] = btn.dataset.value;
   document.querySelectorAll(`.chip[data-filter="${key}"]`).forEach(b => b.setAttribute('aria-pressed', String(b === btn)));
   render();
-}));
+});
 
 fetch('data/events.csv', { cache: 'no-cache' })
   .then(r => { if (!r.ok) throw new Error(r.status); return r.text(); })
@@ -407,6 +443,7 @@ fetch('data/events.csv', { cache: 'no-cache' })
     const rows = parseCSV(text);
     events = rows.length > 1 ? toEvents(rows) : [];
     renderCounter();
+    renderCountryFilters();
     render();
   })
   .catch(err => {

@@ -11,6 +11,12 @@ body:
     validations:
       required: true
   - type: input
+    id: country
+    attributes:
+      label: Platform country
+      description: Two-letter code of the country where the company that operates the site or app has its operational headquarters (not the holding company, not the agent's country). GLOBAL only if there is no clear operator.
+      placeholder: e.g. US, MX, CN or GLOBAL
+  - type: input
     id: agent
     attributes:
       label: Agent and company
