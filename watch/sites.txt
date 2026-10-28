@@ -1,0 +1,23 @@
+# Sites whose robots.txt is checked every week.
+# Format: domain | Platform name (the name is optional; it is used in the proposed CSV rows).
+# Lines starting with # are ignored.
+amazon.com | Amazon
+walmart.com | Walmart
+target.com | Target
+bestbuy.com | Best Buy
+ebay.com | eBay
+etsy.com | Etsy
+costco.com | Costco
+homedepot.com | The Home Depot
+mercadolibre.com.mx | Mercado Libre
+linkedin.com | LinkedIn
+reddit.com | Reddit
+youtube.com | YouTube
+booking.com | Booking.com
+expedia.com | Expedia
+airbnb.com | Airbnb
+ticketmaster.com | Ticketmaster
+theguardian.com | The Guardian
+wsj.com | The Wall Street Journal
+nypost.com | New York Post
+britannica.com | Encyclopædia Britannica

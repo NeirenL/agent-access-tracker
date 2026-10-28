@@ -1,0 +1,285 @@
+{
+  "url": "https://www.amazon.com/robots.txt",
+  "all_robots_blocked": false,
+  "ai_rules": {
+    "AddSearchBot": [
+      "Disallow: /"
+    ],
+    "AI2Bot": [
+      "Disallow: /"
+    ],
+    "AI2Bot-DeepResearchEval": [
+      "Disallow: /"
+    ],
+    "Ai2Bot-Dolma": [
+      "Disallow: /"
+    ],
+    "aiHitBot": [
+      "Disallow: /"
+    ],
+    "Andibot": [
+      "Disallow: /"
+    ],
+    "Anomura": [
+      "Disallow: /"
+    ],
+    "atlassian-bot": [
+      "Disallow: /"
+    ],
+    "Brightbot": [
+      "Disallow: /"
+    ],
+    "BuddyBot": [
+      "Disallow: /"
+    ],
+    "Bytespider": [
+      "Disallow: /"
+    ],
+    "CCBot": [
+      "Disallow: /"
+    ],
+    "Channel3Bot": [
+      "Disallow: /"
+    ],
+    "ChatGLM-Spider": [
+      "Disallow: /"
+    ],
+    "ChatGPT-User": [
+      "Disallow: /"
+    ],
+    "Claude-SearchBot": [
+      "Disallow: /"
+    ],
+    "Claude-User": [
+      "Disallow: /"
+    ],
+    "Claude-Web": [
+      "Disallow: /"
+    ],
+    "ClaudeBot": [
+      "Disallow: /"
+    ],
+    "Cloudflare-AutoRAG": [
+      "Disallow: /"
+    ],
+    "CloudflareBrowserRenderingCrawler": [
+      "Disallow: /"
+    ],
+    "cohere-ai": [
+      "Disallow: /"
+    ],
+    "cohere-training-data-crawler": [
+      "Disallow: /"
+    ],
+    "Cotoyogi": [
+      "Disallow: /"
+    ],
+    "Crawl4AI": [
+      "Disallow: /"
+    ],
+    "Datenbank Crawler": [
+      "Disallow: /"
+    ],
+    "DeepSeekBot": [
+      "Disallow: /"
+    ],
+    "Devin": [
+      "Disallow: /"
+    ],
+    "Diffbot": [
+      "Disallow: /"
+    ],
+    "DuckAssistBot": [
+      "Disallow: /"
+    ],
+    "Echobot Bot": [
+      "Disallow: /"
+    ],
+    "EchoboxBot": [
+      "Disallow: /"
+    ],
+    "Factset_spyderbot": [
+      "Disallow: /"
+    ],
+    "FriendlyCrawler": [
+      "Disallow: /"
+    ],
+    "Gemini-Deep-Research": [
+      "Disallow: /"
+    ],
+    "Google-CloudVertexBot": [
+      "Disallow: /"
+    ],
+    "Google-Extended": [
+      "Disallow: /"
+    ],
+    "Google-Firebase": [
+      "Disallow: /"
+    ],
+    "Google-NotebookLM": [
+      "Disallow: /"
+    ],
+    "GoogleAgent-Mariner": [
+      "Disallow: /"
+    ],
+    "GoogleAgent-Shopping": [
+      "Disallow: /"
+    ],
+    "GoogleOther": [
+      "Disallow: /"
+    ],
+    "GPTBot": [
+      "Disallow: /"
+    ],
+    "Grok-DeepSearch": [
+      "Disallow: /"
+    ],
+    "GrokBot": [
+      "Disallow: /"
+    ],
+    "iAskBot": [
+      "Disallow: /"
+    ],
+    "iaskspider": [
+      "Disallow: /"
+    ],
+    "ICC-Crawler": [
+      "Disallow: /"
+    ],
+    "ImagesiftBot": [
+      "Disallow: /"
+    ],
+    "imageSpider": [
+      "Disallow: /"
+    ],
+    "img2dataset": [
+      "Disallow: /"
+    ],
+    "ISSCyberRiskCrawler": [
+      "Disallow: /"
+    ],
+    "Kangaroo Bot": [
+      "Disallow: /"
+    ],
+    "KlaviyoAIBot": [
+      "Disallow: /"
+    ],
+    "KunatoCrawler": [
+      "Disallow: /"
+    ],
+    "laion-huggingface-processor": [
+      "Disallow: /"
+    ],
+    "Linguee Bot": [
+      "Disallow: /"
+    ],
+    "LinkupBot": [
+      "Disallow: /"
+    ],
+    "Manus-User": [
+      "Disallow: /"
+    ],
+    "Meta-ExternalAgent": [
+      "Disallow: /"
+    ],
+    "Meta-ExternalFetcher": [
+      "Disallow: /"
+    ],
+    "meta-webindexer": [
+      "Disallow: /"
+    ],
+    "MistralAI-User": [
+      "Disallow: /"
+    ],
+    "netEstate Imprint Crawler": [
+      "Disallow: /"
+    ],
+    "OAI-SearchBot": [
+      "Disallow: /"
+    ],
+    "omgili": [
+      "Disallow: /"
+    ],
+    "PanguBot": [
+      "Disallow: /"
+    ],
+    "Panscient": [
+      "Disallow: /"
+    ],
+    "panscient.com": [
+      "Disallow: /"
+    ],
+    "Perplexity-User": [
+      "Disallow: /"
+    ],
+    "PerplexityBot": [
+      "Disallow: /"
+    ],
+    "PetalBot": [
+      "Disallow: /"
+    ],
+    "PhindBot": [
+      "Disallow: /"
+    ],
+    "Poggio-Citations": [
+      "Disallow: /"
+    ],
+    "QualifiedBot": [
+      "Disallow: /"
+    ],
+    "SBIntuitionsBot": [
+      "Disallow: /"
+    ],
+    "Scrapy": [
+      "Disallow: /"
+    ],
+    "SemrushBot-SWA": [
+      "Disallow: /"
+    ],
+    "ShapBot": [
+      "Disallow: /"
+    ],
+    "Sidetrade indexer bot": [
+      "Disallow: /"
+    ],
+    "TavilyBot": [
+      "Disallow: /"
+    ],
+    "TerraCotta": [
+      "Disallow: /"
+    ],
+    "Thinkbot": [
+      "Disallow: /"
+    ],
+    "Timpibot": [
+      "Disallow: /"
+    ],
+    "TwinAgent": [
+      "Disallow: /"
+    ],
+    "VelenPublicWebCrawler": [
+      "Disallow: /"
+    ],
+    "webzio-extended": [
+      "Disallow: /"
+    ],
+    "wpbot": [
+      "Disallow: /"
+    ],
+    "WRTNBot": [
+      "Disallow: /"
+    ],
+    "xAI-Grok": [
+      "Disallow: /"
+    ],
+    "YaK": [
+      "Disallow: /"
+    ],
+    "YouBot": [
+      "Disallow: /"
+    ],
+    "ZanistaBot": [
+      "Disallow: /"
+    ]
+  }
+}

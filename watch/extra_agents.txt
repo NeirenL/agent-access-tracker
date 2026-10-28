@@ -1,0 +1,4 @@
+# AI agents to watch in addition to the ai.robots.txt list
+# (https://github.com/ai-robots-txt/ai.robots.txt). Format: Name | Operator. Lines starting with # are ignored.
+GoogleAgent-Shopping | Google
+Grok-DeepSearch | xAI

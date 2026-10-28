@@ -1,0 +1,33 @@
+{
+  "url": "https://www.mercadolibre.com.mx/robots.txt",
+  "all_robots_blocked": false,
+  "ai_rules": {
+    "Amazonbot": [
+      "Disallow: /"
+    ],
+    "ChatGPT-User": [
+      "Disallow: /"
+    ],
+    "Claude-User": [
+      "Disallow: /"
+    ],
+    "ClaudeBot": [
+      "Disallow: /"
+    ],
+    "FacebookBot": [
+      "Allow: /"
+    ],
+    "facebookexternalhit": [
+      "Allow: /"
+    ],
+    "GPTBot": [
+      "Disallow: /"
+    ],
+    "Perplexity-User": [
+      "Disallow: /"
+    ],
+    "PerplexityBot": [
+      "Disallow: /"
+    ]
+  }
+}

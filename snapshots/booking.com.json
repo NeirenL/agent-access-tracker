@@ -1,0 +1,35 @@
+{
+  "url": "https://booking.com/robots.txt",
+  "all_robots_blocked": false,
+  "ai_rules": {
+    "Applebot": [
+      "Disallow: /alt_avail*",
+      "Disallow: /honing.html",
+      "Disallow: /photo.html",
+      "Disallow: /photo.en.html",
+      "Disallow: /photo.de.html",
+      "Disallow: /photo.nl.html",
+      "Disallow: /photo.fr.html",
+      "Disallow: /photo.es.html",
+      "Disallow: /photo.it.html",
+      "Disallow: /photo.pt.html",
+      "Disallow: /photo.ja.html",
+      "Disallow: /photo.zh.html",
+      "Disallow: /photo.pl.html",
+      "Disallow: /book.html",
+      "Disallow: /mybooking.html",
+      "Disallow: /confirmation.html",
+      "Disallow: /navigation_times",
+      "Disallow: /hotelsonmap.*.json",
+      "Disallow: /general.*",
+      "Disallow: /markers_on_map",
+      "Disallow: /logo",
+      "Disallow: /load_times",
+      "Disallow: /anysearch.*",
+      "Disallow: /region_attractions",
+      "Disallow: /*city_bookings",
+      "Disallow: /*nofollow=1",
+      "Disallow: /flexiproduct"
+    ]
+  }
+}

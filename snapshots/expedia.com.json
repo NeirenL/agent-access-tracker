@@ -1,0 +1,69 @@
+{
+  "url": "https://www.expedia.com/robots.txt",
+  "all_robots_blocked": false,
+  "ai_rules": {
+    "ChatGPT-User": [
+      "Allow: /",
+      "Disallow: /p/home",
+      "Disallow: /*/p/home",
+      "Disallow: /auth/",
+      "Disallow: /*/auth/",
+      "Disallow: /*/sso/",
+      "Disallow: /cl/*"
+    ],
+    "Claude-SearchBot": [
+      "Allow: /",
+      "Disallow: /p/home",
+      "Disallow: /*/p/home",
+      "Disallow: /auth/",
+      "Disallow: /*/auth/",
+      "Disallow: /*/sso/",
+      "Disallow: /cl/*"
+    ],
+    "Claude-User": [
+      "Allow: /",
+      "Disallow: /p/home",
+      "Disallow: /*/p/home",
+      "Disallow: /auth/",
+      "Disallow: /*/auth/",
+      "Disallow: /*/sso/",
+      "Disallow: /cl/*"
+    ],
+    "OAI-AdsBot": [
+      "Allow: /",
+      "Disallow: /api/uisprime/track",
+      "Disallow: /trvl-px/",
+      "Disallow: /egcs/v2/collect",
+      "Disallow: /api/ucs/shortlist/",
+      "Disallow: /api/v4/typeahead/",
+      "Disallow: /cl/*"
+    ],
+    "OAI-SearchBot": [
+      "Allow: /",
+      "Disallow: /p/home",
+      "Disallow: /*/p/home",
+      "Disallow: /auth/",
+      "Disallow: /*/auth/",
+      "Disallow: /*/sso/",
+      "Disallow: /cl/*"
+    ],
+    "Perplexity-User": [
+      "Allow: /",
+      "Disallow: /p/home",
+      "Disallow: /*/p/home",
+      "Disallow: /auth/",
+      "Disallow: /*/auth/",
+      "Disallow: /*/sso/",
+      "Disallow: /cl/*"
+    ],
+    "PerplexityBot": [
+      "Allow: /",
+      "Disallow: /p/home",
+      "Disallow: /*/p/home",
+      "Disallow: /auth/",
+      "Disallow: /*/auth/",
+      "Disallow: /*/sso/",
+      "Disallow: /cl/*"
+    ]
+  }
+}

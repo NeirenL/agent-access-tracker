@@ -1,0 +1,63 @@
+{
+  "url": "https://www.theguardian.com/robots.txt",
+  "all_robots_blocked": false,
+  "ai_rules": {
+    "amazon-QBusiness": [
+      "Disallow: /"
+    ],
+    "Amazonbot": [
+      "Disallow: /"
+    ],
+    "Amzn-SearchBot": [
+      "Disallow: /"
+    ],
+    "anthropic-ai": [
+      "Disallow: /"
+    ],
+    "Applebot-Extended": [
+      "Disallow: /"
+    ],
+    "Bytespider": [
+      "Disallow: /"
+    ],
+    "CCBot": [
+      "Disallow: /"
+    ],
+    "Claude-SearchBot": [
+      "Disallow: /"
+    ],
+    "Claude-User": [
+      "Disallow: /"
+    ],
+    "ClaudeBot": [
+      "Disallow: /"
+    ],
+    "DuckAssistBot": [
+      "Disallow: /"
+    ],
+    "FacebookBot": [
+      "Disallow: /"
+    ],
+    "Google-CloudVertexBot": [
+      "Disallow: /"
+    ],
+    "Meta-ExternalAgent": [
+      "Disallow: /"
+    ],
+    "PerplexityBot": [
+      "Disallow: /"
+    ],
+    "PetalBot": [
+      "Disallow: /"
+    ],
+    "YandexAdditional": [
+      "Disallow: /"
+    ],
+    "YandexAdditionalBot": [
+      "Disallow: /"
+    ],
+    "YouBot": [
+      "Disallow: /"
+    ]
+  }
+}

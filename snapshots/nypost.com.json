@@ -1,0 +1,90 @@
+{
+  "url": "https://nypost.com/robots.txt",
+  "all_robots_blocked": false,
+  "ai_rules": {
+    "amazon-kendra": [
+      "Disallow: /"
+    ],
+    "amazon-QBusiness": [
+      "Disallow: /"
+    ],
+    "Amazonbot": [
+      "Disallow: /"
+    ],
+    "Amzn-SearchBot": [
+      "Disallow: /"
+    ],
+    "Amzn-User": [
+      "Disallow: /"
+    ],
+    "anthropic-ai": [
+      "Disallow: /"
+    ],
+    "Applebot-Extended": [
+      "Disallow: /"
+    ],
+    "Bytespider": [
+      "Disallow: /"
+    ],
+    "CCBot": [
+      "Disallow: /"
+    ],
+    "Claude-SearchBot": [
+      "Disallow: /"
+    ],
+    "Claude-User": [
+      "Disallow: /"
+    ],
+    "Claude-Web": [
+      "Disallow: /"
+    ],
+    "ClaudeBot": [
+      "Disallow: /"
+    ],
+    "cohere-ai": [
+      "Disallow: /"
+    ],
+    "Diffbot": [
+      "Disallow: /"
+    ],
+    "FacebookBot": [
+      "Disallow: /"
+    ],
+    "FriendlyCrawler": [
+      "Disallow: /"
+    ],
+    "Google-Extended": [
+      "Disallow: /"
+    ],
+    "ImagesiftBot": [
+      "Disallow: /"
+    ],
+    "Meta-ExternalAgent": [
+      "Disallow: /"
+    ],
+    "Meta-ExternalFetcher": [
+      "Disallow: /"
+    ],
+    "omgili": [
+      "Disallow: /"
+    ],
+    "omgilibot": [
+      "Disallow: /"
+    ],
+    "PerplexityBot": [
+      "Disallow: /"
+    ],
+    "PetalBot": [
+      "Disallow: /"
+    ],
+    "Scrapy": [
+      "Disallow: /"
+    ],
+    "Shap-User": [
+      "Disallow: /"
+    ],
+    "ShapBot": [
+      "Disallow: /"
+    ]
+  }
+}

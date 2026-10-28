@@ -1,0 +1,56 @@
+name: Watch robots.txt
+
+on:
+  schedule:
+    - cron: "0 13 * * 1" # every Monday at 13:00 UTC
+  workflow_dispatch: # also allows running it manually from the Actions tab
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: watch-robots
+  cancel-in-progress: false
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Check robots.txt of every site
+        run: python3 watch/check_robots.py --report "$RUNNER_TEMP/report.md" --issues-dir "$RUNNER_TEMP/issues"
+
+      - name: Add the report to the run summary
+        run: cat "$RUNNER_TEMP/report.md" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Commit updated snapshots
+        run: |
+          git add snapshots
+          if git diff --cached --quiet; then
+            echo "Snapshots unchanged; nothing to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Update robots.txt snapshots"
+          git pull --rebase origin main
+          git push origin HEAD:main
+
+      - name: Open one issue per changed site
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          shopt -s nullglob
+          files=("$RUNNER_TEMP"/issues/*.md)
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "No AI-agent changes this week."
+            exit 0
+          fi
+          gh label create robots-change --color 8ea2ff --description "AI-agent rules changed in a robots.txt" --force
+          for f in "${files[@]}"; do
+            title=$(head -n 1 "$f")
+            tail -n +3 "$f" > "$RUNNER_TEMP/body.md"
+            gh issue create --title "$title" --label robots-change --body-file "$RUNNER_TEMP/body.md"
+          done
