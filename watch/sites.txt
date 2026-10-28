@@ -28,3 +28,9 @@ temu.com | Temu
 zillow.com | Zillow
 instacart.com | Instacart
 nytimes.com | The New York Times
+stackoverflow.com | Stack Overflow
+douyin.com | Douyin
+zhihu.com | Zhihu
+xiaohongshu.com | Xiaohongshu
+baidu.com | Baidu
+opentable.com | OpenTable
