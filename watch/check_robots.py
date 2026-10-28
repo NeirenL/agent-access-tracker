@@ -25,6 +25,7 @@ SITES_FILE = ROOT / "watch" / "sites.txt"
 EXTRA_AGENTS_FILE = ROOT / "watch" / "extra_agents.txt"
 SNAPSHOTS = ROOT / "snapshots"
 AGENTS_CACHE = SNAPSHOTS / "_ai_agents.json"
+WATCHED_FILE = SNAPSHOTS / "_watched_agents.json"  # every agent checked in the last run
 
 AGENTS_URL = "https://raw.githubusercontent.com/ai-robots-txt/ai.robots.txt/main/robots.json"
 USER_AGENT = "AgentAccessTracker/1.0 (+https://github.com/NeirenL/agent-access-tracker)"
@@ -75,6 +76,21 @@ def clean_operator(text):
     """'[OpenAI](https://openai.com)' -> 'OpenAI'; unknown operators -> ''."""
     text = re.sub(r"\[([^\]]+)\]\([^)]*\)", r"\1", text or "").strip()
     return "" if not text or text.lower().startswith("unclear") else text
+
+
+def load_previous_watched():
+    """Lowercase names of the agents checked in the last run, or None if unknown.
+
+    Only agents watched in both runs are compared, so an agent that is new to the
+    ai.robots.txt list (or dropped from it) never looks like a robots.txt change.
+    """
+    if WATCHED_FILE.exists():
+        return {n.lower() for n in json.loads(WATCHED_FILE.read_text(encoding="utf-8"))}
+    if AGENTS_CACHE.exists():  # runs before _watched_agents.json existed: cached list + extras
+        names = set(json.loads(AGENTS_CACHE.read_text(encoding="utf-8")))
+        names |= {row[0] for row in read_list(EXTRA_AGENTS_FILE)}
+        return {n.lower() for n in names}
+    return None
 
 
 def load_agents():
@@ -212,7 +228,12 @@ def main():
     args = parser.parse_args()
 
     today = datetime.date.today().isoformat()
+    previous_watched = load_previous_watched()  # read before load_agents() refreshes the cache
     agents, agents_source = load_agents()
+    new_agents = 0 if previous_watched is None else len(set(agents) - previous_watched)
+
+    def watched_both_weeks(agent):
+        return agent.lower() in agents and (previous_watched is None or agent.lower() in previous_watched)
     sites = [(row[0].lower(), row[1] if len(row) > 1 else row[0]) for row in read_list(SITES_FILE)]
     if args.only:
         sites = [s for s in sites if s[0] in {d.lower() for d in args.only}]
@@ -259,7 +280,7 @@ def main():
         changes = [
             (agent, previous.get(agent, []), rules.get(agent, []))
             for agent in sorted(set(previous) | set(rules), key=str.lower)
-            if previous.get(agent, []) != rules.get(agent, [])
+            if watched_both_weeks(agent) and previous.get(agent, []) != rules.get(agent, [])
         ]
         all_change = (previous_all, all_blocked) if previous_all is not None and previous_all != all_blocked else None
         if changes or all_change:
@@ -271,13 +292,18 @@ def main():
         else:
             results.append((domain, "✅ no change", len(rules), blocks, all_cell))
 
+    if not args.only:  # a partial run must not shrink the list used next week
+        WATCHED_FILE.write_text(json.dumps(sorted({n for n, _ in agents.values()}, key=str.lower), indent=2) + "\n", encoding="utf-8")
+
     failed = sum(1 for r in results if r[1].startswith("⚠️"))
     changed = sum(1 for r in results if r[1].startswith("🔔"))
     report = [
         f"## robots.txt watch · {today}",
         "",
         f"{len(results)} sites checked · {changed} changed · {failed} failed · "
-        f"{len(agents)} AI agents watched (list from {agents_source})",
+        f"{len(agents)} AI agents watched (list from {agents_source}"
+        + (f"; {new_agents} new this week, recorded as baseline only" if new_agents else "")
+        + ")",
         "",
         "| Site | Result | AI agents named | Whole-site blocks | All robots blocked (`*`) |",
         "|---|---|---|---|---|",
