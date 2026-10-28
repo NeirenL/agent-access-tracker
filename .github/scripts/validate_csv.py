@@ -43,11 +43,20 @@ PAIS_RE = re.compile(r"^(?:[A-Z]{2}|GLOBAL)$")
 
 # data/agents.csv: one row per specific agent named in events.csv (groups of agents get no row).
 # Every value comes from an official source; "unknown" when the source doesn't give it.
-AGENT_COLUMNS = ["agente", "empresa", "tipo", "tipo_fuente", "que_hace", "user_agent", "fecha_lanzamiento", "fuente_url"]
+AGENT_COLUMNS = [
+    "agente", "empresa", "tipo", "tipo_fuente", "que_hace", "user_agent", "fecha_lanzamiento", "fuente_url",
+    "paises_disponibles", "paises_excluidos", "disponibilidad_fuente_url", "disponibilidad_tipo_fuente",
+    "disponibilidad_notas", "fecha_revisado",
+]
 AGENT_TIPOS = {"nube", "local", "crawler", "unknown"}
 # tipo_fuente: "official" when the source states the type, "inferred" when we deduced it, "unknown" with tipo unknown.
 TIPO_FUENTES = {"official", "inferred"}
 UNKNOWN = "unknown"
+# Availability comes only from official help pages or docs; "sin dato" when there is none.
+NO_DATA = "sin dato"
+AVAIL_SOURCES = {"help_page", "changelog", "none"}  # disponibilidad_tipo_fuente
+COUNTRY_RE = re.compile(r"^[A-Z]{2}$")
+OPTIONAL_AGENT_COLUMNS = {"disponibilidad_notas"}
 
 errors = []  # (file, line, message)
 current_file = CSV_PATH
@@ -152,7 +161,7 @@ def validate_agents():
     for line, r in read_rows(AGENTS_PATH, AGENT_COLUMNS):
         count += 1
         for col in AGENT_COLUMNS:
-            if not r[col]:
+            if not r[col] and col not in OPTIONAL_AGENT_COLUMNS:
                 error(line, f'{col} must not be empty; write "{UNKNOWN}" if the official source does not say')
 
         name = r["agente"].casefold()
@@ -177,7 +186,44 @@ def validate_agents():
             for url in (u.strip() for u in r["fuente_url"].split(";")):
                 if not url.startswith("https://") or len(url) <= len("https://"):
                     error(line, f'fuente_url "{url}" must start with https:// (separate several sources with " ; ")')
+
+        validate_availability(line, r)
     return count
+
+
+def country_list(line, column, value, allow_global):
+    """Codes separated by ";" (e.g. US;MX), "GLOBAL" if allowed, or "sin dato"."""
+    if not value or value == NO_DATA or (allow_global and value == "GLOBAL"):
+        return
+    codes = [c.strip() for c in value.split(";")]
+    bad = [c for c in codes if not COUNTRY_RE.match(c)]
+    if bad:
+        error(line, f'{column} has invalid codes {bad}: use two-letter uppercase codes separated by ";"'
+                    + (', "GLOBAL"' if allow_global else "") + f' or "{NO_DATA}"')
+    dupes = sorted({c for c in codes if codes.count(c) > 1})
+    if dupes:
+        error(line, f"{column} repeats {dupes}")
+
+
+def validate_availability(line, r):
+    country_list(line, "paises_disponibles", r["paises_disponibles"], allow_global=True)
+    country_list(line, "paises_excluidos", r["paises_excluidos"], allow_global=False)
+
+    kind, url = r["disponibilidad_tipo_fuente"], r["disponibilidad_fuente_url"]
+    if kind and kind not in AVAIL_SOURCES:
+        error(line, f'disponibilidad_tipo_fuente "{kind}" is not allowed. Use one of: "help_page", "changelog", "none"')
+    if url and url != NO_DATA and not (url.startswith("https://") and len(url) > len("https://")):
+        error(line, f'disponibilidad_fuente_url "{url}" must start with https:// or be "{NO_DATA}"')
+    if kind == "none" and url and url != NO_DATA:
+        error(line, f'disponibilidad_tipo_fuente is "none" but disponibilidad_fuente_url has a link')
+    if kind in ("help_page", "changelog") and url == NO_DATA:
+        error(line, f'disponibilidad_tipo_fuente "{kind}" needs a link in disponibilidad_fuente_url')
+    has_data = (r["paises_disponibles"] not in ("", NO_DATA)) or (r["paises_excluidos"] not in ("", NO_DATA))
+    if has_data and url == NO_DATA:
+        error(line, "Countries need an official source in disponibilidad_fuente_url")
+
+    if r["fecha_revisado"] and not is_date(r["fecha_revisado"]):
+        error(line, f'fecha_revisado "{r["fecha_revisado"]}" must be YYYY-MM-DD')
 
 
 def main():

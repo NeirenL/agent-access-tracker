@@ -45,11 +45,12 @@ def main():
             url = (row.get("fuente_url") or "").strip()
             if url:
                 urls.setdefault(url, []).append(f"{line} ({(row.get('plataforma') or '').strip()})")
-    # agents.csv may list several sources separated by ";", or "unknown".
+    # agents.csv: its sources (several may be separated by ";") and its availability source.
     if os.path.exists(AGENTS_PATH):
         with open(AGENTS_PATH, newline="", encoding="utf-8-sig") as f:
             for line, row in enumerate(csv.DictReader(f), start=2):
-                for url in (row.get("fuente_url") or "").split(";"):
+                sources = (row.get("fuente_url") or "") + ";" + (row.get("disponibilidad_fuente_url") or "")
+                for url in sources.split(";"):
                     url = url.strip()
                     if url.startswith("http"):
                         urls.setdefault(url, []).append(f"agents.csv {line} ({(row.get('agente') or '').strip()})")

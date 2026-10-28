@@ -140,6 +140,16 @@
   .agent-card dl { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; margin: 10px 0 0; font-size: 0.85rem; }
   .agent-card dt { color: var(--muted); }
   .agent-card dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+  .countries summary {
+    display: inline-block; margin-top: 4px; padding: 2px 10px;
+    border: 1px solid var(--border); border-radius: 999px;
+    color: var(--muted); font-size: 0.8rem; cursor: pointer; list-style: none;
+  }
+  .countries summary::-webkit-details-marker { display: none; }
+  .countries summary:hover, .countries[open] summary { color: var(--text); }
+  .countries summary:focus-visible { outline: 2px solid var(--optout); outline-offset: 2px; }
+  .countries p { margin: 8px 0 0; font-size: 0.8rem; color: var(--muted); }
+  .avail-note { display: block; margin-top: 4px; color: var(--muted); font-size: 0.8rem; }
   .section-note { color: var(--muted); font-size: 0.85rem; margin: -4px 0 14px; }
   .src { color: var(--optout); text-decoration: none; }
   .src:hover { text-decoration: underline; }
@@ -160,7 +170,7 @@
   .event .title { font-weight: 600; }
   .event .meta { display: flex; flex-wrap: wrap; gap: 4px 16px; margin-top: 8px; color: var(--muted); font-size: 0.85rem; }
   .event .meta b { color: var(--text); font-weight: 500; }
-  .event .notes { margin: 8px 0 0; font-size: 0.9rem; }
+  .event .notes { margin: 8px 0 0; font-size: 0.9rem; overflow-wrap: anywhere; } /* long URLs in notes */
 
   .empty, .error { padding: 20px; color: var(--muted); background: var(--surface); border: 1px dashed var(--border); border-radius: var(--radius); }
   .error { color: var(--block); }
@@ -509,6 +519,29 @@ function sourceLinks(value) {
   return urls.map(u => sourceLink({ fuente_url: u })).join(' · ');
 }
 
+// paises_disponibles: codes separated by ";", GLOBAL, or "sin dato" (no official list).
+const NO_DATA = 'sin dato';
+const codesOf = v => (v && v !== NO_DATA && v !== 'GLOBAL') ? v.split(';').map(c => c.trim()).filter(Boolean) : [];
+
+function availability(a) {
+  const avail = a.paises_disponibles;
+  const note = a.disponibilidad_notas ? `<span class="avail-note">${esc(a.disponibilidad_notas)}</span>` : '';
+  if (!avail || avail === NO_DATA) return `No official data${note}`;
+  const excluded = codesOf(a.paises_excluidos).map(countryName);
+  const codes = codesOf(avail);
+  let text = avail === 'GLOBAL'
+    ? 'Available worldwide'
+    : `Available in ${codes.length} ${codes.length === 1 ? 'country' : 'countries and territories'}`;
+  if (excluded.length) text += ` except ${excluded.join(', ')}`;
+  if (a.disponibilidad_tipo_fuente === 'changelog') text += ' (per changelog)';
+  const list = codes.length > 1 ? `<details class="countries"><summary>Show list</summary><p>${
+    codes.map(c => ({ c, n: countryName(c) })).sort((x, y) => x.n.localeCompare(y.n))
+      .map(({ c, n }) => `${esc(n)} (${esc(c)})`).join(', ')}</p></details>` : '';
+  const source = /^https?:\/\//i.test(a.disponibilidad_fuente_url || '') ? ` · ${sourceLink({ fuente_url: a.disponibilidad_fuente_url })}` : '';
+  const checked = known(a.fecha_revisado) && a.fecha_revisado !== NO_DATA ? `Checked ${fmtDate(a.fecha_revisado)}` : '';
+  return `${esc(text)}${list}${note}${checked || source ? `<span class="avail-note">${checked}${source}</span>` : ''}`;
+}
+
 function renderAgents() {
   const el = document.getElementById('agents');
   if (!agents.length) { el.innerHTML = '<div class="empty">Could not load data/agents.csv.</div>'; return; }
@@ -522,6 +555,7 @@ function renderAgents() {
       <dt>robots.txt name</dt><dd>${esc(known(a.user_agent) || 'Unknown')}</dd>
       <dt>Launched</dt><dd>${known(a.fecha_lanzamiento) ? fmtDate(a.fecha_lanzamiento) : 'Unknown'}</dd>
       <dt>Source</dt><dd>${sourceLinks(a.fuente_url)}</dd>
+      <dt>Availability</dt><dd>${availability(a)}</dd>
     </dl>
   </article>`).join('')}</div>`;
 }

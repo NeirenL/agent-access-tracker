@@ -52,6 +52,12 @@ The column names and values are kept in Spanish, the language the dataset was st
 | `user_agent` | Name it uses in robots.txt, or `none` if it browses like a normal Chrome browser | e.g. `ChatGPT-User` |
 | `fecha_lanzamiento` | Launch date | `YYYY-MM-DD` or `unknown` |
 | `fuente_url` | Official source(s) | `https://` URLs separated by ` ; `, or `unknown` |
+| `paises_disponibles` | Where the agent is available, only from official help pages or docs (never from news) | Two-letter codes separated by `;` (e.g. `US;MX`), `GLOBAL`, or `sin dato` (no official list) |
+| `paises_excluidos` | Countries the official source says are excluded | Codes separated by `;`, or `sin dato` |
+| `disponibilidad_fuente_url` | Official page the countries come from | `https://` URL, or `sin dato` |
+| `disponibilidad_tipo_fuente` | Kind of page | `help_page` · `changelog` (the page shows "per changelog") · `none` |
+| `disponibilidad_notas` | Exceptions the codes can't express (e.g. excluded regions of a country) | Free text, may be empty |
+| `fecha_revisado` | When the availability page was checked | `YYYY-MM-DD` |
 
 ## 🤝 How to contribute
 
