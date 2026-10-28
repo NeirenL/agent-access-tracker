@@ -150,6 +150,11 @@
   .countries summary:focus-visible { outline: 2px solid var(--optout); outline-offset: 2px; }
   .countries p { margin: 8px 0 0; font-size: 0.8rem; color: var(--muted); }
   .avail-note { display: block; margin-top: 4px; color: var(--muted); font-size: 0.8rem; }
+  .watch-tag {
+    display: inline-block; margin-top: 6px; padding: 1px 8px;
+    border: 1px dashed var(--optout); border-radius: 999px;
+    color: var(--optout); font-size: 0.75rem; font-weight: 600;
+  }
   .section-note { color: var(--muted); font-size: 0.85rem; margin: -4px 0 14px; }
   .src { color: var(--optout); text-decoration: none; }
   .src:hover { text-decoration: underline; }
@@ -239,7 +244,7 @@
 
   <section>
     <h2>Agents explained <span class="count" id="agents-count"></span></h2>
-    <p class="section-note">Every specific agent named above, from official company pages and docs. Names in <i>italics</i> above are groups of agents, not a specific product, so they are not listed here.</p>
+    <p class="section-note">Every specific agent named above, plus agents we are watching that have no events yet, from official company pages and docs. Names in <i>italics</i> above are groups of agents, not a specific product, so they are not listed here.</p>
     <div id="agents"></div>
   </section>
 
@@ -529,7 +534,8 @@ function availability(a) {
   const codes = codesOf(avail);
   let text = avail === 'GLOBAL'
     ? 'Available worldwide'
-    : `Available in ${codes.length} ${codes.length === 1 ? 'country' : 'countries and territories'}`;
+    : codes.length === 1 ? `Available in ${countryName(codes[0])} only`
+    : `Available in ${codes.length} countries and territories`;
   if (excluded.length) text += ` except ${excluded.join(', ')}`;
   if (a.availability_source_type === 'changelog') text += ' (per changelog)';
   const list = codes.length > 1 ? `<details class="countries"><summary>Show list</summary><p>${
@@ -547,6 +553,7 @@ function renderAgents() {
   document.getElementById('agents-count').textContent = `(${list.length})`;
   el.innerHTML = `<div class="agents-grid">${list.map(a => `<article class="agent-card">
     <h3>${esc(a.agent)}</h3>
+    ${a.tracking === 'watchlist' ? '<span class="watch-tag">Watching (no events yet)</span>' : ''}
     <div class="sub">${esc(known(a.company) || 'Unknown company')} · ${esc(agentType(a))}</div>
     <p>${esc(known(a.what_it_does) || 'No official description found.')}</p>
     <dl>

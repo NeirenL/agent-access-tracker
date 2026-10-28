@@ -38,7 +38,7 @@ The data lives in two files. In [`data/events.csv`](data/events.csv), each row i
 
 ### Agents
 
-[`data/agents.csv`](data/agents.csv) explains each specific agent named in `events.csv`: one row per agent. Every value comes from an official company page, doc or blog; anything the official source doesn't give is `unknown` (or `no data` for availability). Groups of agents (for example "All third-party AI agents") are not a specific product, so they get no row; the page shows them in italics.
+[`data/agents.csv`](data/agents.csv) explains each specific agent named in `events.csv`, plus agents on a watchlist that have no events yet: one row per agent. Every value comes from an official company page, doc or blog; anything the official source doesn't give is `unknown` (or `no data` for availability). Groups of agents (for example "All third-party AI agents") are not a specific product, so they get no row; the page shows them in italics.
 
 | Column | Meaning | Allowed values / format |
 |---|---|---|
@@ -56,6 +56,7 @@ The data lives in two files. In [`data/events.csv`](data/events.csv), each row i
 | `availability_source_type` | Kind of page | `help_page` · `changelog` (the page shows "per changelog") · `none` |
 | `availability_notes` | Exceptions the codes can't express (e.g. excluded regions of a country) | Free text, may be empty |
 | `checked_date` | When the availability page was checked | `YYYY-MM-DD` |
+| `tracking` | Why the agent is listed | `event` (named in `events.csv`; the check fails if no event names it) · `watchlist` (watched before any event; the page shows "Watching (no events yet)") |
 
 ## 🤝 How to contribute
 

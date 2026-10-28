@@ -38,7 +38,7 @@ COUNTRY_RE = re.compile(r"^(?:[A-Z]{2}|GLOBAL)$")
 AGENT_COLUMNS = [
     "agent", "company", "type", "type_source", "what_it_does", "user_agent", "launch_date", "source_url",
     "available_countries", "excluded_countries", "availability_source_url", "availability_source_type",
-    "availability_notes", "checked_date",
+    "availability_notes", "checked_date", "tracking",
 ]
 AGENT_TYPES = {"cloud", "local", "crawler", "unknown"}
 # type_source: "official" when the source states the type, "inferred" when we deduced it, "unknown" with type unknown.
@@ -49,9 +49,12 @@ NO_DATA = "no data"
 AVAIL_SOURCES = {"help_page", "changelog", "none"}  # availability_source_type
 CODE_RE = re.compile(r"^[A-Z]{2}$")
 OPTIONAL_AGENT_COLUMNS = {"availability_notes"}
+# tracking: "event" agents must be named in events.csv; "watchlist" agents are watched before any event exists.
+TRACKING = {"event", "watchlist"}
 
 errors = []  # (file, line, message)
 current_file = CSV_PATH
+event_agents = []  # agent text of every event, to check that "event" agents appear there
 
 
 def error(line, message):
@@ -105,6 +108,7 @@ def validate_events():
     count = 0
     for line, r in read_rows(CSV_PATH, COLUMNS):
         count += 1
+        event_agents.append(r["agent"])
 
         if not is_date(r["date"]):
             error(line, f'date "{r["date"]}" is not a valid date in YYYY-MM-DD format (e.g. 2026-01-31)')
@@ -174,7 +178,20 @@ def validate_agents():
                     error(line, f'source_url "{url}" must start with https:// (separate several sources with " ; ")')
 
         validate_availability(line, r)
+
+        if r["tracking"] and r["tracking"] not in TRACKING:
+            error(line, f'tracking "{r["tracking"]}" is not allowed. Use "event" or "watchlist"')
+        elif r["tracking"] == "event" and r["agent"] and not named_in_events(r["agent"]):
+            error(line, f'agent "{r["agent"]}" has tracking "event" but no event in events.csv names it; '
+                        'add the event or use "watchlist"')
     return count
+
+
+def named_in_events(name):
+    """True if some event's agent text names this agent as a whole word, the way the page matches them
+    ("ChatGPT" does not count inside "ChatGPT-User")."""
+    pattern = re.compile(r"(?<![\w-])" + re.escape(name) + r"(?![\w-])")
+    return any(pattern.search(text) for text in event_agents)
 
 
 def country_list(line, column, value, allow_global):
