@@ -1,4 +1,4 @@
-"""Check that every fuente_url in the dataset still responds.
+"""Check that every fuente_url in the dataset (events.csv and agents.csv) still responds.
 
 Writes a Markdown report and sets the `broken` step output for the workflow.
 """
@@ -10,6 +10,7 @@ import urllib.request
 
 CSV_PATH = sys.argv[1] if len(sys.argv) > 1 else "data/events.csv"
 REPORT_PATH = sys.argv[2] if len(sys.argv) > 2 else "report.md"
+AGENTS_PATH = sys.argv[3] if len(sys.argv) > 3 else (os.path.dirname(CSV_PATH) or ".") + "/agents.csv"
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36",
     "Accept": "text/html,application/xhtml+xml,*/*;q=0.8",
@@ -38,14 +39,20 @@ def check(url):
 
 
 def main():
-    with open(CSV_PATH, newline="", encoding="utf-8-sig") as f:
-        rows = list(csv.DictReader(f))
-
     urls = {}
-    for line, row in enumerate(rows, start=2):
-        url = (row.get("fuente_url") or "").strip()
-        if url:
-            urls.setdefault(url, []).append(f"{line} ({(row.get('plataforma') or '').strip()})")
+    with open(CSV_PATH, newline="", encoding="utf-8-sig") as f:
+        for line, row in enumerate(csv.DictReader(f), start=2):
+            url = (row.get("fuente_url") or "").strip()
+            if url:
+                urls.setdefault(url, []).append(f"{line} ({(row.get('plataforma') or '').strip()})")
+    # agents.csv may list several sources separated by ";", or "unknown".
+    if os.path.exists(AGENTS_PATH):
+        with open(AGENTS_PATH, newline="", encoding="utf-8-sig") as f:
+            for line, row in enumerate(csv.DictReader(f), start=2):
+                for url in (row.get("fuente_url") or "").split(";"):
+                    url = url.strip()
+                    if url.startswith("http"):
+                        urls.setdefault(url, []).append(f"agents.csv {line} ({(row.get('agente') or '').strip()})")
 
     broken, unverified = [], []
     for url, where in urls.items():
@@ -56,7 +63,7 @@ def main():
         entry = f"| {url} | `{result}` | {', '.join(where)} |"
         (unverified if result in BOT_BLOCK_CODES else broken).append(entry)
 
-    table_head = "| URL | Result | CSV line (platform) |\n|---|---|---|"
+    table_head = "| URL | Result | CSV line (platform or agent) |\n|---|---|---|"
     report = [f"Weekly link check: **{len(broken)} broken** out of {len(urls)} source URLs.\n"]
     if broken:
         report += ["### ❌ Broken links", table_head, *broken, ""]

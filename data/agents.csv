@@ -1,0 +1,30 @@
+agente,empresa,tipo,tipo_fuente,que_hace,user_agent,fecha_lanzamiento,fuente_url
+GPTBot,OpenAI,crawler,official,Crawls the web to collect content that may be used to train OpenAI's AI models.,GPTBot,unknown,https://developers.openai.com/api/docs/bots
+OAI-SearchBot,OpenAI,crawler,official,Crawls websites so they can appear in ChatGPT's search results.,OAI-SearchBot,unknown,https://developers.openai.com/api/docs/bots
+ChatGPT-User,OpenAI,nube,inferred,Visits a web page when a ChatGPT user asks for it. It is not an automatic crawler.,ChatGPT-User,unknown,https://developers.openai.com/api/docs/bots
+ChatGPT,OpenAI,nube,inferred,"OpenAI's AI chat assistant. When a user asks, it visits web pages as ChatGPT-User.",ChatGPT-User,2022-11-30,https://openai.com/index/chatgpt/ ; https://developers.openai.com/api/docs/bots
+ClaudeBot,Anthropic,crawler,official,Collects web content that may be used to train Anthropic's AI models.,ClaudeBot,unknown,https://support.claude.com/en/articles/8896518-does-anthropic-crawl-data-from-the-web-and-how-can-site-owners-block-the-crawler
+Claude-User,Anthropic,nube,inferred,Visits a web page when a Claude user asks a question that needs it.,Claude-User,unknown,https://support.claude.com/en/articles/8896518-does-anthropic-crawl-data-from-the-web-and-how-can-site-owners-block-the-crawler
+Claude,Anthropic,nube,inferred,"Anthropic's AI assistant. When a user asks, it visits web pages as Claude-User.",Claude-User,2023-03-14,https://www.anthropic.com/news/introducing-claude ; https://support.claude.com/en/articles/8896518-does-anthropic-crawl-data-from-the-web-and-how-can-site-owners-block-the-crawler
+PerplexityBot,Perplexity,crawler,official,Crawls websites to show and link them in Perplexity's search results. Perplexity says it is not used to train AI models.,PerplexityBot,unknown,https://docs.perplexity.ai/guides/bots
+Perplexity-User,Perplexity,nube,inferred,Visits a web page when a Perplexity user asks a question. Perplexity says it generally ignores robots.txt because a user asked.,Perplexity-User,unknown,https://docs.perplexity.ai/guides/bots
+Comet Assistant,Perplexity,local,inferred,"The assistant inside Comet, Perplexity's web browser. It can run whole browsing sessions for the user, such as booking or buying.",unknown,2025-07-09,https://www.perplexity.ai/hub/blog/introducing-comet
+Amazonbot,Amazon,crawler,official,"Amazon's web crawler, used to improve Amazon's products and services. It may be used to train Amazon AI models.",Amazonbot,unknown,https://developer.amazon.com/amazonbot
+GoogleAgent-Mariner,Google,unknown,unknown,unknown,unknown,unknown,unknown
+GoogleAgent-Shopping,Google,unknown,unknown,unknown,unknown,unknown,unknown
+Gemini,Google,nube,inferred,"Google's AI assistant app, formerly called Bard.",unknown,2024-02-08,https://blog.google/products-and-platforms/products/gemini/bard-gemini-advanced-app/
+AI Mode,Google,nube,inferred,An AI mode in Google Search that answers complex questions and follow-ups.,unknown,2025-03-05,https://blog.google/products-and-platforms/products/search/ai-mode-search/
+Copilot,Microsoft,nube,inferred,"Microsoft's everyday AI companion across Windows, Edge, Bing and Microsoft 365.",unknown,2023-09-26,https://blogs.microsoft.com/blog/2023/09/21/announcing-microsoft-copilot-your-everyday-ai-companion/
+Muse,Meta,nube,official,"Meta's personal AI agent. It does tasks such as sending emails, booking travel and shopping from its own cloud machine, and asks before a purchase.",unknown,2026-09-08,https://about.fb.com/news/2026/09/introducing-muse-personal-ai-agent/
+Grok Bot,xAI,nube,official,AI teammates from xAI that finish tasks end to end on a computer of their own in the cloud.,unknown,2026-08-11,https://x.ai/news/introducing-grok-bot
+GrokBot,xAI,unknown,unknown,unknown,unknown,unknown,unknown
+Grok-DeepSearch,xAI,unknown,unknown,unknown,unknown,unknown,unknown
+xAI-Grok,xAI,unknown,unknown,unknown,unknown,unknown,unknown
+OpenClaw,OpenClaw Foundation,local,official,An open-source AI assistant that runs on the user's own machine and is reached through chat apps. It can browse the web and fill forms.,unknown,unknown,https://openclaw.ai/
+Doubao Phone Assistant,ByteDance,local,inferred,ByteDance's AI phone assistant. It operates apps on the phone for the user; the consumer version runs on a nubia phone.,unknown,unknown,https://o.doubao.com/
+Qwen App,Alibaba,nube,inferred,"Alibaba's AI assistant app, described as an assistant that not only chats but gets things done.",unknown,2025-11-17,https://www.alibabagroup.com/document-1928528945544691712
+Lucky AI,Luckin Coffee,unknown,unknown,"Luckin Coffee's AI ordering agent (officially AI Lucky), built with VolcEngine and available inside Qwen, WeChat and Alipay.",unknown,unknown,https://investor.luckincoffee.com/news-releases/news-release-details/luckin-coffee-showcases-end-end-digital-intelligence-innovations
+Yuanbao,Tencent,nube,inferred,Tencent's all-in-one AI assistant.,unknown,unknown,https://yuanbao.tencent.com/
+Xiaomei,Meituan,nube,inferred,"Meituan's small AI life assistant, used through the Xiaomei app.",unknown,unknown,https://www.meituan.com/technology
+WeChat AI Agent,Tencent,unknown,unknown,WeChat's mini-program AI. It answers users in chat and calls the skills that mini programs expose to finish tasks. In internal beta.,unknown,unknown,https://developers.weixin.qq.com/miniprogram/dev/ai/guide.html
+A-Bao,Ant Group,unknown,unknown,The AI version of the Alipay app: users ask in a chat and it arranges thousands of services. Payments need the user's own confirmation.,unknown,2026-06-16,https://www.antgroup.com/news-media/press-releases/1781596800000

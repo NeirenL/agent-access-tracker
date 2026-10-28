@@ -1,4 +1,4 @@
-"""Validate data/events.csv and fail with a clear message pointing at the line.
+"""Validate data/events.csv and data/agents.csv and fail with a clear message pointing at the line.
 
 Uses only the Python standard library. Errors are also printed as GitHub
 annotations so they show up on the file in pull requests.
@@ -10,6 +10,7 @@ import sys
 from datetime import datetime
 
 CSV_PATH = sys.argv[1] if len(sys.argv) > 1 else "data/events.csv"
+AGENTS_PATH = sys.argv[2] if len(sys.argv) > 2 else (os.path.dirname(CSV_PATH) or ".") + "/agents.csv"
 
 COLUMNS = [
     "fecha", "plataforma", "pais", "agente", "empresa_agente", "tipo_agente",
@@ -40,11 +41,20 @@ REQUIRED = ["plataforma", "agente"]
 # is no clear operator. A different legal seat goes in notas.
 PAIS_RE = re.compile(r"^(?:[A-Z]{2}|GLOBAL)$")
 
-errors = []
+# data/agents.csv: one row per specific agent named in events.csv (groups of agents get no row).
+# Every value comes from an official source; "unknown" when the source doesn't give it.
+AGENT_COLUMNS = ["agente", "empresa", "tipo", "tipo_fuente", "que_hace", "user_agent", "fecha_lanzamiento", "fuente_url"]
+AGENT_TIPOS = {"nube", "local", "crawler", "unknown"}
+# tipo_fuente: "official" when the source states the type, "inferred" when we deduced it, "unknown" with tipo unknown.
+TIPO_FUENTES = {"official", "inferred"}
+UNKNOWN = "unknown"
+
+errors = []  # (file, line, message)
+current_file = CSV_PATH
 
 
 def error(line, message):
-    errors.append((line, message))
+    errors.append((current_file, line, message))
 
 
 def fmt_allowed(column):
@@ -56,90 +66,147 @@ def fmt_allowed(column):
     )
 
 
-def main():
-    if not os.path.exists(CSV_PATH):
-        print(f"::error::{CSV_PATH} not found")
-        sys.exit(1)
+def is_date(value):
+    try:
+        datetime.strptime(value, "%Y-%m-%d")
+        return len(value) == 10
+    except ValueError:
+        return False
 
-    with open(CSV_PATH, newline="", encoding="utf-8-sig") as f:
+
+def read_rows(path, columns):
+    """Yield (line, {column: value}) for every non-empty record, after checking the header.
+
+    `line` is the first line of the record, since quoted fields may span lines.
+    """
+    with open(path, newline="", encoding="utf-8-sig") as f:
         reader = csv.reader(f)
         try:
             header = next(reader)
         except StopIteration:
             error(1, "File is empty")
-            header = None
-
-        if header is not None and [h.strip() for h in header] != COLUMNS:
-            error(1, "Header must be exactly: " + ",".join(COLUMNS) + "\n    Found: " + ",".join(header))
-
-        seen_rows = {}
-        seen_keys = {}
-        platform_pais = {}  # platform -> (pais, line where it was first seen)
-        count = 0
+            return
+        if [h.strip() for h in header] != columns:
+            error(1, "Header must be exactly: " + ",".join(columns) + "\n    Found: " + ",".join(header))
         prev_end = reader.line_num
         for row in reader:
-            line = prev_end + 1  # first line of this record (quoted fields may span lines)
+            line = prev_end + 1
             prev_end = reader.line_num
             if not any(cell.strip() for cell in row):
                 continue
-            count += 1
-
-            if len(row) != len(COLUMNS):
-                error(line, f"Expected {len(COLUMNS)} columns but found {len(row)}. "
+            if len(row) != len(columns):
+                error(line, f"Expected {len(columns)} columns but found {len(row)}. "
                             "Check for missing commas, or wrap text containing commas in double quotes.")
                 continue
+            yield line, {col: value.strip() for col, value in zip(columns, row)}
 
-            r = {col: value.strip() for col, value in zip(COLUMNS, row)}
-            for col, aliases in ALIASES.items():
-                r[col] = aliases.get(r[col], r[col])
 
-            try:
-                datetime.strptime(r["fecha"], "%Y-%m-%d")
-                if len(r["fecha"]) != 10:
-                    raise ValueError
-            except ValueError:
-                error(line, f'fecha "{r["fecha"]}" is not a valid date in YYYY-MM-DD format (e.g. 2026-01-31)')
+def validate_events():
+    seen_rows = {}
+    seen_keys = {}
+    platform_pais = {}  # platform -> (pais, line where it was first seen)
+    count = 0
+    for line, r in read_rows(CSV_PATH, COLUMNS):
+        count += 1
+        for col, aliases in ALIASES.items():
+            r[col] = aliases.get(r[col], r[col])
 
-            for col in REQUIRED:
-                if not r[col]:
-                    error(line, f"{col} must not be empty")
+        if not is_date(r["fecha"]):
+            error(line, f'fecha "{r["fecha"]}" is not a valid date in YYYY-MM-DD format (e.g. 2026-01-31)')
 
-            for col in ALLOWED:
-                if r[col] not in ALLOWED[col]:
-                    error(line, f'{col} "{r[col]}" is not allowed. Use one of: {fmt_allowed(col)}')
+        for col in REQUIRED:
+            if not r[col]:
+                error(line, f"{col} must not be empty")
 
-            if not PAIS_RE.match(r["pais"]):
-                error(line, f'pais "{r["pais"]}" must be a two-letter uppercase country code (e.g. US, MX, CN) or GLOBAL')
-            elif r["plataforma"]:
-                first = platform_pais.setdefault(r["plataforma"].casefold(), (r["pais"], line))
-                if first[0] != r["pais"]:
-                    error(line, f'pais "{r["pais"]}" differs from "{first[0]}" used for {r["plataforma"]} on line {first[1]}; '
-                                "a platform keeps the same country in every row")
+        for col in ALLOWED:
+            if r[col] not in ALLOWED[col]:
+                error(line, f'{col} "{r[col]}" is not allowed. Use one of: {fmt_allowed(col)}')
 
-            if not r["fuente_url"].startswith("https://") or len(r["fuente_url"]) <= len("https://"):
-                error(line, f'fuente_url "{r["fuente_url"]}" must start with https://')
+        if not PAIS_RE.match(r["pais"]):
+            error(line, f'pais "{r["pais"]}" must be a two-letter uppercase country code (e.g. US, MX, CN) or GLOBAL')
+        elif r["plataforma"]:
+            first = platform_pais.setdefault(r["plataforma"].casefold(), (r["pais"], line))
+            if first[0] != r["pais"]:
+                error(line, f'pais "{r["pais"]}" differs from "{first[0]}" used for {r["plataforma"]} on line {first[1]}; '
+                            "a platform keeps the same country in every row")
 
-            exact = tuple(r.values())
-            if exact in seen_rows:
-                error(line, f"Duplicate row: identical to line {seen_rows[exact]}")
+        if not r["fuente_url"].startswith("https://") or len(r["fuente_url"]) <= len("https://"):
+            error(line, f'fuente_url "{r["fuente_url"]}" must start with https://')
+
+        exact = tuple(r.values())
+        if exact in seen_rows:
+            error(line, f"Duplicate row: identical to line {seen_rows[exact]}")
+        else:
+            seen_rows[exact] = line
+            key = tuple(r[c].casefold() for c in ("fecha", "plataforma", "agente", "estado"))
+            if key in seen_keys:
+                error(line, f"Duplicate event: same fecha, plataforma, agente and estado as line {seen_keys[key]}")
             else:
-                seen_rows[exact] = line
-                key = tuple(r[c].casefold() for c in ("fecha", "plataforma", "agente", "estado"))
-                if key in seen_keys:
-                    error(line, f"Duplicate event: same fecha, plataforma, agente and estado as line {seen_keys[key]}")
-                else:
-                    seen_keys[key] = line
+                seen_keys[key] = line
+    return count
+
+
+def validate_agents():
+    seen = {}
+    count = 0
+    for line, r in read_rows(AGENTS_PATH, AGENT_COLUMNS):
+        count += 1
+        for col in AGENT_COLUMNS:
+            if not r[col]:
+                error(line, f'{col} must not be empty; write "{UNKNOWN}" if the official source does not say')
+
+        name = r["agente"].casefold()
+        if name in seen:
+            error(line, f'Duplicate agente "{r["agente"]}": already on line {seen[name]}')
+        seen.setdefault(name, line)
+
+        if r["tipo"] and r["tipo"] not in AGENT_TIPOS:
+            error(line, f'tipo "{r["tipo"]}" is not allowed. Use one of: ' + ", ".join(f'"{t}"' for t in sorted(AGENT_TIPOS)))
+
+        if r["tipo"] == UNKNOWN and r["tipo_fuente"] and r["tipo_fuente"] != UNKNOWN:
+            error(line, f'tipo_fuente "{r["tipo_fuente"]}" must be "{UNKNOWN}" when tipo is "{UNKNOWN}"')
+        elif r["tipo"] in AGENT_TIPOS - {UNKNOWN} and r["tipo_fuente"] not in TIPO_FUENTES:
+            error(line, f'tipo_fuente "{r["tipo_fuente"]}" must be "official" (the source states the type) '
+                        'or "inferred" (deduced, shown as "likely" on the page)')
+
+        if r["fecha_lanzamiento"] and r["fecha_lanzamiento"] != UNKNOWN and not is_date(r["fecha_lanzamiento"]):
+            error(line, f'fecha_lanzamiento "{r["fecha_lanzamiento"]}" must be YYYY-MM-DD or "{UNKNOWN}"')
+
+        # One or more official sources separated by " ; ", or "unknown".
+        if r["fuente_url"] and r["fuente_url"] != UNKNOWN:
+            for url in (u.strip() for u in r["fuente_url"].split(";")):
+                if not url.startswith("https://") or len(url) <= len("https://"):
+                    error(line, f'fuente_url "{url}" must start with https:// (separate several sources with " ; ")')
+    return count
+
+
+def main():
+    global current_file
+    if not os.path.exists(CSV_PATH):
+        print(f"::error::{CSV_PATH} not found")
+        sys.exit(1)
+
+    counts = {}
+    current_file = CSV_PATH
+    counts[CSV_PATH] = validate_events()
+    if os.path.exists(AGENTS_PATH):
+        current_file = AGENTS_PATH
+        counts[AGENTS_PATH] = validate_agents()
 
     if errors:
         errors.sort()
-        for line, message in errors:
-            print(f"::error file={CSV_PATH},line={line}::{message.splitlines()[0]}")
-        print(f"\n{CSV_PATH}: {len(errors)} problem(s) found\n")
-        for line, message in errors:
-            print(f"  Line {line}: {message}")
+        for path, line, message in errors:
+            print(f"::error file={path},line={line}::{message.splitlines()[0]}")
+        for path in counts:
+            found = [(line, message) for p, line, message in errors if p == path]
+            if found:
+                print(f"\n{path}: {len(found)} problem(s) found\n")
+                for line, message in found:
+                    print(f"  Line {line}: {message}")
         sys.exit(1)
 
-    print(f"{CSV_PATH}: OK ({count} rows checked)")
+    for path, count in counts.items():
+        print(f"{path}: OK ({count} rows checked)")
 
 
 if __name__ == "__main__":

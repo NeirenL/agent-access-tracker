@@ -38,6 +38,21 @@ The column names and values are kept in Spanish, the language the dataset was st
 | `fuente_url` | Link to the source | Full `https://` URL |
 | `notas` | Extra context | Free text (wrap in quotes if it contains commas) |
 
+### Agents
+
+[`data/agents.csv`](data/agents.csv) explains each specific agent named in `events.csv`: one row per agent. Every value comes from an official company page, doc or blog; anything the official source doesn't give is `unknown`. Groups of agents (for example "All third-party AI agents") are not a specific product, so they get no row; the page shows them in italics.
+
+| Column | Meaning | Allowed values / format |
+|---|---|---|
+| `agente` | Agent name, as written in `events.csv` | e.g. `GPTBot`, `Muse` |
+| `empresa` | Company behind the agent | e.g. `OpenAI` |
+| `tipo` | Where it works | `nube` (cloud) · `local` (on the user's device) · `crawler` · `unknown` |
+| `tipo_fuente` | Where `tipo` comes from | `official` (the source states it) · `inferred` (deduced from the source; the page shows it as "likely") · `unknown` when `tipo` is `unknown` |
+| `que_hace` | What it does, in one simple line | Free text |
+| `user_agent` | Name it uses in robots.txt, or `none` if it browses like a normal Chrome browser | e.g. `ChatGPT-User` |
+| `fecha_lanzamiento` | Launch date | `YYYY-MM-DD` or `unknown` |
+| `fuente_url` | Official source(s) | `https://` URLs separated by ` ; `, or `unknown` |
+
 ## 🤝 How to contribute
 
 Know of a platform blocking or allowing an AI agent? **[Open an issue](https://github.com/NeirenL/agent-access-tracker/issues/new/choose)** and include:
@@ -48,7 +63,7 @@ Know of a platform blocking or allowing an AI agent? **[Open an issue](https://g
 
 Entries without a verifiable source won't be added. If you spot an error or a dead link, open an issue too.
 
-Editing the CSV directly? Every push and pull request runs an automatic check on `data/events.csv` (exact columns, `YYYY-MM-DD` dates, allowed values, `https://` sources, no duplicates). If it fails, the log tells you which line to fix. `tipo_agente` and `mecanismo` may be left empty when the source doesn't say.
+Editing the CSV directly? Every push and pull request runs an automatic check on `data/events.csv` and `data/agents.csv` (exact columns, `YYYY-MM-DD` dates, allowed values, `https://` sources, no duplicates). If it fails, the log tells you which line to fix. `tipo_agente` and `mecanismo` may be left empty when the source doesn't say.
 
 Every Monday, an automated check visits each `fuente_url` and opens an issue if any link is broken.
 

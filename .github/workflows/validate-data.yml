@@ -13,5 +13,5 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - name: Validate data/events.csv
-        run: python3 .github/scripts/validate_csv.py data/events.csv
+      - name: Validate data/events.csv and data/agents.csv
+        run: python3 .github/scripts/validate_csv.py data/events.csv data/agents.csv

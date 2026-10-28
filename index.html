@@ -118,6 +118,29 @@
     font-size: 0.7rem; font-weight: 600; letter-spacing: 0.04em; line-height: 1.6;
     color: var(--muted); vertical-align: 2px; white-space: nowrap;
   }
+  .agent-name { cursor: help; text-decoration: underline dotted var(--muted); text-underline-offset: 3px; }
+  .agent-name.group { font-style: italic; }
+  .agent-name:focus-visible { outline: 2px solid var(--optout); outline-offset: 2px; border-radius: 4px; }
+  .tip {
+    position: absolute; z-index: 10;
+    width: max-content; max-width: min(340px, calc(100vw - 16px));
+    padding: 10px 12px;
+    background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+    font-size: 0.82rem; line-height: 1.45;
+  }
+  .tip p { margin: 4px 0 0; }
+  .tip .tip-agent + .tip-agent { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
+  .tip .tip-extra { color: var(--muted); margin-bottom: 6px; }
+
+  .agents-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+  .agent-card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
+  .agent-card h3 { margin: 0; font-size: 1rem; }
+  .agent-card p { margin: 8px 0 0; font-size: 0.9rem; }
+  .agent-card dl { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; margin: 10px 0 0; font-size: 0.85rem; }
+  .agent-card dt { color: var(--muted); }
+  .agent-card dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+  .section-note { color: var(--muted); font-size: 0.85rem; margin: -4px 0 14px; }
   .src { color: var(--optout); text-decoration: none; }
   .src:hover { text-decoration: underline; }
 
@@ -204,13 +227,22 @@
     <div id="timeline"></div>
   </section>
 
+  <section>
+    <h2>Agents explained <span class="count" id="agents-count"></span></h2>
+    <p class="section-note">Every specific agent named above, from official company pages and docs. Names in <i>italics</i> above are groups of agents, not a specific product, so they are not listed here.</p>
+    <div id="agents"></div>
+  </section>
+
   <footer>
     <a href="data/events.csv">Download data (CSV)</a>
+    <a href="data/agents.csv">Download agents (CSV)</a>
     <a href="https://github.com/NeirenL/agent-access-tracker">GitHub repository</a>
     <a href="https://github.com/NeirenL/agent-access-tracker/issues/new/choose">Report a case</a>
     <span>Data licensed under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></span>
   </footer>
 </div>
+
+<div id="agent-tip" class="tip" role="tooltip" hidden></div>
 
 <noscript><p style="text-align:center;color:#8b93a7">This page needs JavaScript to read the data file.</p></noscript>
 
@@ -341,16 +373,72 @@ function sourceLink(e, text) {
   return `<a class="src" href="${esc(e.fuente_url)}" target="_blank" rel="noopener noreferrer">${esc(host)} ↗</a>`;
 }
 
+// data/agents.csv has one row per specific agent. An event's agent text can name several of them
+// ("GPTBot / ChatGPT-User"); text that names none of them is a group of agents.
+const AGENT_TYPE = { nube: 'Cloud', local: 'Local', crawler: 'Crawler' };
+const GROUP_TIP = 'Group of agents, not a specific product. See the source for details.';
+let agents = [];
+let agentMatchers = []; // longest name first, so "ChatGPT-User" is found before "ChatGPT"
+
+const known = v => (v && v.toLowerCase() !== 'unknown') ? v : '';
+// "Likely cloud" when the type was deduced (tipo_fuente = inferred) instead of stated by the source.
+function agentType(a) {
+  const label = AGENT_TYPE[a.tipo];
+  if (!label) return 'Type unknown';
+  return a.tipo_fuente === 'inferred' ? `Likely ${label.toLowerCase()}` : label;
+}
+const escRe = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+function setAgents(rows) {
+  const header = rows[0].map(norm);
+  agents = rows.slice(1)
+    .map(r => Object.fromEntries(header.map((h, j) => [h, (r[j] || '').trim()])))
+    .filter(a => a.agente);
+  // A name only counts as a whole word: "ChatGPT" does not match inside "ChatGPT-User".
+  agentMatchers = [...agents].sort((a, b) => b.agente.length - a.agente.length)
+    .map(a => ({ agent: a, re: new RegExp(`(?<![\\w-])${escRe(a.agente)}(?![\\w-])`) }));
+}
+
+function agentsIn(text) {
+  let rest = text || '';
+  const found = [];
+  for (const { agent, re } of agentMatchers) {
+    const m = rest.match(re);
+    if (!m) continue;
+    found.push({ agent, at: m.index });
+    rest = rest.slice(0, m.index) + ' '.repeat(m[0].length) + rest.slice(m.index + m[0].length);
+  }
+  return found.sort((a, b) => a.at - b.at).map(f => f.agent);
+}
+
+// Agent text with a tooltip; `extra` is an optional first line (e.g. the event's status).
+function agentName(text, extra = '') {
+  const label = esc(text || 'Unknown agent');
+  if (!agents.length) return label; // agents.csv did not load: plain text
+  const group = !agentsIn(text).length;
+  return `<span class="agent-name${group ? ' group' : ''}" tabindex="0" data-agent="${esc(text)}" data-extra="${esc(extra)}">${label}</span>`;
+}
+
+function tipHTML(text, extra) {
+  const head = extra ? `<div class="tip-extra">${esc(extra)}</div>` : '';
+  const list = agentsIn(text);
+  if (!list.length) return `${head}<div>${esc(GROUP_TIP)}</div>`;
+  return head + list.map(a => `<div class="tip-agent">
+    <b>${esc(a.agente)}</b> <span class="sub">${esc(known(a.empresa) || 'Unknown company')} · ${esc(agentType(a))}</span>
+    <p>${esc(known(a.que_hace) || 'No official description found.')}</p>
+  </div>`).join('');
+}
+
 function agentLine(e) {
-  return esc(e.agente) + (e.empresa_agente ? ` <span class="sub">(${esc(e.empresa_agente)})</span>` : '');
+  return agentName(e.agente) + (e.empresa_agente ? ` <span class="sub">(${esc(e.empresa_agente)})</span>` : '');
 }
 
 // One small chip per agent, colored by the status of that event; details on hover.
 function agentChips(group) {
   return `<div class="agent-chips">${group.map(e => {
     const s = STATUS[e.statusKey];
-    const tip = [s ? s.label : e.estado, MECH[e.mechKey] || e.mecanismo, e.empresa_agente].filter(Boolean).join(' · ');
-    return `<span class="agent-chip ${s ? s.cls : ''}" title="${esc(tip)}"><span class="dot"></span><span>${esc(e.agente || 'Unknown agent')}</span><time>${fmtDate(e.fecha)}</time></span>`;
+    const status = [s ? s.label : e.estado, MECH[e.mechKey] || e.mecanismo].filter(Boolean).join(' · ');
+    return `<span class="agent-chip ${s ? s.cls : ''}"><span class="dot"></span>${agentName(e.agente, status)}<time>${fmtDate(e.fecha)}</time></span>`;
   }).join('')}</div>`;
 }
 
@@ -415,6 +503,76 @@ function renderTimeline() {
 
 function render() { renderTable(); renderTimeline(); }
 
+function sourceLinks(value) {
+  const urls = (value || '').split(';').map(u => u.trim()).filter(u => /^https?:\/\//i.test(u));
+  if (!urls.length) return 'Unknown';
+  return urls.map(u => sourceLink({ fuente_url: u })).join(' · ');
+}
+
+function renderAgents() {
+  const el = document.getElementById('agents');
+  if (!agents.length) { el.innerHTML = '<div class="empty">Could not load data/agents.csv.</div>'; return; }
+  const list = [...agents].sort((a, b) => a.empresa.localeCompare(b.empresa) || a.agente.localeCompare(b.agente));
+  document.getElementById('agents-count').textContent = `(${list.length})`;
+  el.innerHTML = `<div class="agents-grid">${list.map(a => `<article class="agent-card">
+    <h3>${esc(a.agente)}</h3>
+    <div class="sub">${esc(known(a.empresa) || 'Unknown company')} · ${esc(agentType(a))}</div>
+    <p>${esc(known(a.que_hace) || 'No official description found.')}</p>
+    <dl>
+      <dt>robots.txt name</dt><dd>${esc(known(a.user_agent) || 'Unknown')}</dd>
+      <dt>Launched</dt><dd>${known(a.fecha_lanzamiento) ? fmtDate(a.fecha_lanzamiento) : 'Unknown'}</dd>
+      <dt>Source</dt><dd>${sourceLinks(a.fuente_url)}</dd>
+    </dl>
+  </article>`).join('')}</div>`;
+}
+
+// One tooltip box for every agent name: hover, keyboard focus or tap shows it.
+const tipEl = document.getElementById('agent-tip');
+let tipFor = null;
+
+function showTip(target) {
+  if (tipFor && tipFor !== target) tipFor.removeAttribute('aria-describedby');
+  tipFor = target;
+  tipEl.innerHTML = tipHTML(target.dataset.agent, target.dataset.extra);
+  tipEl.hidden = false;
+  const r = target.getBoundingClientRect();
+  const w = tipEl.offsetWidth, h = tipEl.offsetHeight;
+  const left = Math.max(8, Math.min(r.left, document.documentElement.clientWidth - w - 8));
+  const above = r.bottom + 8 + h > window.innerHeight && r.top - 8 - h > 0;
+  tipEl.style.left = `${left + window.scrollX}px`;
+  tipEl.style.top = `${(above ? r.top - 8 - h : r.bottom + 8) + window.scrollY}px`;
+  target.setAttribute('aria-describedby', 'agent-tip');
+}
+
+function hideTip() {
+  if (tipFor) tipFor.removeAttribute('aria-describedby');
+  tipFor = null;
+  tipEl.hidden = true;
+}
+
+// The agent name an event happened on, if any (the target can also be the document itself).
+const nameOf = ev => (ev.target instanceof Element ? ev.target.closest('.agent-name') : null);
+
+document.addEventListener('mouseover', ev => {
+  const t = nameOf(ev);
+  if (t && t !== tipFor) showTip(t);
+});
+document.addEventListener('mouseout', ev => {
+  const t = nameOf(ev);
+  if (t && t === tipFor && !t.contains(ev.relatedTarget)) hideTip();
+});
+document.addEventListener('focusin', ev => {
+  const t = nameOf(ev);
+  if (t) showTip(t);
+});
+document.addEventListener('focusout', ev => { if (ev.target === tipFor) hideTip(); });
+document.addEventListener('click', ev => {
+  const t = nameOf(ev);
+  if (t) showTip(t); else hideTip();
+});
+document.addEventListener('keydown', ev => { if (ev.key === 'Escape') hideTip(); });
+window.addEventListener('resize', hideTip);
+
 // One chip per country in the data, most platforms first; GLOBAL goes last.
 function renderCountryFilters() {
   const perCountry = new Map();
@@ -437,14 +595,22 @@ document.querySelector('.filters').addEventListener('click', ev => {
   render();
 });
 
-fetch('data/events.csv', { cache: 'no-cache' })
-  .then(r => { if (!r.ok) throw new Error(r.status); return r.text(); })
-  .then(text => {
-    const rows = parseCSV(text);
+const loadCSV = path => fetch(path, { cache: 'no-cache' })
+  .then(r => { if (!r.ok) throw new Error(`${path}: ${r.status}`); return r.text(); })
+  .then(parseCSV);
+
+// The page still works without agents.csv: agent names then show without tooltips.
+const agentsLoaded = loadCSV('data/agents.csv')
+  .then(rows => { if (rows.length > 1) setAgents(rows); })
+  .catch(err => console.error(err));
+
+Promise.all([loadCSV('data/events.csv'), agentsLoaded])
+  .then(([rows]) => {
     events = rows.length > 1 ? toEvents(rows) : [];
     renderCounter();
     renderCountryFilters();
     render();
+    renderAgents();
   })
   .catch(err => {
     console.error(err);
