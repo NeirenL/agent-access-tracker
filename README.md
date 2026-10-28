@@ -20,44 +20,42 @@ This project collects them in one dated, sourced place, so anyone can see who bl
 
 ## 📊 The data
 
-Everything lives in a single file: [`data/events.csv`](data/events.csv). Each row is one **event**, meaning a platform changed (or announced) its stance toward an agent. The page shows the most recent event per platform as its current status.
-
-The column names and values are kept in Spanish, the language the dataset was started in. The page translates them.
+The data lives in two files. In [`data/events.csv`](data/events.csv), each row is one **event**: a platform changed (or announced) its stance toward an agent. The page shows the most recent event per platform as its current status.
 
 | Column | Meaning | Allowed values / format |
 |---|---|---|
-| `fecha` | Date of the event | `YYYY-MM-DD` |
-| `plataforma` | Platform taking the action | e.g. `Amazon`, `LinkedIn` |
-| `pais` | Country of the operational headquarters of the company that **operates the site or app** (not the holding company or its legal seat, not the agent's country, and not where the platform is used). If the legal seat is elsewhere, it goes in `notas`. | Two-letter [ISO 3166-1](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) code, e.g. `US`, `MX`, `CN`. `GLOBAL` only if there is no clear operator. A platform keeps the same country in every row. |
-| `agente` | The AI agent affected | e.g. `Comet`, `Grok Bot` |
-| `empresa_agente` | Company behind the agent | e.g. `Perplexity`, `xAI` |
-| `tipo_agente` | Where the agent runs | `nube` (cloud) · `navegador` (browser) · `teléfono` (phone) · `crawler`. `telefono` without the accent is also accepted and treated as `teléfono`. Leave empty if the source doesn't say. |
-| `estado` | The platform's stance | `bloquea` (blocks) · `permite` (allows) · `permite con condiciones` (allows with conditions) · `opt-out` |
-| `mecanismo` | How it is enforced | `robots.txt` · `términos de servicio` (terms of service) · `bloqueo técnico` (technical block) · `protocolo de permisos` (permission protocol) · `bloqueo de red/CDN` (network/CDN block) · `demanda` (lawsuit). `terminos de servicio` and `bloqueo tecnico` without accents are also accepted. Leave empty if the source doesn't say; put details in `notas`. |
-| `verificacion` | How the event is confirmed | `oficial` (official) · `reportado por medios` (media report) · `reportado por usuarios` (user reports) |
-| `fuente_url` | Link to the source | Full `https://` URL |
-| `notas` | Extra context | Free text (wrap in quotes if it contains commas) |
+| `date` | Date of the event | `YYYY-MM-DD` |
+| `platform` | Platform taking the action | e.g. `Amazon`, `LinkedIn` |
+| `country` | Country of the operational headquarters of the company that **operates the site or app** (not the holding company or its legal seat, not the agent's country, and not where the platform is used). If the legal seat is elsewhere, it goes in `notes`. | Two-letter [ISO 3166-1](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) code, e.g. `US`, `MX`, `CN`. `GLOBAL` only if there is no clear operator. A platform keeps the same country in every row. |
+| `agent` | The AI agent affected | e.g. `Comet Assistant`, `Grok Bot` |
+| `agent_company` | Company behind the agent | e.g. `Perplexity`, `xAI` |
+| `agent_type` | Where the agent runs | `cloud` · `browser` · `phone` · `crawler`. Leave empty if the source doesn't say. |
+| `status` | The platform's stance | `blocks` · `allows` · `allows with conditions` · `opt-out` |
+| `mechanism` | How it is enforced | `robots.txt` · `terms of service` · `technical block` · `permission protocol` · `network/CDN block` · `lawsuit`. Leave empty if the source doesn't say; put details in `notes`. |
+| `verification` | How the event is confirmed | `official` · `media report` · `user reports` |
+| `source_url` | Link to the source | Full `https://` URL |
+| `notes` | Extra context | Free text (wrap in quotes if it contains commas) |
 
 ### Agents
 
-[`data/agents.csv`](data/agents.csv) explains each specific agent named in `events.csv`: one row per agent. Every value comes from an official company page, doc or blog; anything the official source doesn't give is `unknown`. Groups of agents (for example "All third-party AI agents") are not a specific product, so they get no row; the page shows them in italics.
+[`data/agents.csv`](data/agents.csv) explains each specific agent named in `events.csv`: one row per agent. Every value comes from an official company page, doc or blog; anything the official source doesn't give is `unknown` (or `no data` for availability). Groups of agents (for example "All third-party AI agents") are not a specific product, so they get no row; the page shows them in italics.
 
 | Column | Meaning | Allowed values / format |
 |---|---|---|
-| `agente` | Agent name, as written in `events.csv` | e.g. `GPTBot`, `Muse` |
-| `empresa` | Company behind the agent | e.g. `OpenAI` |
-| `tipo` | Where it works | `nube` (cloud) · `local` (on the user's device) · `crawler` · `unknown` |
-| `tipo_fuente` | Where `tipo` comes from | `official` (the source states it) · `inferred` (deduced from the source; the page shows it as "likely") · `unknown` when `tipo` is `unknown` |
-| `que_hace` | What it does, in one simple line | Free text |
+| `agent` | Agent name, as written in `events.csv` | e.g. `GPTBot`, `Muse` |
+| `company` | Company behind the agent | e.g. `OpenAI` |
+| `type` | Where it works | `cloud` · `local` (on the user's device) · `crawler` · `unknown` |
+| `type_source` | Where `type` comes from | `official` (the source states it) · `inferred` (deduced from the source; the page shows it as "likely") · `unknown` when `type` is `unknown` |
+| `what_it_does` | What it does, in one simple line | Free text |
 | `user_agent` | Name it uses in robots.txt, or `none` if it browses like a normal Chrome browser | e.g. `ChatGPT-User` |
-| `fecha_lanzamiento` | Launch date | `YYYY-MM-DD` or `unknown` |
-| `fuente_url` | Official source(s) | `https://` URLs separated by ` ; `, or `unknown` |
-| `paises_disponibles` | Where the agent is available, only from official help pages or docs (never from news) | Two-letter codes separated by `;` (e.g. `US;MX`), `GLOBAL`, or `sin dato` (no official list) |
-| `paises_excluidos` | Countries the official source says are excluded | Codes separated by `;`, or `sin dato` |
-| `disponibilidad_fuente_url` | Official page the countries come from | `https://` URL, or `sin dato` |
-| `disponibilidad_tipo_fuente` | Kind of page | `help_page` · `changelog` (the page shows "per changelog") · `none` |
-| `disponibilidad_notas` | Exceptions the codes can't express (e.g. excluded regions of a country) | Free text, may be empty |
-| `fecha_revisado` | When the availability page was checked | `YYYY-MM-DD` |
+| `launch_date` | Launch date | `YYYY-MM-DD` or `unknown` |
+| `source_url` | Official source(s) | `https://` URLs separated by ` ; `, or `unknown` |
+| `available_countries` | Where the agent is available, only from official help pages or docs (never from news) | Two-letter codes separated by `;` (e.g. `US;MX`), `GLOBAL`, or `no data` (no official list) |
+| `excluded_countries` | Countries the official source says are excluded | Codes separated by `;`, or `no data` |
+| `availability_source_url` | Official page the countries come from | `https://` URL, or `no data` |
+| `availability_source_type` | Kind of page | `help_page` · `changelog` (the page shows "per changelog") · `none` |
+| `availability_notes` | Exceptions the codes can't express (e.g. excluded regions of a country) | Free text, may be empty |
+| `checked_date` | When the availability page was checked | `YYYY-MM-DD` |
 
 ## 🤝 How to contribute
 
@@ -69,9 +67,9 @@ Know of a platform blocking or allowing an AI agent? **[Open an issue](https://g
 
 Entries without a verifiable source won't be added. If you spot an error or a dead link, open an issue too.
 
-Editing the CSV directly? Every push and pull request runs an automatic check on `data/events.csv` and `data/agents.csv` (exact columns, `YYYY-MM-DD` dates, allowed values, `https://` sources, no duplicates). If it fails, the log tells you which line to fix. `tipo_agente` and `mecanismo` may be left empty when the source doesn't say.
+Editing the CSV directly? Every push and pull request runs an automatic check on `data/events.csv` and `data/agents.csv` (exact columns, `YYYY-MM-DD` dates, allowed values, `https://` sources, no duplicates). If it fails, the log tells you which line to fix. `agent_type` and `mechanism` may be left empty when the source doesn't say.
 
-Every Monday, an automated check visits each `fuente_url` and opens an issue if any link is broken.
+Every Monday, an automated check visits each `source_url` and opens an issue if any link is broken.
 
 Every Monday, the robots.txt watcher in [`watch/`](watch/) also checks the sites listed in `watch/sites.txt` and saves their robots.txt snapshots in [`snapshots/`](snapshots/). It opens an issue when the rules for AI agents change, and never edits `data/events.csv` itself.
 

@@ -151,17 +151,17 @@ def ai_rules(text, agents):
 def blocks_all_robots(text):
     """True if the User-agent: * group disallows the whole site."""
     rules = [r for names, group in parse_groups(text) if "*" in names for r in group]
-    return proposed_estado(rules) == "bloquea"
+    return proposed_status(rules) == "blocks"
 
 
 def looks_like_robots(text):
     return re.search(r"^\s*(user-agent|disallow|allow|sitemap)\s*:", text, re.I | re.M) is not None
 
 
-def proposed_estado(rules):
+def proposed_status(rules):
     """Only a whole-site block is mapped automatically; everything else needs a human decision."""
     if "Disallow: /" in rules and not any(r.startswith("Allow: ") and r != "Allow: " for r in rules):
-        return "bloquea"
+        return "blocks"
     return "TO DECIDE"
 
 
@@ -175,7 +175,7 @@ def fence(rules):
     return "```\n" + ("\n".join(rules) if rules else NOT_LISTED) + "\n```"
 
 
-def issue_for(domain, name, pais, url, changes, agents, today, all_robots=None):
+def issue_for(domain, name, country, url, changes, agents, today, all_robots=None):
     """Issue text. `all_robots` is (before, after) when the User-agent: * whole-site block changed."""
     what = [c[0] for c in changes] + (["User-agent: *"] if all_robots else [])
     lines = [
@@ -198,19 +198,19 @@ def issue_for(domain, name, pais, url, changes, agents, today, all_robots=None):
             f"```\n{state(all_robots[1])}\n```",
             "",
         ]
-        estado = "bloquea" if all_robots[1] else "TO DECIDE"
-        rows.append(csv_row([today, name, pais, "All robots (User-agent: *)", "", "", estado, "robots.txt", "oficial", url, NOTE]))
+        status = "blocks" if all_robots[1] else "TO DECIDE"
+        rows.append(csv_row([today, name, country, "All robots (User-agent: *)", "", "", status, "robots.txt", "official", url, NOTE]))
     for agent, before, after in changes:
         operator = next((op for n, op in agents.values() if n == agent), "")
         lines += [f"#### {agent}" + (f" ({operator})" if operator else ""), "**Before**", fence(before), "**After**", fence(after), ""]
-        estado = proposed_estado(after) if after else "TO DECIDE"
-        rows.append(csv_row([today, name, pais, agent, operator, "", estado, "robots.txt", "oficial", url, NOTE]))
+        status = proposed_status(after) if after else "TO DECIDE"
+        rows.append(csv_row([today, name, country, agent, operator, "", status, "robots.txt", "official", url, NOTE]))
     lines += [
         "### Proposed rows for `data/events.csv`",
         "Review before adding anything. `TO DECIDE` means the change is not a clear whole-site block "
-        "(partial rules, an Allow, or the agent was removed): pick the right `estado` by hand. "
-        "`pais` comes from watch/sites.txt; `TO DECIDE` there means the site has no country yet. "
-        "`tipo_agente` is left empty on purpose.",
+        "(partial rules, an Allow, or the agent was removed): pick the right `status` by hand. "
+        "`country` comes from watch/sites.txt; `TO DECIDE` there means the site has no country yet. "
+        "`agent_type` is left empty on purpose.",
         "",
         "```csv",
         *rows,
@@ -245,7 +245,7 @@ def main():
     issues_dir.mkdir(parents=True, exist_ok=True)
 
     results = []  # (domain, status text, ai agent count, whole-site blocks)
-    for n, (domain, name, pais) in enumerate(sites):
+    for n, (domain, name, country) in enumerate(sites):
         if n:
             time.sleep(PAUSE_SECONDS)
         url = f"https://{domain}/robots.txt"
@@ -274,7 +274,7 @@ def main():
             encoding="utf-8",
         )
 
-        blocks = sum(1 for r in rules.values() if proposed_estado(r) == "bloquea")
+        blocks = sum(1 for r in rules.values() if proposed_status(r) == "blocks")
         all_cell = "yes" if all_blocked else "no"
         if previous is None:
             results.append((domain, "📸 first snapshot (baseline, no issue)", len(rules), blocks, all_cell))
@@ -287,7 +287,7 @@ def main():
         all_change = (previous_all, all_blocked) if previous_all is not None and previous_all != all_blocked else None
         if changes or all_change:
             (issues_dir / f"{domain}.md").write_text(
-                issue_for(domain, name, pais, final_url, changes, agents, today, all_change), encoding="utf-8"
+                issue_for(domain, name, country, final_url, changes, agents, today, all_change), encoding="utf-8"
             )
             what = [c[0] for c in changes] + (["User-agent: *"] if all_change else [])
             results.append((domain, f"🔔 changed: {', '.join(what)}", len(rules), blocks, all_cell))

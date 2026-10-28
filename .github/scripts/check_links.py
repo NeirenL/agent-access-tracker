@@ -1,4 +1,4 @@
-"""Check that every fuente_url in the dataset (events.csv and agents.csv) still responds.
+"""Check that every source_url in the dataset (events.csv and agents.csv) still responds.
 
 Writes a Markdown report and sets the `broken` step output for the workflow.
 """
@@ -42,18 +42,18 @@ def main():
     urls = {}
     with open(CSV_PATH, newline="", encoding="utf-8-sig") as f:
         for line, row in enumerate(csv.DictReader(f), start=2):
-            url = (row.get("fuente_url") or "").strip()
+            url = (row.get("source_url") or "").strip()
             if url:
-                urls.setdefault(url, []).append(f"{line} ({(row.get('plataforma') or '').strip()})")
+                urls.setdefault(url, []).append(f"{line} ({(row.get('platform') or '').strip()})")
     # agents.csv: its sources (several may be separated by ";") and its availability source.
     if os.path.exists(AGENTS_PATH):
         with open(AGENTS_PATH, newline="", encoding="utf-8-sig") as f:
             for line, row in enumerate(csv.DictReader(f), start=2):
-                sources = (row.get("fuente_url") or "") + ";" + (row.get("disponibilidad_fuente_url") or "")
+                sources = (row.get("source_url") or "") + ";" + (row.get("availability_source_url") or "")
                 for url in sources.split(";"):
                     url = url.strip()
                     if url.startswith("http"):
-                        urls.setdefault(url, []).append(f"agents.csv {line} ({(row.get('agente') or '').strip()})")
+                        urls.setdefault(url, []).append(f"agents.csv {line} ({(row.get('agent') or '').strip()})")
 
     broken, unverified = [], []
     for url, where in urls.items():

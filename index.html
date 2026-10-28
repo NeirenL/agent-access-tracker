@@ -208,17 +208,17 @@
     <div class="filter-row" role="group" aria-label="Filter by status">
       <span class="label">Status</span>
       <button class="chip" data-filter="status" data-value="" aria-pressed="true">All</button>
-      <button class="chip" data-filter="status" data-value="bloquea" aria-pressed="false">Blocks</button>
-      <button class="chip" data-filter="status" data-value="permite" aria-pressed="false">Allows</button>
-      <button class="chip" data-filter="status" data-value="permite con condiciones" aria-pressed="false">Allows with conditions</button>
+      <button class="chip" data-filter="status" data-value="blocks" aria-pressed="false">Blocks</button>
+      <button class="chip" data-filter="status" data-value="allows" aria-pressed="false">Allows</button>
+      <button class="chip" data-filter="status" data-value="allows with conditions" aria-pressed="false">Allows with conditions</button>
       <button class="chip" data-filter="status" data-value="opt-out" aria-pressed="false">Opt-out</button>
     </div>
     <div class="filter-row" role="group" aria-label="Filter by agent type">
       <span class="label">Agent type</span>
       <button class="chip" data-filter="type" data-value="" aria-pressed="true">All</button>
-      <button class="chip" data-filter="type" data-value="nube" aria-pressed="false">Cloud</button>
-      <button class="chip" data-filter="type" data-value="navegador" aria-pressed="false">Browser</button>
-      <button class="chip" data-filter="type" data-value="teléfono" aria-pressed="false">Phone</button>
+      <button class="chip" data-filter="type" data-value="cloud" aria-pressed="false">Cloud</button>
+      <button class="chip" data-filter="type" data-value="browser" aria-pressed="false">Browser</button>
+      <button class="chip" data-filter="type" data-value="phone" aria-pressed="false">Phone</button>
       <button class="chip" data-filter="type" data-value="crawler" aria-pressed="false">Crawler</button>
     </div>
     <div class="filter-row" role="group" aria-label="Filter by platform country" id="country-filters">
@@ -258,32 +258,29 @@
 
 <script>
 const STATUS = {
-  'bloquea': { label: 'Blocks', cls: 'block' },
-  'permite': { label: 'Allows', cls: 'allow' },
-  'permite con condiciones': { label: 'Allows with conditions', cls: 'cond' },
+  'blocks': { label: 'Blocks', cls: 'block' },
+  'allows': { label: 'Allows', cls: 'allow' },
+  'allows with conditions': { label: 'Allows with conditions', cls: 'cond' },
   'opt-out': { label: 'Opt-out', cls: 'optout' },
 };
-// tipo_agente and mecanismo follow the same rule as .github/scripts/validate_csv.py:
-// exact official values, plus aliases that are converted to the official value.
+// agent_type, mechanism and verification use the allowed values of .github/scripts/validate_csv.py.
 // Any other value is shown as written.
-const TYPE = { nube: 'Cloud', navegador: 'Browser', 'teléfono': 'Phone', crawler: 'Crawler' };
-const TYPE_ALIASES = { telefono: 'teléfono' };
+const TYPE = { cloud: 'Cloud', browser: 'Browser', phone: 'Phone', crawler: 'Crawler' };
 const MECH = {
   'robots.txt': 'robots.txt',
-  'términos de servicio': 'Terms of service',
-  'bloqueo técnico': 'Technical block',
-  'protocolo de permisos': 'Permission protocol',
-  'bloqueo de red/CDN': 'Network/CDN block',
-  'demanda': 'Lawsuit',
+  'terms of service': 'Terms of service',
+  'technical block': 'Technical block',
+  'permission protocol': 'Permission protocol',
+  'network/CDN block': 'Network/CDN block',
+  'lawsuit': 'Lawsuit',
 };
-const MECH_ALIASES = { 'terminos de servicio': 'términos de servicio', 'bloqueo tecnico': 'bloqueo técnico' };
-const COLUMNS = ['fecha', 'plataforma', 'pais', 'agente', 'empresa_agente', 'tipo_agente', 'estado', 'mecanismo', 'verificacion', 'fuente_url', 'notas'];
-const VERIF = { oficial: 'Official', 'reportado por medios': 'Media report', 'reportado por usuarios': 'User reports' };
+const COLUMNS = ['date', 'platform', 'country', 'agent', 'agent_company', 'agent_type', 'status', 'mechanism', 'verification', 'source_url', 'notes'];
+const VERIF = { official: 'Official', 'media report': 'Media report', 'user reports': 'User reports' };
 
 const filters = { status: '', type: '', country: '' };
 let events = [];
 
-// Lowercase, trim and drop accents so "Teléfono" matches "telefono".
+// Lowercase, trim and drop accents, for comparing names and values.
 const norm = s => (s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').trim().toLowerCase();
 
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -313,17 +310,17 @@ function toEvents(rows) {
     const e = { i };
     COLUMNS.forEach(c => { e[c] = ''; }); // a missing column shows as empty instead of breaking the page
     header.forEach((h, j) => { e[h] = (r[j] || '').trim(); });
-    e.statusKey = norm(e.estado);
-    e.typeKey = TYPE_ALIASES[e.tipo_agente] || e.tipo_agente;
-    e.mechKey = MECH_ALIASES[e.mecanismo] || e.mecanismo;
-    e.platformKey = norm(e.plataforma);
-    e.countryKey = (e.pais || '').toUpperCase();
+    e.statusKey = norm(e.status);
+    e.typeKey = e.agent_type;
+    e.mechKey = e.mechanism;
+    e.platformKey = norm(e.platform);
+    e.countryKey = (e.country || '').toUpperCase();
     return e;
   });
 }
 
 // Newest first; for same-day events, the row added later wins.
-const byNewest = (a, b) => (b.fecha || '').localeCompare(a.fecha || '') || b.i - a.i;
+const byNewest = (a, b) => (b.date || '').localeCompare(a.date || '') || b.i - a.i;
 
 function latestPerPlatform(list) {
   const seen = new Map();
@@ -337,7 +334,7 @@ const typeMatches = e => !filters.type || e.typeKey === filters.type;
 const countryMatches = e => !filters.country || e.countryKey === filters.country;
 const matches = e => (!filters.status || e.statusKey === filters.status) && typeMatches(e) && countryMatches(e);
 
-// pais is a two-letter country code of the platform, or GLOBAL.
+// country is a two-letter country code of the platform, or GLOBAL.
 const regionNames = (() => { try { return new Intl.DisplayNames(['en'], { type: 'region' }); } catch { return null; } })();
 function countryName(code) {
   if (code === 'GLOBAL') return 'Global';
@@ -348,7 +345,7 @@ const countryTag = e => e.countryKey ? `<span class="cc" title="${esc(countryNam
 
 // Every event of each platform: newest first, same-day events in alphabetical order by agent.
 const byDateThenAgent = (a, b) =>
-  (b.fecha || '').localeCompare(a.fecha || '') || a.agente.localeCompare(b.agente, 'en', { sensitivity: 'base' });
+  (b.date || '').localeCompare(a.date || '') || a.agent.localeCompare(b.agent, 'en', { sensitivity: 'base' });
 
 function eventsByPlatform(list) {
   const groups = new Map();
@@ -369,33 +366,33 @@ function fmtDate(s) {
 
 function badge(e) {
   const s = STATUS[e.statusKey];
-  return `<span class="badge ${s ? s.cls : 'unknown'}">${esc(s ? s.label : e.estado || 'Unknown')}</span>`;
+  return `<span class="badge ${s ? s.cls : 'unknown'}">${esc(s ? s.label : e.status || 'Unknown')}</span>`;
 }
 
-const typeLabel = e => esc(TYPE[e.typeKey] || e.tipo_agente || '');
-const mechLabel = e => esc(MECH[e.mechKey] || e.mecanismo || '');
-const verifLabel = e => esc(VERIF[norm(e.verificacion)] || e.verificacion || '');
+const typeLabel = e => esc(TYPE[e.typeKey] || e.agent_type || '');
+const mechLabel = e => esc(MECH[e.mechKey] || e.mechanism || '');
+const verifLabel = e => esc(VERIF[norm(e.verification)] || e.verification || '');
 
 function sourceLink(e, text) {
-  if (!/^https?:\/\//i.test(e.fuente_url)) return '';
+  if (!/^https?:\/\//i.test(e.source_url)) return '';
   let host = text;
-  if (!host) { try { host = new URL(e.fuente_url).hostname.replace(/^www\./, ''); } catch { host = 'Source'; } }
-  return `<a class="src" href="${esc(e.fuente_url)}" target="_blank" rel="noopener noreferrer">${esc(host)} ↗</a>`;
+  if (!host) { try { host = new URL(e.source_url).hostname.replace(/^www\./, ''); } catch { host = 'Source'; } }
+  return `<a class="src" href="${esc(e.source_url)}" target="_blank" rel="noopener noreferrer">${esc(host)} ↗</a>`;
 }
 
 // data/agents.csv has one row per specific agent. An event's agent text can name several of them
 // ("GPTBot / ChatGPT-User"); text that names none of them is a group of agents.
-const AGENT_TYPE = { nube: 'Cloud', local: 'Local', crawler: 'Crawler' };
+const AGENT_TYPE = { cloud: 'Cloud', local: 'Local', crawler: 'Crawler' };
 const GROUP_TIP = 'Group of agents, not a specific product. See the source for details.';
 let agents = [];
 let agentMatchers = []; // longest name first, so "ChatGPT-User" is found before "ChatGPT"
 
 const known = v => (v && v.toLowerCase() !== 'unknown') ? v : '';
-// "Likely cloud" when the type was deduced (tipo_fuente = inferred) instead of stated by the source.
+// "Likely cloud" when the type was deduced (type_source = inferred) instead of stated by the source.
 function agentType(a) {
-  const label = AGENT_TYPE[a.tipo];
+  const label = AGENT_TYPE[a.type];
   if (!label) return 'Type unknown';
-  return a.tipo_fuente === 'inferred' ? `Likely ${label.toLowerCase()}` : label;
+  return a.type_source === 'inferred' ? `Likely ${label.toLowerCase()}` : label;
 }
 const escRe = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
@@ -403,10 +400,10 @@ function setAgents(rows) {
   const header = rows[0].map(norm);
   agents = rows.slice(1)
     .map(r => Object.fromEntries(header.map((h, j) => [h, (r[j] || '').trim()])))
-    .filter(a => a.agente);
+    .filter(a => a.agent);
   // A name only counts as a whole word: "ChatGPT" does not match inside "ChatGPT-User".
-  agentMatchers = [...agents].sort((a, b) => b.agente.length - a.agente.length)
-    .map(a => ({ agent: a, re: new RegExp(`(?<![\\w-])${escRe(a.agente)}(?![\\w-])`) }));
+  agentMatchers = [...agents].sort((a, b) => b.agent.length - a.agent.length)
+    .map(a => ({ agent: a, re: new RegExp(`(?<![\\w-])${escRe(a.agent)}(?![\\w-])`) }));
 }
 
 function agentsIn(text) {
@@ -434,28 +431,28 @@ function tipHTML(text, extra) {
   const list = agentsIn(text);
   if (!list.length) return `${head}<div>${esc(GROUP_TIP)}</div>`;
   return head + list.map(a => `<div class="tip-agent">
-    <b>${esc(a.agente)}</b> <span class="sub">${esc(known(a.empresa) || 'Unknown company')} · ${esc(agentType(a))}</span>
-    <p>${esc(known(a.que_hace) || 'No official description found.')}</p>
+    <b>${esc(a.agent)}</b> <span class="sub">${esc(known(a.company) || 'Unknown company')} · ${esc(agentType(a))}</span>
+    <p>${esc(known(a.what_it_does) || 'No official description found.')}</p>
   </div>`).join('');
 }
 
 function agentLine(e) {
-  return agentName(e.agente) + (e.empresa_agente ? ` <span class="sub">(${esc(e.empresa_agente)})</span>` : '');
+  return agentName(e.agent) + (e.agent_company ? ` <span class="sub">(${esc(e.agent_company)})</span>` : '');
 }
 
 // One small chip per agent, colored by the status of that event; details on hover.
 function agentChips(group) {
   return `<div class="agent-chips">${group.map(e => {
     const s = STATUS[e.statusKey];
-    const status = [s ? s.label : e.estado, MECH[e.mechKey] || e.mecanismo].filter(Boolean).join(' · ');
-    return `<span class="agent-chip ${s ? s.cls : ''}"><span class="dot"></span>${agentName(e.agente, status)}<time>${fmtDate(e.fecha)}</time></span>`;
+    const status = [s ? s.label : e.status, MECH[e.mechKey] || e.mechanism].filter(Boolean).join(' · ');
+    return `<span class="agent-chip ${s ? s.cls : ''}"><span class="dot"></span>${agentName(e.agent, status)}<time>${fmtDate(e.date)}</time></span>`;
   }).join('')}</div>`;
 }
 
 function renderCounter() {
   const current = latestPerPlatform(events);
-  const blocks = current.filter(e => e.statusKey === 'bloquea').length;
-  const allows = current.filter(e => e.statusKey === 'permite' || e.statusKey === 'permite con condiciones').length;
+  const blocks = current.filter(e => e.statusKey === 'blocks').length;
+  const allows = current.filter(e => e.statusKey === 'allows' || e.statusKey === 'allows with conditions').length;
   document.getElementById('n-blocks').textContent = blocks;
   document.getElementById('w-blocks').textContent = blocks === 1 ? 'block' : 'blocks';
   document.getElementById('n-allows').textContent = allows;
@@ -468,7 +465,7 @@ function renderTable() {
   const groups = eventsByPlatform(events);
   const rows = latestPerPlatform(events)
     .filter(e => (!filters.status || e.statusKey === filters.status) && countryMatches(e) && groups.get(e.platformKey).some(typeMatches))
-    .sort((a, b) => a.plataforma.localeCompare(b.plataforma));
+    .sort((a, b) => a.platform.localeCompare(b.platform));
   document.getElementById('table-count').textContent = `(${rows.length})`;
   const el = document.getElementById('table');
   if (!rows.length) { el.innerHTML = '<div class="empty">No platforms match these filters.</div>'; return; }
@@ -478,11 +475,11 @@ function renderTable() {
       const group = groups.get(e.platformKey).filter(typeMatches);
       const types = [...new Set(group.map(typeLabel).filter(Boolean))].join(', ');
       return `<tr>
-      <td class="platform" data-label="Platform"><div>${esc(e.plataforma)}${countryTag(e)}</div></td>
+      <td class="platform" data-label="Platform"><div>${esc(e.platform)}${countryTag(e)}</div></td>
       <td data-label="Status"><div>${badge(e)}</div></td>
       <td data-label="Agents"><div>${agentChips(group)}</div></td>
       <td data-label="Type"><div>${types}</div></td>
-      <td data-label="Since"><div style="white-space: nowrap">${fmtDate(e.fecha)}</div></td>
+      <td data-label="Since"><div style="white-space: nowrap">${fmtDate(e.date)}</div></td>
       <td data-label="Source"><div>${sourceLink(e)}</div></td>
     </tr>`;
     }).join('')}</tbody>
@@ -497,16 +494,16 @@ function renderTimeline() {
   el.innerHTML = `<ol class="timeline">${list.map(e => {
     const cls = (STATUS[e.statusKey] || {}).cls || '';
     const meta = [
-      e.agente && `<span>Agent: <b>${agentLine(e)}</b></span>`,
-      e.tipo_agente && `<span>Type: <b>${typeLabel(e)}</b></span>`,
-      e.mecanismo && `<span>Mechanism: <b>${mechLabel(e)}</b></span>`,
-      e.verificacion && `<span>Verification: <b>${verifLabel(e)}</b></span>`,
+      e.agent && `<span>Agent: <b>${agentLine(e)}</b></span>`,
+      e.agent_type && `<span>Type: <b>${typeLabel(e)}</b></span>`,
+      e.mechanism && `<span>Mechanism: <b>${mechLabel(e)}</b></span>`,
+      e.verification && `<span>Verification: <b>${verifLabel(e)}</b></span>`,
       sourceLink(e) && `<span>${sourceLink(e)}</span>`,
     ].filter(Boolean).join('');
     return `<li class="event ${cls}">
-      <div class="top"><span class="date">${fmtDate(e.fecha)}</span><span class="title">${esc(e.plataforma)}${countryTag(e)}</span>${badge(e)}</div>
+      <div class="top"><span class="date">${fmtDate(e.date)}</span><span class="title">${esc(e.platform)}${countryTag(e)}</span>${badge(e)}</div>
       <div class="meta">${meta}</div>
-      ${e.notas ? `<p class="notes">${esc(e.notas)}</p>` : ''}
+      ${e.notes ? `<p class="notes">${esc(e.notes)}</p>` : ''}
     </li>`;
   }).join('')}</ol>`;
 }
@@ -516,46 +513,46 @@ function render() { renderTable(); renderTimeline(); }
 function sourceLinks(value) {
   const urls = (value || '').split(';').map(u => u.trim()).filter(u => /^https?:\/\//i.test(u));
   if (!urls.length) return 'Unknown';
-  return urls.map(u => sourceLink({ fuente_url: u })).join(' · ');
+  return urls.map(u => sourceLink({ source_url: u })).join(' · ');
 }
 
-// paises_disponibles: codes separated by ";", GLOBAL, or "sin dato" (no official list).
-const NO_DATA = 'sin dato';
+// available_countries: codes separated by ";", GLOBAL, or "no data" (no official list).
+const NO_DATA = 'no data';
 const codesOf = v => (v && v !== NO_DATA && v !== 'GLOBAL') ? v.split(';').map(c => c.trim()).filter(Boolean) : [];
 
 function availability(a) {
-  const avail = a.paises_disponibles;
-  const note = a.disponibilidad_notas ? `<span class="avail-note">${esc(a.disponibilidad_notas)}</span>` : '';
+  const avail = a.available_countries;
+  const note = a.availability_notes ? `<span class="avail-note">${esc(a.availability_notes)}</span>` : '';
   if (!avail || avail === NO_DATA) return `No official data${note}`;
   // CN is mainland China only: Hong Kong and Macao have their own codes.
-  const excluded = codesOf(a.paises_excluidos).map(c => c === 'CN' ? 'mainland China' : countryName(c));
+  const excluded = codesOf(a.excluded_countries).map(c => c === 'CN' ? 'mainland China' : countryName(c));
   const codes = codesOf(avail);
   let text = avail === 'GLOBAL'
     ? 'Available worldwide'
     : `Available in ${codes.length} ${codes.length === 1 ? 'country' : 'countries and territories'}`;
   if (excluded.length) text += ` except ${excluded.join(', ')}`;
-  if (a.disponibilidad_tipo_fuente === 'changelog') text += ' (per changelog)';
+  if (a.availability_source_type === 'changelog') text += ' (per changelog)';
   const list = codes.length > 1 ? `<details class="countries"><summary>Show list</summary><p>${
     codes.map(c => ({ c, n: countryName(c) })).sort((x, y) => x.n.localeCompare(y.n))
       .map(({ c, n }) => `${esc(n)} (${esc(c)})`).join(', ')}</p></details>` : '';
-  const source = /^https?:\/\//i.test(a.disponibilidad_fuente_url || '') ? ` · ${sourceLink({ fuente_url: a.disponibilidad_fuente_url })}` : '';
-  const checked = known(a.fecha_revisado) && a.fecha_revisado !== NO_DATA ? `Checked ${fmtDate(a.fecha_revisado)}` : '';
+  const source = /^https?:\/\//i.test(a.availability_source_url || '') ? ` · ${sourceLink({ source_url: a.availability_source_url })}` : '';
+  const checked = known(a.checked_date) && a.checked_date !== NO_DATA ? `Checked ${fmtDate(a.checked_date)}` : '';
   return `${esc(text)}${list}${note}${checked || source ? `<span class="avail-note">${checked}${source}</span>` : ''}`;
 }
 
 function renderAgents() {
   const el = document.getElementById('agents');
   if (!agents.length) { el.innerHTML = '<div class="empty">Could not load data/agents.csv.</div>'; return; }
-  const list = [...agents].sort((a, b) => a.empresa.localeCompare(b.empresa) || a.agente.localeCompare(b.agente));
+  const list = [...agents].sort((a, b) => a.company.localeCompare(b.company) || a.agent.localeCompare(b.agent));
   document.getElementById('agents-count').textContent = `(${list.length})`;
   el.innerHTML = `<div class="agents-grid">${list.map(a => `<article class="agent-card">
-    <h3>${esc(a.agente)}</h3>
-    <div class="sub">${esc(known(a.empresa) || 'Unknown company')} · ${esc(agentType(a))}</div>
-    <p>${esc(known(a.que_hace) || 'No official description found.')}</p>
+    <h3>${esc(a.agent)}</h3>
+    <div class="sub">${esc(known(a.company) || 'Unknown company')} · ${esc(agentType(a))}</div>
+    <p>${esc(known(a.what_it_does) || 'No official description found.')}</p>
     <dl>
       <dt>robots.txt name</dt><dd>${esc(known(a.user_agent) || 'Unknown')}</dd>
-      <dt>Launched</dt><dd>${known(a.fecha_lanzamiento) ? fmtDate(a.fecha_lanzamiento) : 'Unknown'}</dd>
-      <dt>Source</dt><dd>${sourceLinks(a.fuente_url)}</dd>
+      <dt>Launched</dt><dd>${known(a.launch_date) ? fmtDate(a.launch_date) : 'Unknown'}</dd>
+      <dt>Source</dt><dd>${sourceLinks(a.source_url)}</dd>
       <dt>Availability</dt><dd>${availability(a)}</dd>
     </dl>
   </article>`).join('')}</div>`;

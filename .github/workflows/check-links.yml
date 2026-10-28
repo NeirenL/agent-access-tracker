@@ -15,7 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - name: Check every fuente_url
+      - name: Check every source_url
         id: check
         run: python3 .github/scripts/check_links.py data/events.csv report.md
 

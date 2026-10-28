@@ -1,7 +1,7 @@
 # Sites whose robots.txt is checked every week.
 # Format: domain | Platform name | Country (name and country are optional; they are used in the proposed CSV rows).
 # Country: two-letter code of the operational headquarters of the company that operates the site or app
-# (not the holding company or the legal seat), e.g. US, MX, CN. Same value and rule as the pais column.
+# (not the holding company or the legal seat), e.g. US, MX, CN. Same value and rule as the country column.
 # GLOBAL only if there is no clear operator. TO DECIDE means it still needs a human review.
 # Lines starting with # are ignored.
 amazon.com | Amazon | US
