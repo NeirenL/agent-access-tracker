@@ -527,7 +527,8 @@ function availability(a) {
   const avail = a.paises_disponibles;
   const note = a.disponibilidad_notas ? `<span class="avail-note">${esc(a.disponibilidad_notas)}</span>` : '';
   if (!avail || avail === NO_DATA) return `No official data${note}`;
-  const excluded = codesOf(a.paises_excluidos).map(countryName);
+  // CN never covers Hong Kong (HK has its own code), so say so when CN is excluded.
+  const excluded = codesOf(a.paises_excluidos).map(c => c === 'CN' ? 'mainland China (Hong Kong included)' : countryName(c));
   const codes = codesOf(avail);
   let text = avail === 'GLOBAL'
     ? 'Available worldwide'
