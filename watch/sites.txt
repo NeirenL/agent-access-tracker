@@ -21,3 +21,10 @@ theguardian.com | The Guardian
 wsj.com | The Wall Street Journal
 nypost.com | New York Post
 britannica.com | Encyclopædia Britannica
+x.com | X
+quora.com | Quora
+medium.com | Medium
+temu.com | Temu
+zillow.com | Zillow
+instacart.com | Instacart
+nytimes.com | The New York Times
