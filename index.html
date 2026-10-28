@@ -93,6 +93,25 @@
   tr:last-child td { border-bottom: 0; }
   td.platform { font-weight: 600; }
   .sub { color: var(--muted); font-size: 0.85rem; }
+
+  .agent-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .agent-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    max-width: 100%;
+    padding: 3px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    font-size: 0.8rem;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+  }
+  .agent-chip .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; background: var(--muted); }
+  .agent-chip.block .dot { background: var(--block); }
+  .agent-chip.allow .dot { background: var(--allow); }
+  .agent-chip.cond .dot { background: var(--cond); }
+  .agent-chip.optout .dot { background: var(--optout); }
+  .agent-chip time { color: var(--muted); white-space: nowrap; }
   .src { color: var(--optout); text-decoration: none; }
   .src:hover { text-decoration: underline; }
 
@@ -261,7 +280,23 @@ function latestPerPlatform(list) {
   return [...seen.values()];
 }
 
-const matches = e => (!filters.status || e.statusKey === filters.status) && (!filters.type || e.typeKey === filters.type);
+const typeMatches = e => !filters.type || e.typeKey === filters.type;
+const matches = e => (!filters.status || e.statusKey === filters.status) && typeMatches(e);
+
+// Every event of each platform: newest first, same-day events in alphabetical order by agent.
+const byDateThenAgent = (a, b) =>
+  (b.fecha || '').localeCompare(a.fecha || '') || a.agente.localeCompare(b.agente, 'en', { sensitivity: 'base' });
+
+function eventsByPlatform(list) {
+  const groups = new Map();
+  for (const e of list) {
+    if (!e.platformKey) continue;
+    if (!groups.has(e.platformKey)) groups.set(e.platformKey, []);
+    groups.get(e.platformKey).push(e);
+  }
+  for (const group of groups.values()) group.sort(byDateThenAgent);
+  return groups;
+}
 
 function fmtDate(s) {
   const d = new Date(s + 'T00:00:00Z');
@@ -289,6 +324,15 @@ function agentLine(e) {
   return esc(e.agente) + (e.empresa_agente ? ` <span class="sub">(${esc(e.empresa_agente)})</span>` : '');
 }
 
+// One small chip per agent, colored by the status of that event; details on hover.
+function agentChips(group) {
+  return `<div class="agent-chips">${group.map(e => {
+    const s = STATUS[e.statusKey];
+    const tip = [s ? s.label : e.estado, MECH[e.mechKey] || e.mecanismo, e.empresa_agente].filter(Boolean).join(' · ');
+    return `<span class="agent-chip ${s ? s.cls : ''}" title="${esc(tip)}"><span class="dot"></span><span>${esc(e.agente || 'Unknown agent')}</span><time>${fmtDate(e.fecha)}</time></span>`;
+  }).join('')}</div>`;
+}
+
 function renderCounter() {
   const current = latestPerPlatform(events);
   const blocks = current.filter(e => e.statusKey === 'bloquea').length;
@@ -300,20 +344,29 @@ function renderCounter() {
 }
 
 function renderTable() {
-  const rows = latestPerPlatform(events).filter(matches).sort((a, b) => a.plataforma.localeCompare(b.plataforma));
+  // One row per platform: status, date and source come from its most recent event;
+  // the Agents column lists every event of that platform.
+  const groups = eventsByPlatform(events);
+  const rows = latestPerPlatform(events)
+    .filter(e => (!filters.status || e.statusKey === filters.status) && groups.get(e.platformKey).some(typeMatches))
+    .sort((a, b) => a.plataforma.localeCompare(b.plataforma));
   document.getElementById('table-count').textContent = `(${rows.length})`;
   const el = document.getElementById('table');
   if (!rows.length) { el.innerHTML = '<div class="empty">No platforms match these filters.</div>'; return; }
   el.innerHTML = `<table>
-    <thead><tr><th>Platform</th><th>Status</th><th>Agent</th><th>Type</th><th>Since</th><th>Source</th></tr></thead>
-    <tbody>${rows.map(e => `<tr>
+    <thead><tr><th>Platform</th><th>Status</th><th>Agents</th><th>Type</th><th>Since</th><th>Source</th></tr></thead>
+    <tbody>${rows.map(e => {
+      const group = groups.get(e.platformKey).filter(typeMatches);
+      const types = [...new Set(group.map(typeLabel).filter(Boolean))].join(', ');
+      return `<tr>
       <td class="platform" data-label="Platform"><div>${esc(e.plataforma)}</div></td>
       <td data-label="Status"><div>${badge(e)}</div></td>
-      <td data-label="Agent"><div>${agentLine(e)}</div></td>
-      <td data-label="Type"><div>${typeLabel(e)}</div></td>
-      <td data-label="Since"><div>${fmtDate(e.fecha)}</div></td>
+      <td data-label="Agents"><div>${agentChips(group)}</div></td>
+      <td data-label="Type"><div>${types}</div></td>
+      <td data-label="Since"><div style="white-space: nowrap">${fmtDate(e.fecha)}</div></td>
       <td data-label="Source"><div>${sourceLink(e)}</div></td>
-    </tr>`).join('')}</tbody>
+    </tr>`;
+    }).join('')}</tbody>
   </table>`;
 }
 
