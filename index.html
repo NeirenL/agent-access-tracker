@@ -397,24 +397,28 @@
     gap: 10px;
   }
   .platform-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
     background: var(--surface-2);
     border: 1px solid var(--border);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.15rem;
+    font-size: 1.05rem;
     font-weight: 800;
     color: var(--accent);
     flex-shrink: 0;
   }
   .platform-name {
-    font-size: 1.05rem;
+    font-size: 1rem;
     font-weight: 700;
     line-height: 1.25;
     color: #fff;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px;
   }
   .country-pill {
     display: inline-block;
@@ -425,8 +429,38 @@
     color: var(--text-dim);
     font-size: 0.72rem;
     font-weight: 700;
-    margin-left: 4px;
-    vertical-align: 1px;
+    margin-left: 0;
+    vertical-align: middle;
+  }
+  .region-pill {
+    display: inline-block;
+    padding: 1px 6px;
+    border-radius: 4px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--accent);
+    font-size: 0.72rem;
+    font-weight: 600;
+  }
+  .confirmed-flags-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 3px;
+  }
+  .scope-flags {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 3px;
+    align-items: center;
+    line-height: 1.25;
+    cursor: default;
+  }
+  .scope-globe {
+    display: inline-block;
+    cursor: default;
+    line-height: 1;
+    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.2));
   }
 
   /* Status Badges */
@@ -717,9 +751,14 @@
         <button class="chip" data-filter="type" data-value="crawler" aria-pressed="false">🕷️ Crawler</button>
       </div>
 
-      <div class="filter-row" role="group" aria-label="Filter by country" id="country-filters">
-        <span class="filter-label" id="lbl-filter-country">Country</span>
-        <button class="chip" data-filter="country" data-value="" aria-pressed="true"><span id="chip-country-all">All</span></button>
+      <div class="filter-row" role="group" aria-label="Filter by region" id="region-filters">
+        <span class="filter-label" id="lbl-filter-region">Region</span>
+        <button class="chip" data-filter="region" data-value="" aria-pressed="true"><span id="chip-region-all">All</span></button>
+        <button class="chip" data-filter="region" data-value="global" aria-pressed="false">🌐 <span id="chip-reg-global">Global</span></button>
+        <button class="chip" data-filter="region" data-value="north-america" aria-pressed="false">🌎 <span id="chip-reg-na">North America</span></button>
+        <button class="chip" data-filter="region" data-value="latam" aria-pressed="false">🌎 <span id="chip-reg-latam">LATAM</span></button>
+        <button class="chip" data-filter="region" data-value="europe" aria-pressed="false">🌍 <span id="chip-reg-europe">Europe</span></button>
+        <button class="chip" data-filter="region" data-value="asia" aria-pressed="false">🌏 <span id="chip-reg-asia">Asia</span></button>
       </div>
     </div>
   </section>
@@ -810,7 +849,13 @@ const I18N = {
     searchPlaceholder: "Search platforms or agents (e.g. Amazon, ChatGPT, Walmart, Gemini, Etsy, Mercado Libre...)",
     filterStatus: "Status",
     filterType: "Agent Type",
-    filterCountry: "Country",
+    filterRegion: "Region",
+    regionAll: "All",
+    regionGlobal: "Global",
+    regionNA: "North America",
+    regionLATAM: "LATAM",
+    regionEurope: "Europe",
+    regionAsia: "Asia",
     all: "All",
     statusBlocks: "Blocks",
     statusAllows: "Allows",
@@ -852,7 +897,13 @@ const I18N = {
     searchPlaceholder: "Buscar plataformas o agentes (ej. Amazon, ChatGPT, Walmart, Gemini, Etsy, Mercado Libre...)",
     filterStatus: "Estado",
     filterType: "Tipo de Agente",
-    filterCountry: "País",
+    filterRegion: "Región",
+    regionAll: "Todas",
+    regionGlobal: "Global",
+    regionNA: "Norteamérica",
+    regionLATAM: "LATAM",
+    regionEurope: "Europa",
+    regionAsia: "Asia",
     all: "Todos",
     statusBlocks: "Bloquean",
     statusAllows: "Permiten",
@@ -894,7 +945,13 @@ const I18N = {
     searchPlaceholder: "搜索平台或智能体（例如：Amazon、ChatGPT、淘宝、豆包、Walmart、Gemini...）",
     filterStatus: "状态",
     filterType: "智能体类型",
-    filterCountry: "所属地区",
+    filterRegion: "所属区域",
+    regionAll: "全部",
+    regionGlobal: "全球",
+    regionNA: "北美",
+    regionLATAM: "拉美",
+    regionEurope: "欧洲",
+    regionAsia: "亚洲",
     all: "全部",
     statusBlocks: "封禁",
     statusAllows: "允许",
@@ -946,16 +1003,111 @@ const MECH = {
   'network/CDN block': 'Network/CDN block',
   'lawsuit': 'Lawsuit',
 };
-const COLUMNS = ['date', 'platform', 'country', 'agent', 'agent_company', 'agent_type', 'status', 'mechanism', 'verification', 'source_url', 'notes'];
+const COLUMNS = ['date', 'platform', 'country', 'scope', 'agent', 'agent_company', 'agent_type', 'status', 'mechanism', 'verification', 'source_url', 'notes'];
 const VERIF = { official: 'Official', 'media report': 'Media report', 'user reports': 'User reports' };
 
-const filters = { status: '', type: '', country: '', search: '' };
+const initialRegion = urlParams.get('region') || '';
+const initialSearch = urlParams.get('q') || urlParams.get('search') || '';
+const filters = { status: '', type: '', region: initialRegion, search: initialSearch };
 let events = [];
 let agents = [];
 let agentMatchers = [];
 
 const norm = s => (s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').trim().toLowerCase();
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+function getEventRegionKey(e) {
+  const raw = norm(e.scope || e.alcance || '');
+  if (raw === 'global') return 'global';
+  if (raw === 'north america' || raw === 'north-america' || raw === 'norteamerica' || raw === 'norte-america') return 'north-america';
+  if (raw === 'latam' || raw === 'latin america' || raw === 'latinoamerica') return 'latam';
+  if (raw === 'europe' || raw === 'europa') return 'europe';
+  if (raw === 'asia') return 'asia';
+
+  const p = norm(e.platform);
+  const c = (e.country || '').toUpperCase();
+  if (p.includes('wikipedia') || p.includes('cloudflare') || p.includes('google') || p.includes('visa') || p.includes('mastercard') || c === 'GLOBAL') {
+    return 'global';
+  }
+  if (c === 'LATAM' || c === 'MX' || p.includes('mercado libre') || p.includes('liverpool')) {
+    return 'latam';
+  }
+  if (c === 'CN' || p.includes('taobao') || p.includes('alipay') || p.includes('meituan') || p.includes('jd.com') || p.includes('ctrip') || p.includes('pinduoduo') || p.includes('maoyan') || p.includes('wechat')) {
+    return 'asia';
+  }
+  if (c === 'GB' || c === 'DE' || c === 'FR' || c === 'NL' || p.includes('guardian')) {
+    return 'europe';
+  }
+  if (c === 'US' || c === 'CA') {
+    return 'north-america';
+  }
+  return 'global';
+}
+
+function getScopeLabel(regionKey, lang = currentLang) {
+  const dict = {
+    'global': { en: 'Global', es: 'Global', zh: '全球' },
+    'north-america': { en: 'North America', es: 'Norteamérica', zh: '北美' },
+    'latam': { en: 'LATAM', es: 'LATAM', zh: '拉美' },
+    'europe': { en: 'Europe', es: 'Europa', zh: '欧洲' },
+    'asia': { en: 'Asia', es: 'Asia', zh: '亚洲' },
+  };
+  return (dict[regionKey] && dict[regionKey][lang]) || regionKey;
+}
+
+function getFlagEmoji(countryCode) {
+  if (!countryCode || countryCode.length !== 2) return '';
+  const codePoints = [...countryCode.toUpperCase()].map(c => 0x1F1E6 + c.charCodeAt(0) - 65);
+  return String.fromCodePoint(...codePoints);
+}
+
+function getConfirmedCountries(e) {
+  const p = norm(e.platform);
+  if (p.includes('mercado libre')) {
+    return ['MX', 'BR', 'AR', 'CL', 'CO', 'PE', 'UY', 'VE', 'EC', 'CR', 'BO', 'PY', 'GT', 'PA', 'DO', 'HN', 'NI', 'SV'];
+  }
+  if (e.countryKey && e.countryKey !== 'GLOBAL' && e.countryKey !== 'LATAM') {
+    return [e.countryKey];
+  }
+  return [];
+}
+
+function getScopeDisplay(e) {
+  const isGlobal = e.regionKey === 'global';
+  if (isGlobal) {
+    const tip = currentLang === 'es' ? 'Alcance Global (aplica a nivel mundial)' : (currentLang === 'zh' ? '全球适用' : 'Global scope (applies worldwide)');
+    return {
+      html: '<span class="scope-globe" style="font-size:1.15rem;" title="' + esc(tip) + '">🌐</span>',
+      tooltip: tip,
+      isGlobal: true,
+    };
+  }
+  const countries = getConfirmedCountries(e);
+  if (!countries.length) {
+    return { html: '', tooltip: '', isGlobal: false };
+  }
+  const flags = countries.map(getFlagEmoji).join(' ');
+  let tip = '';
+  if (countries.length > 1) {
+    tip = currentLang === 'es'
+      ? `Regla confirmada por fuentes en ${countries.length} países de LATAM: ${countries.join(', ')}`
+      : (currentLang === 'zh'
+          ? `经由来源在拉美 ${countries.length} 个国家/地区确认: ${countries.join(', ')}`
+          : `Rule confirmed by sources across ${countries.length} LATAM countries: ${countries.join(', ')}`);
+  } else {
+    const cName = countryName(countries[0]);
+    tip = currentLang === 'es'
+      ? `Regla confirmada por la fuente en ${cName} (${countries[0]})`
+      : (currentLang === 'zh'
+          ? `来源确认为 ${cName} (${countries[0]})`
+          : `Rule confirmed by source in ${cName} (${countries[0]})`);
+  }
+  return {
+    html: `<span class="scope-flags" style="font-size:1.05rem; letter-spacing:1px;" title="${esc(tip)}">${flags}</span>`,
+    tooltip: tip,
+    isGlobal: false,
+  };
+}
 
 function parseCSV(text) {
   const rows = [];
@@ -987,6 +1139,7 @@ function toEvents(rows) {
     e.mechKey = e.mechanism;
     e.platformKey = norm(e.platform);
     e.countryKey = (e.country || '').toUpperCase();
+    e.regionKey = getEventRegionKey(e);
     return e;
   });
 }
@@ -1102,13 +1255,14 @@ function agentChips(group) {
 
 function filterMatches(e, group) {
   if (filters.status && e.statusKey !== filters.status) return false;
-  if (filters.country && e.countryKey !== filters.country) return false;
+  if (filters.region && e.regionKey !== filters.region) return false;
   if (filters.type && !group.some(item => item.typeKey === filters.type)) return false;
   if (filters.search) {
     const q = norm(filters.search);
     const inPlatform = norm(e.platform).includes(q);
     const inAgents = group.some(item => norm(item.agent).includes(q) || norm(item.agent_company).includes(q) || norm(item.notes).includes(q));
-    if (!inPlatform && !inAgents) return false;
+    const inRegion = norm(getScopeLabel(e.regionKey)).includes(q) || norm(e.regionKey).includes(q);
+    if (!inPlatform && !inAgents && !inRegion) return false;
   }
   return true;
 }
@@ -1182,14 +1336,22 @@ function renderPlatforms() {
     container.innerHTML = `<div class="platforms-grid">${filtered.map(e => {
       const group = (groups.get(e.platformKey) || [e]).filter(item => !filters.type || item.typeKey === filters.type);
       const initial = e.platform.charAt(0).toUpperCase();
+      const scopeInfo = getScopeDisplay(e);
       return `<article class="platform-card">
         <div>
           <div class="platform-card-top">
             <div class="platform-info">
               <div class="platform-avatar">${initial}</div>
               <div>
-                <div class="platform-name">${esc(e.platform)} <span class="country-pill">${esc(e.countryKey)}</span></div>
-                <div style="font-size:0.75rem; color:var(--text-dim); margin-top:2px;">${esc(countryName(e.countryKey))}</div>
+                <div class="platform-name">${esc(e.platform)} <span class="country-pill" title="${esc(countryName(e.countryKey))}">${esc(e.countryKey)}</span></div>
+                <div style="font-size:0.75rem; color:var(--text-dim); margin-top:2px; display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+                  <span>${esc(countryName(e.countryKey))}</span>
+                  <span style="color:var(--border);">·</span>
+                  <span class="region-pill">${esc(getScopeLabel(e.regionKey))}</span>
+                </div>
+                <div class="confirmed-flags-bar" style="margin-top:5px; min-height:22px; display:flex; align-items:center;">
+                  ${scopeInfo.html}
+                </div>
               </div>
             </div>
             <div>${badge(e)}</div>
@@ -1218,8 +1380,9 @@ function renderPlatforms() {
       </thead>
       <tbody>${filtered.map(e => {
         const group = (groups.get(e.platformKey) || [e]).filter(item => !filters.type || item.typeKey === filters.type);
+        const scopeInfo = getScopeDisplay(e);
         return `<tr>
-          <td class="platform"><div>${esc(e.platform)} ${countryTag(e)}</div></td>
+          <td class="platform"><div>${esc(e.platform)} ${countryTag(e)} <span style="margin-left:6px;" title="${esc(scopeInfo.tooltip)}">${scopeInfo.html}</span></div></td>
           <td><div>${badge(e)}</div></td>
           <td><div>${agentChips(group)}</div></td>
           <td><div style="white-space:nowrap;font-size:0.85rem;">${fmtDate(e.date)}</div></td>
@@ -1234,10 +1397,10 @@ function renderTimeline() {
   const q = norm(filters.search);
   const list = events.filter(e => {
     if (filters.status && e.statusKey !== filters.status) return false;
-    if (filters.country && e.countryKey !== filters.country) return false;
+    if (filters.region && e.regionKey !== filters.region) return false;
     if (filters.type && e.typeKey !== filters.type) return false;
     if (q) {
-      const match = norm(e.platform).includes(q) || norm(e.agent).includes(q) || norm(e.agent_company).includes(q) || norm(e.notes).includes(q);
+      const match = norm(e.platform).includes(q) || norm(e.agent).includes(q) || norm(e.agent_company).includes(q) || norm(e.notes).includes(q) || norm(getScopeLabel(e.regionKey)).includes(q);
       if (!match) return false;
     }
     return true;
@@ -1252,10 +1415,11 @@ function renderTimeline() {
   el.innerHTML = `<ol class="timeline">${list.map(e => {
     const s = STATUS[e.statusKey];
     const cls = s ? s.cls : '';
+    const scopeInfo = getScopeDisplay(e);
     return `<li class="event ${cls}">
       <div class="top">
         <span class="date">${fmtDate(e.date)}</span>
-        <span class="title">${esc(e.platform)} ${countryTag(e)}</span>
+        <span class="title">${esc(e.platform)} ${countryTag(e)} <span style="margin-left:4px;" title="${esc(scopeInfo.tooltip)}">${scopeInfo.html}</span></span>
         ${badge(e)}
       </div>
       <div class="meta">
@@ -1303,23 +1467,22 @@ function renderAll() {
   renderAgents();
 }
 
-function renderCountryFilters() {
-  const perCountry = new Map();
-  for (const e of latestPerPlatform(events)) {
-    if (e.countryKey) perCountry.set(e.countryKey, (perCountry.get(e.countryKey) || 0) + 1);
-  }
-  const codes = [...perCountry.keys()].sort((a, b) =>
-    (a === 'GLOBAL') - (b === 'GLOBAL') || perCountry.get(b) - perCountry.get(a) || a.localeCompare(b));
-
-  const countryContainer = document.getElementById('country-filters');
-  const existingBtns = countryContainer.querySelectorAll('button:not([data-value=""])');
-  existingBtns.forEach(b => b.remove());
-
-  countryContainer.insertAdjacentHTML('beforeend', codes.map(c => {
-    const name = countryName(c);
-    const label = c === 'GLOBAL' ? 'Global' : `${name} (${c})`;
-    return `<button class="chip" data-filter="country" data-value="${esc(c)}" aria-pressed="false" title="${esc(name)}">${esc(label)}</button>`;
-  }).join(''));
+function updateRegionFilters() {
+  const t = I18N[currentLang];
+  const lbl = document.getElementById('lbl-filter-region');
+  if (lbl) lbl.textContent = t.filterRegion;
+  const chipAll = document.getElementById('chip-region-all');
+  if (chipAll) chipAll.textContent = t.regionAll;
+  const chipGlobal = document.getElementById('chip-reg-global');
+  if (chipGlobal) chipGlobal.textContent = t.regionGlobal;
+  const chipNA = document.getElementById('chip-reg-na');
+  if (chipNA) chipNA.textContent = t.regionNA;
+  const chipLATAM = document.getElementById('chip-reg-latam');
+  if (chipLATAM) chipLATAM.textContent = t.regionLATAM;
+  const chipEurope = document.getElementById('chip-reg-europe');
+  if (chipEurope) chipEurope.textContent = t.regionEurope;
+  const chipAsia = document.getElementById('chip-reg-asia');
+  if (chipAsia) chipAsia.textContent = t.regionAsia;
 }
 
 // Tooltip Handling
@@ -1428,14 +1591,14 @@ function updateLanguage(lang) {
   document.getElementById('search-input').placeholder = t.searchPlaceholder;
   document.getElementById('lbl-filter-status').textContent = t.filterStatus;
   document.getElementById('lbl-filter-type').textContent = t.filterType;
-  document.getElementById('lbl-filter-country').textContent = t.filterCountry;
   document.getElementById('chip-status-all').textContent = t.all;
   document.getElementById('chip-status-blocks').textContent = t.statusBlocks;
   document.getElementById('chip-status-allows').textContent = t.statusAllows;
   document.getElementById('chip-status-cond').textContent = t.statusCond;
   document.getElementById('chip-status-optout').textContent = t.statusOptout;
   document.getElementById('chip-type-all').textContent = t.all;
-  document.getElementById('chip-country-all').textContent = t.all;
+
+  updateRegionFilters();
 
   document.getElementById('txt-sec-platform').textContent = t.secPlatform;
   document.getElementById('txt-sec-timeline').textContent = t.secTimeline;
@@ -1444,7 +1607,6 @@ function updateLanguage(lang) {
   document.getElementById('btn-view-cards').textContent = t.cardsView;
   document.getElementById('btn-view-table').textContent = t.tableView;
 
-  renderCountryFilters();
   renderAll();
 }
 
@@ -1466,6 +1628,17 @@ const agentsLoaded = loadCSV('data/agents.csv')
 Promise.all([loadCSV('data/events.csv'), agentsLoaded])
   .then(([rows]) => {
     events = rows.length > 1 ? toEvents(rows) : [];
+    if (filters.region) {
+      document.querySelectorAll('#region-filters .chip').forEach(b => {
+        b.setAttribute('aria-pressed', String(b.dataset.value === filters.region));
+      });
+    }
+    if (filters.search) {
+      const sInput = document.getElementById('search-input');
+      if (sInput) sInput.value = filters.search;
+      const sClear = document.getElementById('search-clear');
+      if (sClear) sClear.hidden = false;
+    }
     updateLanguage(currentLang);
     if (currentView === 'table') {
       document.querySelectorAll('.view-btn').forEach(b => b.classList.toggle('active', b.dataset.view === 'table'));

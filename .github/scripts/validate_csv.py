@@ -13,7 +13,7 @@ CSV_PATH = sys.argv[1] if len(sys.argv) > 1 else "data/events.csv"
 AGENTS_PATH = sys.argv[2] if len(sys.argv) > 2 else (os.path.dirname(CSV_PATH) or ".") + "/agents.csv"
 
 COLUMNS = [
-    "date", "platform", "country", "agent", "agent_company", "agent_type",
+    "date", "platform", "country", "scope", "agent", "agent_company", "agent_type",
     "status", "mechanism", "verification", "source_url", "notes",
 ]
 # Keep in sync with STATUS, TYPE, MECH and VERIF in index.html.
@@ -26,8 +26,9 @@ ALLOWED = {
         "permission protocol", "network/CDN block", "lawsuit",
     },
     "verification": {"official", "media report", "user reports"},
+    "scope": {"Global", "North America", "LATAM", "Europe", "Asia"},
 }
-REQUIRED = ["platform", "agent"]
+REQUIRED = ["platform", "agent", "scope"]
 # country: two-letter ISO 3166-1 code of the operational headquarters of the company that operates
 # the site or app, not the holding company or legal seat (e.g. US, MX, CN), or GLOBAL/LATAM when
 # it covers a region or has no single country operator. A different legal seat goes in notes.

@@ -199,12 +199,12 @@ def issue_for(domain, name, country, url, changes, agents, today, all_robots=Non
             "",
         ]
         status = "blocks" if all_robots[1] else "TO DECIDE"
-        rows.append(csv_row([today, name, country, "All robots (User-agent: *)", "", "", status, "robots.txt", "official", url, NOTE]))
+        rows.append(csv_row([today, name, country, "TO DECIDE", "All robots (User-agent: *)", "", "", status, "robots.txt", "official", url, NOTE]))
     for agent, before, after in changes:
         operator = next((op for n, op in agents.values() if n == agent), "")
         lines += [f"#### {agent}" + (f" ({operator})" if operator else ""), "**Before**", fence(before), "**After**", fence(after), ""]
         status = proposed_status(after) if after else "TO DECIDE"
-        rows.append(csv_row([today, name, country, agent, operator, "", status, "robots.txt", "official", url, NOTE]))
+        rows.append(csv_row([today, name, country, "TO DECIDE", agent, operator, "", status, "robots.txt", "official", url, NOTE]))
     lines += [
         "### Proposed rows for `data/events.csv`",
         "Review before adding anything. `TO DECIDE` means the change is not a clear whole-site block "
