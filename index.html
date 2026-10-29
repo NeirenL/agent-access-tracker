@@ -217,8 +217,9 @@
     overflow: hidden;
     display: flex;
   }
-  .ratio-fill-allow { background: var(--allow); transition: width 0.4s ease; }
-  .ratio-fill-block { background: var(--block); transition: width 0.4s ease; }
+  .ratio-fill-allow { background: var(--allow); min-width: 4px; transition: all 0.4s ease; }
+  .ratio-fill-optout { background: var(--optout); min-width: 4px; transition: all 0.4s ease; }
+  .ratio-fill-block { background: var(--block); min-width: 4px; transition: all 0.4s ease; }
 
   /* Search & Controls Section */
   .controls-panel {
@@ -679,11 +680,13 @@
   <div class="ratio-bar-wrap">
     <div class="ratio-bar-header">
       <span style="color:var(--allow)" id="txt-ratio-allow">Allowing: 0%</span>
+      <span style="color:var(--optout)" id="txt-ratio-optout">Opt-out: 0%</span>
       <span style="color:var(--block)" id="txt-ratio-block">Blocking: 0%</span>
     </div>
     <div class="ratio-bar">
-      <div class="ratio-fill-allow" id="ratio-bar-allow" style="width: 50%;"></div>
-      <div class="ratio-fill-block" id="ratio-bar-block" style="width: 50%;"></div>
+      <div class="ratio-fill-allow" id="ratio-bar-allow" style="flex: 17; width: 55%;"></div>
+      <div class="ratio-fill-optout" id="ratio-bar-optout" style="flex: 1; width: 3%;"></div>
+      <div class="ratio-fill-block" id="ratio-bar-block" style="flex: 13; width: 42%;"></div>
     </div>
   </div>
 
@@ -1114,6 +1117,7 @@ function renderCounter() {
   const current = latestPerPlatform(events);
   const blocks = current.filter(e => e.statusKey === 'blocks').length;
   const allows = current.filter(e => e.statusKey === 'allows' || e.statusKey === 'allows with conditions').length;
+  const optout = current.filter(e => e.statusKey === 'opt-out').length;
   const total = current.length;
 
   document.getElementById('n-total').textContent = total;
@@ -1121,12 +1125,42 @@ function renderCounter() {
   document.getElementById('n-allows').textContent = allows;
 
   const pctAllow = total ? Math.round((allows / total) * 100) : 0;
-  const pctBlock = total ? Math.round((blocks / total) * 100) : 0;
+  const pctOptout = total ? Math.round((optout / total) * 100) : 0;
+  const pctBlock = total ? Math.max(0, 100 - pctAllow - pctOptout) : 0;
 
   document.getElementById('txt-ratio-allow').textContent = `${I18N[currentLang].statusAllows}: ${pctAllow}% (${allows})`;
+
+  const optoutEl = document.getElementById('txt-ratio-optout');
+  if (optoutEl) {
+    if (optout > 0) {
+      optoutEl.textContent = `${I18N[currentLang].statusOptout}: ${pctOptout}% (${optout})`;
+      optoutEl.style.display = 'inline';
+    } else {
+      optoutEl.style.display = 'none';
+    }
+  }
+
   document.getElementById('txt-ratio-block').textContent = `${I18N[currentLang].statusBlocks}: ${pctBlock}% (${blocks})`;
-  document.getElementById('ratio-bar-allow').style.width = `${pctAllow}%`;
-  document.getElementById('ratio-bar-block').style.width = `${pctBlock}%`;
+
+  const barAllow = document.getElementById('ratio-bar-allow');
+  const barOptout = document.getElementById('ratio-bar-optout');
+  const barBlock = document.getElementById('ratio-bar-block');
+
+  barAllow.style.flex = `${allows || 1}`;
+  barAllow.style.width = `${pctAllow}%`;
+
+  if (barOptout) {
+    if (optout > 0) {
+      barOptout.style.display = 'block';
+      barOptout.style.flex = `${optout}`;
+      barOptout.style.width = `${pctOptout}%`;
+    } else {
+      barOptout.style.display = 'none';
+    }
+  }
+
+  barBlock.style.flex = `${blocks || 1}`;
+  barBlock.style.width = `${pctBlock}%`;
 }
 
 function renderPlatforms() {
