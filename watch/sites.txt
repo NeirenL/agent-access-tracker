@@ -12,7 +12,7 @@ ebay.com | eBay | US
 etsy.com | Etsy | US
 costco.com | Costco | US
 homedepot.com | The Home Depot | US
-mercadolibre.com.mx | Mercado Libre | MX
+mercadolibre.com.mx | Mercado Libre | LATAM
 linkedin.com | LinkedIn | US
 reddit.com | Reddit | US
 youtube.com | YouTube | US

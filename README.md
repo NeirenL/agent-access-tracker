@@ -26,7 +26,7 @@ The data lives in two files. In [`data/events.csv`](data/events.csv), each row i
 |---|---|---|
 | `date` | Date of the event | `YYYY-MM-DD` |
 | `platform` | Platform taking the action | e.g. `Amazon`, `LinkedIn` |
-| `country` | Country of the operational headquarters of the company that **operates the site or app** (not the holding company or its legal seat, not the agent's country, and not where the platform is used). If the legal seat is elsewhere, it goes in `notes`. | Two-letter [ISO 3166-1](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) code, e.g. `US`, `MX`, `CN`. `GLOBAL` only if there is no clear operator. A platform keeps the same country in every row. |
+| `country` | Country of the operational headquarters of the company that **operates the site or app** (not the holding company or its legal seat, not the agent's country, and not where the platform is used). If the legal seat is elsewhere, it goes in `notes`. | Two-letter [ISO 3166-1](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) code, e.g. `US`, `MX`, `CN`. `GLOBAL` or `LATAM` for global or regional operators. A platform keeps the same country in every row. |
 | `agent` | The AI agent affected | e.g. `Comet Assistant`, `Grok Bot` |
 | `agent_company` | Company behind the agent | e.g. `Perplexity`, `xAI` |
 | `agent_type` | Where the agent runs | `cloud` · `browser` · `phone` · `crawler`. Leave empty if the source doesn't say. |

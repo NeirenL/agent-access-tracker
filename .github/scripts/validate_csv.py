@@ -29,9 +29,9 @@ ALLOWED = {
 }
 REQUIRED = ["platform", "agent"]
 # country: two-letter ISO 3166-1 code of the operational headquarters of the company that operates
-# the site or app, not the holding company or legal seat (e.g. US, MX, CN), or GLOBAL when there
-# is no clear operator. A different legal seat goes in notes.
-COUNTRY_RE = re.compile(r"^(?:[A-Z]{2}|GLOBAL)$")
+# the site or app, not the holding company or legal seat (e.g. US, MX, CN), or GLOBAL/LATAM when
+# it covers a region or has no single country operator. A different legal seat goes in notes.
+COUNTRY_RE = re.compile(r"^(?:[A-Z]{2}|GLOBAL|LATAM)$")
 
 # data/agents.csv: one row per specific agent named in events.csv (groups of agents get no row).
 # Every value comes from an official source; "unknown" when the source doesn't give it.
@@ -122,7 +122,7 @@ def validate_events():
                 error(line, f'{col} "{r[col]}" is not allowed. Use one of: {fmt_allowed(col)}')
 
         if not COUNTRY_RE.match(r["country"]):
-            error(line, f'country "{r["country"]}" must be a two-letter uppercase country code (e.g. US, MX, CN) or GLOBAL')
+            error(line, f'country "{r["country"]}" must be a two-letter uppercase country code (e.g. US, MX, CN) or GLOBAL/LATAM')
         elif r["platform"]:
             first = platform_country.setdefault(r["platform"].casefold(), (r["country"], line))
             if first[0] != r["country"]:
