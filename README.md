@@ -8,7 +8,7 @@
 
 <a href="https://neirenl.github.io/agent-access-tracker/"><img src="docs/screenshot.png" alt="Screenshot of the Agent Access Tracker page" width="100%"></a>
 
-📅 **Last updated:** 2026-10-28
+📅 **Last updated:** 2026-10-29
 
 ## 🧭 Why this exists
 
