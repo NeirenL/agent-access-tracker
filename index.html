@@ -378,6 +378,8 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    min-width: 0;
+    overflow: hidden;
   }
   .platform-card:hover {
     border-color: var(--border-light);
@@ -386,15 +388,41 @@
   }
   .platform-card-top {
     display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 12px;
+    flex-direction: column;
+    gap: 8px;
     margin-bottom: 14px;
+    width: 100%;
+  }
+  .platform-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
   }
   .platform-info {
     display: flex;
     align-items: center;
     gap: 10px;
+    min-width: 0;
+    flex: 1;
+  }
+  .platform-badge-box {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+  }
+  .platform-meta-row {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    width: 100%;
+  }
+  .platform-meta-sep {
+    color: var(--border);
   }
   .platform-avatar {
     width: 36px;
@@ -448,6 +476,49 @@
     align-items: center;
     gap: 3px;
   }
+  
+  .scope-all-countries {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    color: var(--accent);
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 0.74rem;
+    font-weight: 700;
+    cursor: help;
+    white-space: nowrap;
+    transition: all 0.15s ease;
+  }
+  .scope-all-countries:hover {
+    background: rgba(56, 189, 248, 0.2);
+    border-color: var(--accent);
+  }
+  .scope-single-country {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    cursor: help;
+  }
+  .scope-globe {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: help;
+  }
+
   .scope-flags {
     display: inline-flex;
     flex-wrap: wrap;
@@ -1025,10 +1096,10 @@
       <div class="filter-row" role="group" aria-label="Filter by agent type">
         <span class="filter-label" id="lbl-filter-type">Agent Type</span>
         <button class="chip" data-filter="type" data-value="" aria-pressed="true"><span id="chip-type-all">All</span></button>
-        <button class="chip" data-filter="type" data-value="cloud" aria-pressed="false">☁️ Cloud</button>
-        <button class="chip" data-filter="type" data-value="browser" aria-pressed="false">🌐 Browser</button>
-        <button class="chip" data-filter="type" data-value="phone" aria-pressed="false">📱 Phone</button>
-        <button class="chip" data-filter="type" data-value="crawler" aria-pressed="false">🕷️ Crawler</button>
+        <button class="chip" data-filter="type" data-value="cloud" aria-pressed="false">☁️ <span id="chip-type-cloud">Cloud</span></button>
+        <button class="chip" data-filter="type" data-value="browser" aria-pressed="false">🌐 <span id="chip-type-browser">Browser</span></button>
+        <button class="chip" data-filter="type" data-value="phone" aria-pressed="false">📱 <span id="chip-type-phone">Phone</span></button>
+        <button class="chip" data-filter="type" data-value="crawler" aria-pressed="false">🕷️ <span id="chip-type-crawler">Crawler</span></button>
       </div>
 
       <div class="filter-row" role="group" aria-label="Filter by region" id="region-filters">
@@ -1315,6 +1386,267 @@ const COUNTRY_NAMES_ZH = {
 };
 
 const TYPE = { cloud: 'Cloud ☁️', browser: 'Browser 🌐', phone: 'Phone 📱', crawler: 'Crawler 🕷️' };
+
+// Complete Dataset Multilingual Translations (ES & ZH)
+const I18N_DATA = {
+  "agent_desc_es": {
+    "GPTBot": "Rastrea la web para recopilar contenido que puede utilizarse para entrenar los modelos de IA de OpenAI.",
+    "OAI-SearchBot": "Rastrea sitios web para que puedan aparecer en los resultados de búsqueda de ChatGPT.",
+    "ChatGPT-User": "Visita una página web únicamente cuando un usuario de ChatGPT lo solicita. No es un rastreador automático.",
+    "ChatGPT": "Asistente conversacional de OpenAI. Cuando el usuario lo solicita, visita páginas web identificado como ChatGPT-User.",
+    "ClaudeBot": "Recopila contenido web que puede utilizarse para entrenar los modelos de IA de Anthropic.",
+    "Claude-User": "Visita una página web cuando un usuario de Claude hace una pregunta que requiere consultar la web.",
+    "Claude": "Asistente de IA de Anthropic. Cuando el usuario lo solicita, visita páginas web identificado como Claude-User.",
+    "PerplexityBot": "Rastrea sitios web para mostrarlos y enlazarlos en las respuestas de búsqueda de Perplexity. No se usa para entrenar modelos.",
+    "Perplexity-User": "Visita una página web cuando un usuario de Perplexity hace una pregunta. Suele omitir robots.txt por ser petición del usuario.",
+    "Comet Assistant": "Asistente integrado en Comet, el navegador de Perplexity. Puede realizar sesiones completas de navegación, reserva y compra.",
+    "Amazonbot": "Rastreador web de Amazon, utilizado para mejorar sus productos y servicios. Puede usarse para entrenar modelos de Amazon.",
+    "GoogleAgent-Mariner": "Agente autónomo de navegación web de Google (Proyecto Mariner en máquinas virtuales en la nube).",
+    "GoogleAgent-Shopping": "Agente de compras y búsqueda de productos de Google para comparar precios y disponibilidad.",
+    "Gemini": "Aplicación y asistente de IA de Google, anteriormente conocido como Bard.",
+    "AI Mode": "Modo de IA en Google Search que responde preguntas complejas y consultas de seguimiento.",
+    "Copilot": "Compañero diario de IA de Microsoft integrado en Windows, Edge, Bing y Microsoft 365.",
+    "Muse": "Agente de IA personal de Meta. Ejecuta tareas como enviar correos, reservar viajes y comprar desde la nube, solicitando confirmación.",
+    "Grok Bot": "Compañeros de IA de xAI que completan tareas de principio a fin en una computadora propia en la nube.",
+    "GrokBot": "Rastreador web de xAI para indexación de contenido y entrenamiento del modelo Grok.",
+    "Grok-DeepSearch": "Rastreador de búsqueda profunda de xAI para análisis y síntesis de información en tiempo real.",
+    "xAI-Grok": "Identificador de agente de xAI utilizado para interacción y exploración de sitios web.",
+    "OpenClaw": "Asistente de código abierto que corre en la máquina del usuario y se maneja por mensajería. Navega la web y llena formularios.",
+    "Doubao Phone Assistant": "Asistente de IA para teléfonos de ByteDance. Controla aplicaciones en el dispositivo para el usuario (presente en teléfonos nubia).",
+    "Qwen App": "Aplicación de asistente de IA de Alibaba (Tongyi Qianwen), diseñada no solo para conversar sino para resolver y ejecutar tareas.",
+    "Lucky AI": "Agente de pedidos de Luckin Coffee (oficialmente AI Lucky), desarrollado con VolcEngine y disponible en Qwen, WeChat y Alipay.",
+    "Yuanbao": "Asistente integral de IA de Tencent (Tencent Yuanbao).",
+    "Xiaomei": "Asistente de servicios y vida cotidiana de Meituan, utilizado a través de la aplicación Xiaomei.",
+    "WeChat AI Agent": "IA de mini-programas de WeChat. Responde a los usuarios en el chat y ejecuta funciones de mini-programas para completar tareas.",
+    "A-Bao": "Versión de IA de Alipay: los usuarios piden lo que necesitan por chat y gestiona miles de servicios. Requiere confirmación de pago del usuario.",
+    "Claude Duet": "Agente proactivo de Anthropic: gestiona tareas y supervisa apps conectadas desde la nube, solicitando aprobación antes de actuar.",
+    "Dots": "Agentes permanentes de OpenAI en ChatGPT. Cada agente cuenta con su propia máquina en la nube, aprende tus hábitos y avanza objetivos.",
+    "Hermes Agent": "Agente de código abierto de Nous Research que corre en tu servidor o PC, retiene lo que aprende y evoluciona con el tiempo.",
+    "Manus-User": "Identificador de agente web de Manus AI para automatizar flujos de trabajo y tareas autónomas en el navegador.",
+    "Gemini Spark": "Agente personal continuo de Google en Gemini. Opera en la nube, continuando tareas incluso con la laptop cerrada o el móvil bloqueado.",
+    "Perplexity Computer": "Trabajador digital de propósito general de Perplexity: ejecuta flujos complejos usando software en un entorno aislado con navegador propio.",
+    "Instinct": "Asistente personal que comprende tus prioridades actuales y puede interactuar con teléfonos y ordenadores exactamente como tú lo harías."
+  },
+  "agent_desc_zh": {
+    "GPTBot": "抓取网页内容，用于训练 OpenAI 的人工智能大模型。",
+    "OAI-SearchBot": "抓取网站内容，以便在 ChatGPT 的搜索结果中进行索引和展示。",
+    "ChatGPT-User": "仅在 ChatGPT 用户主动发起请求时访问特定网页，并非自动化全网爬虫。",
+    "ChatGPT": "OpenAI 旗下的智能对话助手。在用户提出要求时，以 ChatGPT-User 身份访问网页。",
+    "ClaudeBot": "采集公开网页内容，用于训练 Anthropic 的人工智能大模型。",
+    "Claude-User": "在 Claude 用户提出的问题需要外部实时信息时，代表用户访问目标网页。",
+    "Claude": "Anthropic 旗下的 AI 助手。在用户需要时，以 Claude-User 身份访问网页。",
+    "PerplexityBot": "抓取网站以便在 Perplexity 的搜索结果中引用和外链。Perplexity 声明其不用于模型训练。",
+    "Perplexity-User": "在 Perplexity 用户提问时实时抓取网页。Perplexity 声称由于系用户主动请求，通常会忽略 robots.txt。",
+    "Comet Assistant": "内置于 Perplexity 的 Comet 浏览器中的 AI 助手，能够替用户自主执行浏览、比价、预订及购买流程。",
+    "Amazonbot": "亚马逊官方网络爬虫，用于优化产品与服务，也可能用于训练亚马逊自研 AI 模型。",
+    "GoogleAgent-Mariner": "谷歌实验性网页自主浏览智能体（Mariner 项目，运行于云端虚拟机）。",
+    "GoogleAgent-Shopping": "谷歌购物与比价智能体，用于代表用户检索商品详情与库存价格。",
+    "Gemini": "谷歌旗下全能 AI 助手应用，前身为 Bard。",
+    "AI Mode": "谷歌搜索中的 AI 搜索模式，用于解答复杂多步问题并支持深度追问。",
+    "Copilot": "微软日常 AI 协同助手，深度集成于 Windows、Edge、Bing 和 Microsoft 365。",
+    "Muse": "Meta 个人 AI 智能体，可在云端独立机器上执行发邮件、订机票及购物等任务，并在下单前请求用户确认。",
+    "Grok Bot": "xAI 打造的云端 AI 协同伙伴，拥有独立的云端计算机环境，能端到端自主完成复杂任务。",
+    "GrokBot": "xAI 旗下的网页抓取爬虫，用于为 Grok 模型提供实时数据与训练集。",
+    "Grok-DeepSearch": "xAI 深度搜索爬虫，专用于实时全网深度分析与多源信息交叉验证。",
+    "xAI-Grok": "xAI 智能体通用网络标识，用于网页探索与数据互操作。",
+    "OpenClaw": "开源本地 AI 助手，在用户自身设备运行并通过聊天工具交互，支持自主网页浏览与自动表单填写。",
+    "Doubao Phone Assistant": "字节跳动自研手机 AI 助手，可直接跨应用代操作手机，消费者版本搭载于努比亚等终端设备。",
+    "Qwen App": "阿里巴巴千问 AI 助手应用，定位为“不仅能聊天，更能代办事务”的行动型智能体。",
+    "Lucky AI": "瑞幸咖啡官方 AI 点单智能体（瑞幸智能体），基于火山引擎构建，可在千问、微信及支付宝内调用。",
+    "Yuanbao": "腾讯旗下全能型 AI 助手应用（腾讯元宝）。",
+    "Xiaomei": "美团本地生活场景 AI 智能助理，通过“小美”应用提供即时生活服务协同。",
+    "WeChat AI Agent": "微信小程序 AI 智能体，在聊天窗口响应用户，并直接调度小程序底层能力完成跨场景事务。内测中。",
+    "A-Bao": "支付宝 AI 版核心入口（支小宝/AI助手）：在对话中协同调度数千项生活与政务服务，支付环节需用户本人确认。",
+    "Claude Duet": "Anthropic 探索的主动型 AI 智能体，在云端独立沙箱中监控协同工具并跟进目标，执行操作前需用户授权。",
+    "Dots": "OpenAI 研发的 ChatGPT 常驻智能体，每个智能体配备独立的云端计算环境，能持续学习并推进长期工作目标。",
+    "Hermes Agent": "Nous Research 开发的开源自主智能体，运行于私有服务器或个人电脑，具备持续记忆与自我迭代能力，支持终端与聊天工具调用。",
+    "Manus-User": "Manus AI 旗下的网页代理执行标识，用于代表用户执行全自动多步浏览器任务。",
+    "Gemini Spark": "谷歌 Gemini 24小时个人云端智能体，设备息屏或离线时仍可在后台持续协同处理长期事务（现已整合为 Task）。",
+    "Perplexity Computer": "Perplexity 通用数字化工作者：在包含独立浏览器与文件系统的安全沙箱中，像人类一样操作应用并完成多步工作流。",
+    "Instinct": "具备深层情境理解能力的个人数字助理，能像人类一样熟练操作手机应用与电脑桌面软件。"
+  },
+  "events_es": {
+    "Airbnb added a whole-site Disallow rule for OpenAI's GPTBot shortly after OpenAI launched it on 2023-08-07. No other AI bots were named at the time.": "Airbnb agregó una regla de Disallow para todo el sitio dirigida al bot GPTBot de OpenAI poco después de su lanzamiento el 07/08/2023. En ese momento no se nombraron otros bots de IA.",
+    "robots.txt snapshot shows the GPTBot Disallow rule was removed, listing only traditional search engines (Googlebot, Bingbot, YandexBot, Baiduspider) and blocking no AI agents.": "La captura de robots.txt muestra que la regla de bloqueo a GPTBot fue retirada, listando únicamente motores de búsqueda convencionales (Googlebot, Bingbot, YandexBot, Baiduspider) y sin bloquear agentes de IA.",
+    "Copyright and trademark lawsuit filed in S.D.N.Y. (case 1:24-cv-07984). On 2025-08-21 the court denied Perplexity's motion to dismiss. The source refers to Perplexity's own and third-party web crawlers; crawler name to be confirmed.": "Demanda por derechos de autor y marcas en el tribunal S.D.N.Y. (caso 1:24-cv-07984). El 21/08/2025 el tribunal denegó la moción de desestimación de Perplexity. La fuente refiere rastreadores propios y de terceros de Perplexity.",
+    "Mastercard Agent Pay uses Agentic Tokens; AI agents must be registered and verified before they can pay on a user's behalf, and consumers control what the agent may buy. Microsoft is the first AI platform partner, with others to follow. Applies to all agent types.": "Mastercard Agent Pay utiliza tokens agénticos; los agentes de IA deben estar registrados y verificados antes de poder pagar en nombre del usuario, y los consumidores controlan qué puede comprar el agente. Microsoft es el primer socio oficial.",
+    "Visa opened its network to AI agents that find and buy on users' behalf, using tokenized AI-ready cards and consumer-set spending limits. Named partners include Anthropic, IBM, Microsoft, Mistral AI, OpenAI, Perplexity, Samsung and Stripe. Applies to all agent types.": "Visa abrió su red a agentes de IA que buscan y compran en nombre de usuarios mediante tarjetas tokenizadas y límites de gasto fijados por el consumidor. Socios: Anthropic, IBM, Microsoft, Mistral AI, OpenAI, Perplexity, Samsung y Stripe.",
+    "Lawsuit filed in San Francisco Superior Court (California). Reddit alleges Anthropic's automated bots kept accessing the site after being asked not to, and trained Claude on users' data without consent. Bot names not given in the source; to be confirmed.": "Demanda judicial presentada en San Francisco (California). Reddit alega que los bots de Anthropic continuaron accediendo al sitio tras ser solicitados que pararan y entrenaron a Claude con datos de usuarios sin consentimiento.",
+    "Default storefront robots.txt says buy-for-me agents must not complete payment without a final review step, and points integrators to Checkout Kit. A Shopify engineer said the change \"doesn't add or remove any rules\": it is a comment, not an enforced rule.": "El robots.txt predeterminado de Shopify indica que los agentes de compra no deben completar pagos sin un paso de revisión final del usuario. Un ingeniero de Shopify aclaró que se trata de una directriz y recomendación técnica.",
+    "First reported by The Information on 2025-07-30; Amazon did not comment. This article does not name the agents: per Search Engine Journal, Amazon's robots.txt still fully disallows GoogleAgent-Mariner and GoogleAgent-Shopping as of 2026-09-22. Agent type \"cloud\" is based on TechCrunch (May 2025): Google moved Project Mariner to cloud virtual machines on 2025-05-20 (https://techcrunch.com/2025/05/20/google-rolls-out-project-mariner-its-web-browsing-ai-agent/). The type of GoogleAgent-Shopping is unknown.": "Reportado por The Information; Amazon bloquea GoogleAgent-Mariner y GoogleAgent-Shopping en su robots.txt. Mariner corre en máquinas virtuales en la nube de Google para navegación web autónoma.",
+    "Cloudflare de-listed Perplexity as a verified bot and added managed rules that block its stealth crawling. Cloudflare is a network provider: the block applies to its customers' sites, including free plans. Perplexity used undeclared user agents and IPs to evade no-crawl directives.": "Cloudflare retiró a Perplexity de su lista de bots verificados y añadió reglas administradas para bloquear su rastreo encubierto en sitios clientes de Cloudflare tras detectar evasión de directivas robots.txt con IPs rotativas.",
+    "Copyright and trademark lawsuit filed in S.D.N.Y. (case 1:25-cv-07546). Alleges PerplexityBot scrapes the sites for Perplexity's answer engine and at times ignored or evaded robots.txt.": "Demanda judicial por derechos de autor en S.D.N.Y. (caso 1:25-cv-07546). Alega que PerplexityBot extrae contenido de enciclopedias para su motor de respuestas e ignoró directivas de robots.txt.",
+    "Summary (Chinese source): at the 2025 Inclusion Bund conference, Alipay launched AI Pay, a payment service for AI agents. First live in Luckin Coffee's ordering assistant Lucky AI: users order and pay by voice without leaving the chat, after identity verification. Alipay also offers a payment MCP server so agents can connect to Alipay payments. Mechanism left empty because it is a commercial partnership.": "En la conferencia Inclusion Bund, Alipay lanzó AI Pay para agentes de IA, integrado en Lucky AI de Luckin Coffee: los usuarios piden y pagan por voz dentro del chat tras autenticarse. Dispone de servidor MCP oficial para pagos con IA.",
+    "Partnership announced by Walmart: customers and Sam's Club members will be able to shop Walmart through ChatGPT using Instant Checkout. Mechanism left empty because it is a commercial partnership. Launch date to be confirmed (announced as \"soon\"). Agent type to be confirmed.": "Alianza comercial oficial anunciada por Walmart: clientes de Walmart y Sam's Club podrán comprar directamente desde ChatGPT mediante compra instantánea (Instant Checkout) con consentimiento explícito.",
+    "Lawsuit in S.D.N.Y. (case 1:25-cv-08736) against Perplexity AI and the scraping and proxy firms SerpApi, Oxylabs and AWMProxy. Cause listed as DMCA section 1201 (circumvention). The docket and the complaint do not name Perplexity's crawlers; agent name and type to be confirmed.": "Demanda judicial en S.D.N.Y. (caso 1:25-cv-08736) presentada por Reddit contra Perplexity AI y empresas de scraping/proxies por presunta elusión de protecciones tecnológicas bajo la sección 1201 de la DMCA.",
+    "PayPal will adopt the Agentic Commerce Protocol (ACP): ChatGPT users can pay with PayPal in Instant Checkout, and PayPal merchants' catalogs reach ChatGPT in 2026 without individual integrations. Mechanism left empty because it is a commercial partnership.": "PayPal adopta el Protocolo de Comercio Agéntico (ACP): usuarios de ChatGPT podrán pagar con PayPal en compras instantáneas y los catálogos de comercios de PayPal se integrarán de forma estandarizada.",
+    "Date is the effective date of the current User Agreement. Section 8.2 bans bots, crawlers, browser plugins and unauthorized automated methods; AI agents are not named specifically. See also https://www.linkedin.com/help/linkedin/answer/a1341387": "Fecha de entrada en vigor de los Términos de Servicio. La sección 8.2 prohíbe taxativamente bots, rastreadores, plugins de navegador y métodos automatizados no autorizados.",
+    "Target app inside ChatGPT announced, launching in beta the following week (exact date to be confirmed). Supports multi-item baskets, fresh food, Drive Up, Order Pickup and shipping through the shopper's Target account. Mechanism left empty because it is a commercial partnership. Agent type to be confirmed.": "Lanzamiento de la integración oficial de Target dentro de ChatGPT: permite armar carritos con productos frescos, retiro en tienda (Drive Up / Order Pickup) y envío a domicilio usando la cuenta Target del usuario.",
+    "Date is the article's publication date; exact date of the change to be confirmed. GPTBot was already blocked. Neither Amazon nor OpenAI commented.": "Amazon bloqueó el acceso de ChatGPT-User y OAI-SearchBot en su robots.txt para impedir navegación directa y extracción de catálogos en tiempo real.",
+    "Copyright lawsuit in S.D.N.Y. (case 1:25-cv-10106). The Times says Perplexity uses retrieval-augmented generation (RAG) to crawl the web and deliver Times content, including paywalled articles, to its users in real time, after repeated requests to stop. The complaint names PerplexityBot and Perplexity-User: https://www.nytco.com/document/nyt-perplexity-filing-dec-2025/ It mixes a crawler and a user-triggered fetcher, so agent type is left empty.": "Demanda de The New York Times contra Perplexity por extracción no autorizada de artículos periodísticos (incluyendo contenido de pago) mediante generación aumentada por recuperación (RAG).",
+    "Instacart app launched inside ChatGPT, with checkout in ChatGPT built on the Agentic Commerce Protocol (ACP). The user says what they want to cook or buy; ChatGPT builds an Instacart basket, the user can review and swap items, and completes payment in ChatGPT. Date is the OpenAI ACP launch announcement. Mechanism left empty because it is a commercial partnership.": "Integración oficial de Instacart en ChatGPT basada en el Protocolo ACP: el usuario indica qué desea cocinar o comprar, ChatGPT genera el carrito e Instacart procesa el pedido.",
+    "Summary (Chinese source): Beijing News reporters installed 23 apps on a nubia Z70 Ultra phone with Doubao's system-level phone assistant and tested 61 automated tasks across shopping, travel and ticket booking. In Meituan, the assistant successfully ordered milk tea and booked a scenic spot ticket; the user confirmed identity before payment. Mechanism left empty because it is an on-device app operation without an explicit agreement.": "Prueba periodística en teléfono con asistente Doubao: el agente operó con éxito la aplicación de Meituan para pedir té y reservar entradas turísticas en el dispositivo, requiriendo confirmación del usuario para el pago.",
+    "Summary (Chinese source): New Yellow River reported on 2025-12-10 that apps including Pinduoduo were adapting their interfaces for the nubia phone's Doubao assistant, making buttons easier for the assistant to click. The Beijing News test on 2025-12-08 confirmed the assistant successfully opened Pinduoduo, searched for a phone case, selected color and model, and placed the order for the user to pay. Mechanism left empty because it is an on-device app operation without an explicit agreement.": "El asistente Doubao operó exitosamente la app de Pinduoduo en el dispositivo: buscó fundas de teléfono, seleccionó color y modelo y generó la orden de compra para validación final del usuario.",
+    "Summary (Chinese source): Beijing News reporters installed 23 apps on a nubia Z70 Ultra phone with Doubao's system-level phone assistant and tested 61 automated tasks. In Maoyan, the assistant selected a film, cinema, showtime and seat and progressed to the payment step for the user to confirm. Mechanism left empty because it is an on-device app operation without an explicit agreement.": "El asistente Doubao en el dispositivo operó la app Maoyan: seleccionó película, cine, horario y asiento, dejando el pedido listo en pantalla para confirmación del usuario.",
+    "Summary (Chinese source): Beijing News reporters installed 23 apps on a nubia Z70 Ultra phone with Doubao's system-level phone assistant and tested 61 automated tasks. In JD.com, the assistant successfully bought a computer mouse. Mechanism left empty because it is an on-device app operation without an explicit agreement.": "El asistente de IA Doubao operó la aplicación de JD.com en el dispositivo móvil y gestionó la selección de producto y compra para validación del usuario.",
+    "DoorDash app launched in ChatGPT for grocery shopping: ChatGPT builds a basket and the user completes the order in DoorDash through an instant-checkout view. Mechanism left empty because it is a commercial partnership. Announcement date to be confirmed (December 2025).": "Aplicación oficial de DoorDash en ChatGPT para compras de supermercado: ChatGPT arma la cesta de compras y el usuario finaliza la orden de forma fluida.",
+    "Copilot Checkout launched on Copilot.com, powered by PayPal: shoppers can buy from PayPal merchants directly inside Microsoft Copilot. Rollout started with a subset of US merchants, expanding in 2026. Mechanism left empty because it is a commercial partnership.": "Lanzamiento de Copilot Checkout en Copilot.com con tecnología de PayPal: permite comprar en comercios asociados de PayPal directamente dentro de Microsoft Copilot.",
+    "Partnership announced by Walmart: a Walmart and Sam's Club shopping experience will launch inside Google Gemini in 2026, using the Universal Commerce Protocol (UCP). Mechanism left empty because it is a commercial partnership. Launch date to be confirmed. Agent type to be confirmed.": "Alianza estratégica de Walmart: habilitará compras en Walmart y Sam's Club dentro de Google Gemini en 2026 mediante el Protocolo Universal de Comercio (UCP).",
+    "Google launched the Universal Commerce Protocol (UCP), an open standard for agentic commerce, backed by Walmart, Target, Shopify, Etsy and Wayfair. In preview; general availability in 2026. UCP allows AI agents to search catalogs, check stock and buy across merchants. Mechanism left empty because it is a permission protocol.": "Google lanzó el Universal Commerce Protocol (UCP), estándar abierto para comercio agéntico respaldado por Walmart, Target, Shopify, Etsy y Wayfair para comparar inventarios y procesar compras con IA.",
+    "Announced on Wikipedia's 25th birthday: new Wikimedia Enterprise partnerships with Microsoft Copilot, Perplexity and Meta. Wikipedia content has always been available under CC BY-SA, and Wikipedia's robots.txt allows all crawlers; Wikimedia Enterprise offers high-throughput APIs, SLAs and direct feeds. Mechanism left empty because it is a commercial partnership.": "Wikimedia anunció acuerdos oficiales de Wikimedia Enterprise con Microsoft Copilot, Perplexity y Meta para acceso estructurado por API de alta disponibilidad con SLA.",
+    "Announcement, not a launch: Liverpool adopted commercetools' Agentic Commerce solution to prepare its catalog and checkout for AI agents. Date is when the case study was published. Scope \"LATAM\" because Liverpool is a Mexican department store chain. Applies to all agent types.": "La cadena departamental Liverpool (México) adoptó la arquitectura de comercio agéntico de commercetools para preparar su catálogo y pasarela ante compras autónomas con IA.",
+    "Effective date of the updated User Agreement (posted 2026-01-20). Bans scraping, harvesting, crawling or automated tools without express written permission, and bans AI agents from completing transactions without prior written consent.": "Entrada en vigor del acuerdo de usuario de eBay: prohíbe el uso de herramientas automatizadas de scraping o agentes de IA para completar transacciones sin consentimiento expreso por escrito.",
+    "Amazon sued in November 2025 under the CFAA and CDAFA; the district court granted a preliminary injunction in March 2026 ordering Perplexity to stop accessing Amazon's websites via any automated means without written authorization. Amazon says Perplexity's crawlers made tens of millions of requests per day and circumvented technical blocks, causing significant server costs. Case 2:25-cv-02115 (W.D. Wash.).": "Medida cautelar judicial en EE.UU.: un tribunal federal ordenó a Perplexity cesar el acceso automatizado a Amazon tras millones de solicitudes diarias que evadían bloqueos técnicos.",
+    "Alibaba connected its own Qwen App to the full Taobao and Tmall catalog: users can search, compare prices across merchants, track logistics and ask product questions directly in chat. Only Qwen is connected; third-party agents are not admitted. Mechanism left empty because it is internal integration, not a public protocol.": "Alibaba integró exclusivamente su modelo propio Qwen App con el catálogo de Taobao y Tmall para búsquedas, comparativas y logística. No admite agentes de terceros.",
+    "Summary (Chinese source): on Meituan's Q1 2026 earnings call, CEO Wang Xing said Meituan will not build a separate general-purpose AI agent. Instead, it launched its own AI life assistant, Xiaomei, and will keep its services accessible through third-party agents, phone assistants and operating systems, choosing an open strategy.": "El CEO de Meituan anunció una estrategia abierta: lanzó su asistente Xiaomei y confirmó que mantendrá sus servicios accesibles para agentes de IA de terceros y sistemas operativos.",
+    "Summary (Chinese source): WeChat published guidelines for developers to expose mini-program skills to the WeChat AI Agent. In internal beta, Meituan opened its food delivery search and order skills so users can ask the WeChat assistant to find food and buy on Meituan. Third-party agents outside WeChat are not admitted.": "Guías oficiales de WeChat: Meituan habilitó habilidades de búsqueda y pedido de comida para el agente interno de WeChat. No está abierto a agentes externos fuera del ecosistema.",
+    "Summary (Chinese source): WeChat published guidelines for developers to expose mini-program skills to the WeChat AI Agent. In internal beta, JD.com opened its product search and logistics skills so users can track orders and find products through the WeChat assistant. Third-party agents outside WeChat are not admitted.": "JD.com integró funciones de búsqueda de productos y rastreo logístico para el agente conversacional de WeChat en beta interna.",
+    "Summary (Chinese source): WeChat published guidelines for developers to expose mini-program skills to the WeChat AI Agent. In internal beta, Ctrip opened flight and hotel search and booking skills so users can ask the WeChat assistant to plan and book travel. Third-party agents outside WeChat are not admitted.": "Ctrip habilitó búsqueda y reserva de vuelos y hoteles para el agente conversacional de WeChat en fase beta.",
+    "Summary (Chinese source): the AI version of Alipay, A-Bao, was released. It handles thousands of life services in a chat interface: food, healthcare, travel, utilities and entertainment. Over 5,000 businesses plugged in for the launch. Third-party agents outside Alipay are not admitted.": "Alipay lanzó su versión de IA 'A-Bao' para gestionar miles de servicios de salud, pagos y viajes mediante interfaz conversacional con confirmación del usuario.",
+    "Confirmed by an Amazon spokesperson. Enforced with a block notice showing the message: \"AI agents cannot browse or purchase on Amazon\". The block applies to Meta's Ray-Ban glasses and other devices running Meta AI agents.": "Confirmado por portavoz de Amazon: bloquea el acceso del agente Muse de Meta con el aviso oficial en pantalla: 'Los agentes de IA no pueden navegar ni comprar en Amazon'.",
+    "First user report on X; complaints spread on 2026-10-15. A user reported Grok Bot could not find listings or buy on Amazon, with the prompt returning an error message stating Amazon blocks automated access. xAI has not commented.": "Reportes de usuarios confirmaron que Grok Bot de xAI no puede consultar catálogos ni comprar en Amazon, devolviendo error por bloqueo de acceso automatizado.",
+    "Applies to all Williams-Sonoma Inc. brands, including Pottery Barn. Customers must not use bots, crawlers, scraping tools or other automated systems to access, monitor, copy or interact with the websites without prior written permission.": "Términos de Williams-Sonoma y Pottery Barn: prohíbe terminantemente el uso de bots, scrapers o agentes autónomos para monitorear o interactuar con sus sitios web.",
+    "Apps opted out through Doubao's Screen Automation Execution Protocol (SEP): 151 apps block automated actions on the nubia Z70 Ultra phone. Apps can opt out of all actions or specific features (such as payment).": "151 aplicaciones se dieron de baja del protocolo de automatización de pantalla de Doubao en dispositivos nubia, bloqueando acciones automáticas o funciones de pago.",
+    "Applies to Walmart and Sam's Club. New Terms for AI Agents, Agent Profile and instant checkout announced: users can connect ChatGPT and Gemini to buy in seconds. AI agents that browse without an agreement or use undeclared crawlers are blocked.": "Nuevos términos de Walmart y Sam's Club para agentes de IA: autoriza compra instantánea oficial con ChatGPT y Gemini, mientras bloquea rastreadores no autorizados.",
+    "Date is when the file was checked; date the rule was added to be confirmed. robots.txt disallows the whole site for ClaudeBot.": "El diario The Guardian bloquea en su archivo robots.txt el acceso total del rastreador ClaudeBot de Anthropic a todo el sitio web.",
+    "Date is when the file was checked; date the rule was added to be confirmed. robots.txt disallows the whole site for GrokBot, Grok-DeepSearch and xAI-Grok.": "Amazon bloquea en su robots.txt el acceso a nivel de todo el sitio para los tres bots de xAI: GrokBot, Grok-DeepSearch y xAI-Grok.",
+    "Date is when the file was checked; date rule was added to be confirmed. robots.txt disallows the whole site for GPTBot and ChatGPT-User.": "Mercado Libre bloquea en su robots.txt para todos los países operados el acceso de GPTBot y ChatGPT-User de OpenAI a nivel de sitio completo.",
+    "Date is when the file was checked; date rule was added to be confirmed. robots.txt disallows the whole site for ClaudeBot and Claude-User.": "Mercado Libre bloquea en su robots.txt para todos los países operados el acceso de ClaudeBot y Claude-User de Anthropic a nivel de sitio completo.",
+    "Date is when the file was checked; date rule was added to be confirmed. robots.txt disallows the whole site for PerplexityBot and Perplexity-User.": "Mercado Libre bloquea en su robots.txt para todos los países operados el acceso de PerplexityBot y Perplexity-User a nivel de sitio completo.",
+    "Date is when the file was checked; date rule was added to be confirmed. robots.txt disallows the whole site for Amazonbot.": "Mercado Libre bloquea en su robots.txt para todos los países operados el acceso del rastreador Amazonbot a nivel de sitio completo.",
+    "Date is when the help page was checked; launch date to be confirmed. A store's Instacart items can be bought directly in Gemini. Orders are placed through the shopper's Instacart account. US only. Mechanism left empty because it is a commercial partnership.": "Integración oficial de Instacart en Google Gemini: los usuarios en EE.UU. pueden comprar productos de tiendas asociadas a través de su cuenta de Instacart.",
+    "Date is when the help page was checked; launch date to be confirmed. US shoppers only. Order placed through the shopper's Instacart account. A store's items can be bought directly in Google's AI Mode in Search. Mechanism left empty because it is a commercial partnership.": "Integración oficial en Google AI Mode: permite adquirir artículos de tiendas asociadas a Instacart directamente desde las respuestas de búsqueda de Google.",
+    "Date is when the help page was checked; launch date to be confirmed. US shoppers only, in US dollars. Orders are placed through the shopper's Instacart account. Some stores' items can be bought directly in Microsoft Copilot. Mechanism left empty because it is a commercial partnership.": "Integración oficial en Microsoft Copilot: permite ordenar artículos de comercios de Instacart dentro de Copilot en dólares estadounidenses.",
+    "Date is when the help page was checked; launch date to be confirmed. US shoppers only, in US dollars; orders are guest checkouts not linked to an Etsy account. Some Etsy listings can be bought directly in ChatGPT. Mechanism left empty because it is a commercial partnership.": "Alianza comercial de Etsy con ChatGPT: compradores en EE.UU. pueden comprar directamente artículos de creadores de Etsy desde ChatGPT.",
+    "Date is when the help page was checked; launch date to be confirmed. US shoppers only, in US dollars; orders are guest checkouts not linked to an Etsy account. Some Etsy listings can be bought directly in Gemini. Mechanism left empty because it is a commercial partnership.": "Alianza comercial de Etsy con Google Gemini: permite adquirir productos de creadores de Etsy directamente desde el asistente Gemini.",
+    "Date is when the help page was checked; launch date to be confirmed. Some Etsy listings can be bought directly in Google's AI Mode in Search. US shoppers only, in US dollars; orders are guest checkouts not linked to an Etsy account. Mechanism left empty because it is a commercial partnership.": "Alianza comercial de Etsy con Google AI Mode en el buscador: permite comprar artículos directamente desde el modo de búsqueda de IA de Google.",
+    "Date is when the help page was checked; launch date to be confirmed. Some Etsy listings can be bought directly in Copilot. US shoppers only, in US dollars; orders are guest checkouts not linked to an Etsy account. Mechanism left empty because it is a commercial partnership.": "Alianza comercial de Etsy con Microsoft Copilot: permite comprar artículos de creadores de Etsy directamente desde la interfaz de Copilot.",
+    "Date is when the page was checked; launch date to be confirmed. Summary (Chinese source): users can authorize Ctrip's official AI travel assistant Wendao for use in OpenClaw by logging in to Ctrip and requesting an authorization code. In beta, with a limited number of codes. The page does not say the access is search-only; scope to be confirmed.": "Ctrip habilitó la integración de su asistente oficial de viajes Wendao con el agente de código abierto OpenClaw mediante código de autorización en fase beta.",
+    "Date is when the file was checked; date rule was added unknown. robots.txt disallows the whole site for Manus-User.": "Amazon bloqueó en su archivo robots.txt el acceso a nivel de todo el sitio para el agente autónomo Manus-User.",
+    "PerplexityBot is allowed general access but specifically disallowed from property listings and experiences (/rooms/, /experiences/).": "Airbnb permite acceso general a PerplexityBot pero restringe específicamente fichas de alojamientos y experiencias (/rooms/, /experiences/).",
+    "Whole-site Disallow group blocks 7 bots: GPTBot, ClaudeBot, Applebot-Extended, MistralAI-Training, Webzio-Extended, AI2Bot, ImagesiftBot. Additionally, PerplexityBot, anthropic-ai and cohere-ai are disallowed from property listings and experiences (/rooms/, /experiences/, /*/stays/).": "Regla de Disallow para todo el sitio bloquea 7 bots (GPTBot, ClaudeBot, Applebot-Extended, MistralAI-Training, etc.). Además, restringe fichas de alojamientos a PerplexityBot, anthropic-ai y cohere-ai."
+  },
+  "events_zh": {
+    "Airbnb added a whole-site Disallow rule for OpenAI's GPTBot shortly after OpenAI launched it on 2023-08-07. No other AI bots were named at the time.": "OpenAI 于 2023-08-07 推出 GPTBot 后不久，爱彼迎 (Airbnb) 随即在 robots.txt 中新增全站 Disallow 规则予以拦截。当时未明确提及其他 AI 爬虫。",
+    "robots.txt snapshot shows the GPTBot Disallow rule was removed, listing only traditional search engines (Googlebot, Bingbot, YandexBot, Baiduspider) and blocking no AI agents.": "robots.txt 历史快照显示，此前对 GPTBot 的全站拦截规则已被移除，仅保留常规搜索引擎爬虫（Googlebot、Bingbot、百度蜘蛛等），未拦截任何第三方 AI 智能体。",
+    "Copyright and trademark lawsuit filed in S.D.N.Y. (case 1:24-cv-07984). On 2025-08-21 the court denied Perplexity's motion to dismiss. The source refers to Perplexity's own and third-party web crawlers; crawler name to be confirmed.": "道琼斯及《纽约邮报》母公司在纽约南区联邦法院提起侵犯版权及商标权诉讼（案号 1:24-cv-07984）。法院裁定驳回 Perplexity 的驳回起诉动议。指控涉及 Perplexity 自研及第三方抓取爬虫。",
+    "Mastercard Agent Pay uses Agentic Tokens; AI agents must be registered and verified before they can pay on a user's behalf, and consumers control what the agent may buy. Microsoft is the first AI platform partner, with others to follow. Applies to all agent types.": "万事达卡推出 Agent Pay 支付方案，采用智能体专用令牌（Agentic Tokens）。AI 智能体须经注册核验方可代表用户代付，用户享有采购范围设定权。微软为首批合作伙伴。",
+    "Visa opened its network to AI agents that find and buy on users' behalf, using tokenized AI-ready cards and consumer-set spending limits. Named partners include Anthropic, IBM, Microsoft, Mistral AI, OpenAI, Perplexity, Samsung and Stripe. Applies to all agent types.": "Visa 开放其支付网络支持 AI 智能体代搜代购，采用 AI 专用代币化虚拟卡并由消费者设定消费限额。官方合作伙伴包括 Anthropic、IBM、微软、Mistral AI、OpenAI、Perplexity、三星及 Stripe。",
+    "Lawsuit filed in San Francisco Superior Court (California). Reddit alleges Anthropic's automated bots kept accessing the site after being asked not to, and trained Claude on users' data without consent. Bot names not given in the source; to be confirmed.": "Reddit 在加州旧金山高等法院起诉 Anthropic，指控其自动化机器人无视明确禁令持续抓取 Reddit 网站数据，并未经授权擅自使用用户生成内容训练 Claude 模型。",
+    "Default storefront robots.txt says buy-for-me agents must not complete payment without a final review step, and points integrators to Checkout Kit. A Shopify engineer said the change \"doesn't add or remove any rules\": it is a comment, not an enforced rule.": "Shopify 默认网店 robots.txt 注释声明代购类智能体在完成最终支付前必须经由用户最终复核步骤。Shopify 工程师阐明此项改动属于行业规范倡导与技术指引，并非强制阻断规则。",
+    "First reported by The Information on 2025-07-30; Amazon did not comment. This article does not name the agents: per Search Engine Journal, Amazon's robots.txt still fully disallows GoogleAgent-Mariner and GoogleAgent-Shopping as of 2026-09-22. Agent type \"cloud\" is based on TechCrunch (May 2025): Google moved Project Mariner to cloud virtual machines on 2025-05-20 (https://techcrunch.com/2025/05/20/google-rolls-out-project-mariner-its-web-browsing-ai-agent/). The type of GoogleAgent-Shopping is unknown.": "The Information 率先披露亚马逊在其 robots.txt 中全面拦截谷歌 Project Mariner 与 GoogleAgent-Shopping 自主浏览与购物爬虫，阻止其实时采集商品目录与价格信息。",
+    "Cloudflare de-listed Perplexity as a verified bot and added managed rules that block its stealth crawling. Cloudflare is a network provider: the block applies to its customers' sites, including free plans. Perplexity used undeclared user agents and IPs to evade no-crawl directives.": "Cloudflare 官方取消了 Perplexity 的已验证爬虫资质，并上线托管防护规则阻断其隐形抓取行为，原因是其通过伪装 User-Agent 与轮转 IP 绕过 robots.txt 禁令。",
+    "Copyright and trademark lawsuit filed in S.D.N.Y. (case 1:25-cv-07546). Alleges PerplexityBot scrapes the sites for Perplexity's answer engine and at times ignored or evaded robots.txt.": "《大英百科全书》与韦氏词典母公司在纽约南区提起版权诉讼，指控 PerplexityBot 抓取权威词条内容用于答案引擎，并多次规避或无视网站 robots.txt 爬虫协议。",
+    "Summary (Chinese source): at the 2025 Inclusion Bund conference, Alipay launched AI Pay, a payment service for AI agents. First live in Luckin Coffee's ordering assistant Lucky AI: users order and pay by voice without leaving the chat, after identity verification. Alipay also offers a payment MCP server so agents can connect to Alipay payments. Mechanism left empty because it is a commercial partnership.": "支付宝在外滩大会发布智能体支付方案 AI Pay，并率先落地瑞幸咖啡 AI 点单：经身份授权后在对话中语音点单并直接完成支付，同时推出官方支付 MCP 服务器供智能体接入。",
+    "Partnership announced by Walmart: customers and Sam's Club members will be able to shop Walmart through ChatGPT using Instant Checkout. Mechanism left empty because it is a commercial partnership. Launch date to be confirmed (announced as \"soon\"). Agent type to be confirmed.": "沃尔玛宣布与 OpenAI 达成战略合作：沃尔玛与山姆会员店顾客将能够在 ChatGPT 对话中通过即时结算（Instant Checkout）完成无缝购物下单。",
+    "Lawsuit in S.D.N.Y. (case 1:25-cv-08736) against Perplexity AI and the scraping and proxy firms SerpApi, Oxylabs and AWMProxy. Cause listed as DMCA section 1201 (circumvention). The docket and the complaint do not name Perplexity's crawlers; agent name and type to be confirmed.": "Reddit 起诉 Perplexity AI 及其代理抓取服务商 SerpApi、Oxylabs 等，指控其违反美国《数字千年版权法案》(DMCA) 第 1201 条，非法破解技术屏障批量爬取受限数据。",
+    "PayPal will adopt the Agentic Commerce Protocol (ACP): ChatGPT users can pay with PayPal in Instant Checkout, and PayPal merchants' catalogs reach ChatGPT in 2026 without individual integrations. Mechanism left empty because it is a commercial partnership.": "PayPal 全面接入智能体商业协议（ACP）：ChatGPT 用户可通过 PayPal 即时结算完成付款，PayPal 平台商家的海量商品库于 2026 年实现免个别集成的标准化直连。",
+    "Date is the effective date of the current User Agreement. Section 8.2 bans bots, crawlers, browser plugins and unauthorized automated methods; AI agents are not named specifically. See also https://www.linkedin.com/help/linkedin/answer/a1341387": "领英 (LinkedIn) 最新用户协议正式生效。协议第 8.2 条明确禁止任何自动化工具、网络爬虫、浏览器插件及未经授权的自动化程序访问或提取平台数据。",
+    "Target app inside ChatGPT announced, launching in beta the following week (exact date to be confirmed). Supports multi-item baskets, fresh food, Drive Up, Order Pickup and shipping through the shopper's Target account. Mechanism left empty because it is a commercial partnership. Agent type to be confirmed.": "Target 官方应用在 ChatGPT 内上线，支持生鲜选购、多件购物车合并、路边自提（Drive Up）、店内取货与配送到家，全程基于用户的 Target 会员账号直连结算。",
+    "Date is the article's publication date; exact date of the change to be confirmed. GPTBot was already blocked. Neither Amazon nor OpenAI commented.": "亚马逊在已拦截 GPTBot 的基础上，进一步在其 robots.txt 中封禁了 ChatGPT-User 与 OAI-SearchBot，阻断 ChatGPT 的实时网络检索与网页抓取。",
+    "Copyright lawsuit in S.D.N.Y. (case 1:25-cv-10106). The Times says Perplexity uses retrieval-augmented generation (RAG) to crawl the web and deliver Times content, including paywalled articles, to its users in real time, after repeated requests to stop. The complaint names PerplexityBot and Perplexity-User: https://www.nytco.com/document/nyt-perplexity-filing-dec-2025/ It mixes a crawler and a user-triggered fetcher, so agent type is left empty.": "《纽约时报》起诉 Perplexity 侵犯版权，指控其通过 RAG 技术持续爬取时报原创报道并向用户实时输出包含付费专区在内的全文内容。",
+    "Instacart app launched inside ChatGPT, with checkout in ChatGPT built on the Agentic Commerce Protocol (ACP). The user says what they want to cook or buy; ChatGPT builds an Instacart basket, the user can review and swap items, and completes payment in ChatGPT. Date is the OpenAI ACP launch announcement. Mechanism left empty because it is a commercial partnership.": "Instacart 官方应用集成至 ChatGPT 并基于 ACP 协议支持原生结账：用户告知菜谱或食材，ChatGPT 自动配齐购物车，用户确认替换后直接在会话中付款。",
+    "Summary (Chinese source): Beijing News reporters installed 23 apps on a nubia Z70 Ultra phone with Doubao's system-level phone assistant and tested 61 automated tasks across shopping, travel and ticket booking. In Meituan, the assistant successfully ordered milk tea and booked a scenic spot ticket; the user confirmed identity before payment. Mechanism left empty because it is an on-device app operation without an explicit agreement.": "《新京报》记者实测努比亚手机搭载的豆包端侧助手：智能体跨应用自主操作美团完成点外卖与景区订票，最终支付环节由用户手动刷脸授权确认。",
+    "Summary (Chinese source): New Yellow River reported on 2025-12-10 that apps including Pinduoduo were adapting their interfaces for the nubia phone's Doubao assistant, making buttons easier for the assistant to click. The Beijing News test on 2025-12-08 confirmed the assistant successfully opened Pinduoduo, searched for a phone case, selected color and model, and placed the order for the user to pay. Mechanism left empty because it is an on-device app operation without an explicit agreement.": "多家主流应用针对端侧智能体展开界面友好度适配。实测证实豆包助手能顺利打开拼多多检索手机壳、智能选定型号颜色并生成待付款订单供用户核验。",
+    "Summary (Chinese source): Beijing News reporters installed 23 apps on a nubia Z70 Ultra phone with Doubao's system-level phone assistant and tested 61 automated tasks. In Maoyan, the assistant selected a film, cinema, showtime and seat and progressed to the payment step for the user to confirm. Mechanism left empty because it is an on-device app operation without an explicit agreement.": "豆包手机端侧助手在猫眼应用中成功自主选定电影片名、影院场次以及观影座位，顺利推进至支付确认界面由用户最终付款。",
+    "Summary (Chinese source): Beijing News reporters installed 23 apps on a nubia Z70 Ultra phone with Doubao's system-level phone assistant and tested 61 automated tasks. In JD.com, the assistant successfully bought a computer mouse. Mechanism left empty because it is an on-device app operation without an explicit agreement.": "豆包端侧助手在京东应用内端到端完成鼠标选购、参数确认并代下单，支付环节交由用户自行安全校验。",
+    "DoorDash app launched in ChatGPT for grocery shopping: ChatGPT builds a basket and the user completes the order in DoorDash through an instant-checkout view. Mechanism left empty because it is a commercial partnership. Announcement date to be confirmed (December 2025).": "DoorDash 在 ChatGPT 官方上线生鲜即时购物服务：ChatGPT 协同打包商品，用户通过即时结算浮层在 DoorDash 安全闭环完成订单。",
+    "Copilot Checkout launched on Copilot.com, powered by PayPal: shoppers can buy from PayPal merchants directly inside Microsoft Copilot. Rollout started with a subset of US merchants, expanding in 2026. Mechanism left empty because it is a commercial partnership.": "微软 Copilot.com 上线由 PayPal 支持的原生结算功能，消费者无需跳出对话即可直接购买全美首批合作商家的商品并完成支付。",
+    "Partnership announced by Walmart: a Walmart and Sam's Club shopping experience will launch inside Google Gemini in 2026, using the Universal Commerce Protocol (UCP). Mechanism left empty because it is a commercial partnership. Launch date to be confirmed. Agent type to be confirmed.": "沃尔玛宣布将于 2026 年在谷歌 Gemini 中推出官方直购体验，全面采用通用商业协议（UCP）赋能商品互联与自动结算。",
+    "Google launched the Universal Commerce Protocol (UCP), an open standard for agentic commerce, backed by Walmart, Target, Shopify, Etsy and Wayfair. In preview; general availability in 2026. UCP allows AI agents to search catalogs, check stock and buy across merchants. Mechanism left empty because it is a permission protocol.": "谷歌联合沃尔玛、Target、Shopify、Etsy 等行业巨头发布面向智能体电商的开源开放协议 UCP，允许 AI 跨商家比对库存、执行自动化核验与协同结算。",
+    "Announced on Wikipedia's 25th birthday: new Wikimedia Enterprise partnerships with Microsoft Copilot, Perplexity and Meta. Wikipedia content has always been available under CC BY-SA, and Wikipedia's robots.txt allows all crawlers; Wikimedia Enterprise offers high-throughput APIs, SLAs and direct feeds. Mechanism left empty because it is a commercial partnership.": "维基百科在 25 周年之际宣布与微软 Copilot、Perplexity 及 Meta 达成企业级数据合作，提供带有 SLA 商业保障的高通量 API 官方数据流直连。",
+    "Announcement, not a launch: Liverpool adopted commercetools' Agentic Commerce solution to prepare its catalog and checkout for AI agents. Date is when the case study was published. Scope \"LATAM\" because Liverpool is a Mexican department store chain. Applies to all agent types.": "墨西哥大型百货连锁巨头 Liverpool 率先引入 commercetools 智能体商业架构，对全线商品库存与支付网关进行智能化改造，迎接 AI 代理自主代购时代。",
+    "Effective date of the updated User Agreement (posted 2026-01-20). Bans scraping, harvesting, crawling or automated tools without express written permission, and bans AI agents from completing transactions without prior written consent.": "eBay 更新后的用户协议正式生效，严禁在未经书面许可的情况下利用爬虫、自动化工具抓取数据，并明令禁止 AI 智能体代用户执行交易结算。",
+    "Amazon sued in November 2025 under the CFAA and CDAFA; the district court granted a preliminary injunction in March 2026 ordering Perplexity to stop accessing Amazon's websites via any automated means without written authorization. Amazon says Perplexity's crawlers made tens of millions of requests per day and circumvented technical blocks, causing significant server costs. Case 2:25-cv-02115 (W.D. Wash.).": "美国联邦地区法院正式下达初步禁令，裁令 Perplexity 立即停止以任何自动化手段访问亚马逊网站。亚马逊指控其每日数千万次高频调用强行突破防护屏障。",
+    "Alibaba connected its own Qwen App to the full Taobao and Tmall catalog: users can search, compare prices across merchants, track logistics and ask product questions directly in chat. Only Qwen is connected; third-party agents are not admitted. Mechanism left empty because it is internal integration, not a public protocol.": "阿里巴巴将其通义千问 App 深度集成淘宝天猫全网商品库，实现全网比价、智能问货及物流追踪，目前仅限自研千问，暂不对外部第三方 AI 开放。",
+    "Summary (Chinese source): on Meituan's Q1 2026 earnings call, CEO Wang Xing said Meituan will not build a separate general-purpose AI agent. Instead, it launched its own AI life assistant, Xiaomei, and will keep its services accessible through third-party agents, phone assistants and operating systems, choosing an open strategy.": "美团 CEO 王兴在财报电话会上阐释开放战略：美团不自研通用大模型，而是打造生活助理小美，并支持外部第三方智能体、手机助手及操作系统调用美团本地生活能力。",
+    "Summary (Chinese source): WeChat published guidelines for developers to expose mini-program skills to the WeChat AI Agent. In internal beta, Meituan opened its food delivery search and order skills so users can ask the WeChat assistant to find food and buy on Meituan. Third-party agents outside WeChat are not admitted.": "微信开放小程序接入微信 AI 智能体规范，美团在内测中向微信助手开放了外卖检索与直接下单能力。暂不向微信生态外的第三方智能体开放。",
+    "Summary (Chinese source): WeChat published guidelines for developers to expose mini-program skills to the WeChat AI Agent. In internal beta, JD.com opened its product search and logistics skills so users can track orders and find products through the WeChat assistant. Third-party agents outside WeChat are not admitted.": "京东在微信小程序内测中向微信 AI 智能体开放商品搜索与物流追踪接口，仅限微信内部生态调度。",
+    "Summary (Chinese source): WeChat published guidelines for developers to expose mini-program skills to the WeChat AI Agent. In internal beta, Ctrip opened flight and hotel search and booking skills so users can ask the WeChat assistant to plan and book travel. Third-party agents outside WeChat are not admitted.": "携程在微信小程序内测中向微信 AI 助手开放机票、酒店查询与预订能力，暂不对外部第三方独立智能体开放。",
+    "Summary (Chinese source): the AI version of Alipay, A-Bao, was released. It handles thousands of life services in a chat interface: food, healthcare, travel, utilities and entertainment. Over 5,000 businesses plugged in for the launch. Third-party agents outside Alipay are not admitted.": "支付宝 AI 版“支小宝”正式亮相，以对话交互整合生活缴费、出行打车、政务问诊等数千项民生服务，首批连接逾五千家生态商户。",
+    "Confirmed by an Amazon spokesperson. Enforced with a block notice showing the message: \"AI agents cannot browse or purchase on Amazon\". The block applies to Meta's Ray-Ban glasses and other devices running Meta AI agents.": "亚马逊发言人证实已全面拦截 Meta 旗下 Muse 智能体（含搭载 Meta AI 的 Ray-Ban 智能眼镜等终端），访问时系统直接弹窗提示“AI 智能体禁止浏览或在亚马逊购物”。",
+    "First user report on X; complaints spread on 2026-10-15. A user reported Grok Bot could not find listings or buy on Amazon, with the prompt returning an error message stating Amazon blocks automated access. xAI has not commented.": "社区实测反馈证实 xAI 旗下的 Grok Bot 在亚马逊遭遇严格访问拦截，提示“亚马逊已限制自动化程序访问”，无法进行选品及代下单。",
+    "Applies to all Williams-Sonoma Inc. brands, including Pottery Barn. Customers must not use bots, crawlers, scraping tools or other automated systems to access, monitor, copy or interact with the websites without prior written permission.": "美国家居品牌 Williams-Sonoma（含 Pottery Barn）全线更新用户协议，未经书面同意禁止任何自动化爬虫或 AI 智能体监控、抓取商品信息或代执行交易。",
+    "Apps opted out through Doubao's Screen Automation Execution Protocol (SEP): 151 apps block automated actions on the nubia Z70 Ultra phone. Apps can opt out of all actions or specific features (such as payment).": "微信、淘宝、王者荣耀等 151 款主流应用通过豆包屏幕自动化协议（SEP）主动选择退出端侧代操作，限制手机智能体对特定交易或敏感页面的自主接管。",
+    "Applies to Walmart and Sam's Club. New Terms for AI Agents, Agent Profile and instant checkout announced: users can connect ChatGPT and Gemini to buy in seconds. AI agents that browse without an agreement or use undeclared crawlers are blocked.": "沃尔玛及山姆会员店出台官方智能体新规：授权接入 ChatGPT 与 Gemini 开展秒级即时结算，严令封杀任何未经认证的隐形抓取及无协议自动化爬虫。",
+    "Date is when the file was checked; date the rule was added to be confirmed. robots.txt disallows the whole site for ClaudeBot.": "英国《卫报》(The Guardian) 在其官方 robots.txt 协议中明确设置全站 Disallow 规则，封禁 Anthropic 旗下的 ClaudeBot 抓取爬虫。",
+    "Date is when the file was checked; date the rule was added to be confirmed. robots.txt disallows the whole site for GrokBot, Grok-DeepSearch and xAI-Grok.": "亚马逊在 robots.txt 中针对 xAI 的全线爬虫（GrokBot、Grok-DeepSearch 及 xAI-Grok）设置全站 Disallow 拦截规则。",
+    "Date is when the file was checked; date rule was added to be confirmed. robots.txt disallows the whole site for GPTBot and ChatGPT-User.": "拉美电商龙头美客多 (Mercado Libre) 在其运营的全部国家和地区站点 robots.txt 中，全站封禁 OpenAI 的 GPTBot 与 ChatGPT-User 访问。",
+    "Date is when the file was checked; date rule was added to be confirmed. robots.txt disallows the whole site for ClaudeBot and Claude-User.": "美客多 (Mercado Libre) 在拉美全部 18 个站点 robots.txt 中，全面拦截 Anthropic 旗下的 ClaudeBot 与 Claude-User 访问。",
+    "Date is when the file was checked; date rule was added to be confirmed. robots.txt disallows the whole site for PerplexityBot and Perplexity-User.": "美客多 (Mercado Libre) 在拉美全部 18 个站点 robots.txt 中，全面拦截 Perplexity 旗下的 PerplexityBot 与 Perplexity-User 访问。",
+    "Date is when the file was checked; date rule was added to be confirmed. robots.txt disallows the whole site for Amazonbot.": "美客多 (Mercado Libre) 在拉美全部 18 个站点 robots.txt 中，设置全站 Disallow 拦截亚马逊自研爬虫 Amazonbot。",
+    "Date is when the help page was checked; launch date to be confirmed. A store's Instacart items can be bought directly in Gemini. Orders are placed through the shopper's Instacart account. US only. Mechanism left empty because it is a commercial partnership.": "Instacart 官方支持在谷歌 Gemini 中直接加购商户生鲜并完成订购，依托用户的 Instacart 会员账号直连结算（仅限美国）。",
+    "Date is when the help page was checked; launch date to be confirmed. US shoppers only. Order placed through the shopper's Instacart account. A store's items can be bought directly in Google's AI Mode in Search. Mechanism left empty because it is a commercial partnership.": "Instacart 官方支持在谷歌搜索 AI 模式（AI Mode）中直接完成商品选购与结算（仅限美国地区）。",
+    "Date is when the help page was checked; launch date to be confirmed. US shoppers only, in US dollars. Orders are placed through the shopper's Instacart account. Some stores' items can be bought directly in Microsoft Copilot. Mechanism left empty because it is a commercial partnership.": "Instacart 官方支持在微软 Copilot 中直接选购合作商户的生鲜货品并完成安全结算（仅限美国，以美元支付）。",
+    "Date is when the help page was checked; launch date to be confirmed. US shoppers only, in US dollars; orders are guest checkouts not linked to an Etsy account. Some Etsy listings can be bought directly in ChatGPT. Mechanism left empty because it is a commercial partnership.": "Etsy 官方合作：美国消费者可直接在 ChatGPT 中购买 Etsy 独立手工作者的精选商品，以访客模式安全结算。",
+    "Date is when the help page was checked; launch date to be confirmed. US shoppers only, in US dollars; orders are guest checkouts not linked to an Etsy account. Some Etsy listings can be bought directly in Gemini. Mechanism left empty because it is a commercial partnership.": "Etsy 官方合作：美国消费者可直接在谷歌 Gemini 对话中浏览并下单购买 Etsy 平台商品，无需绑定 Etsy 账号即可访客付款。",
+    "Date is when the help page was checked; launch date to be confirmed. Some Etsy listings can be bought directly in Google's AI Mode in Search. US shoppers only, in US dollars; orders are guest checkouts not linked to an Etsy account. Mechanism left empty because it is a commercial partnership.": "Etsy 官方合作：允许美国消费者在谷歌搜索 AI 模式中一键加购并完成商品直付结算。",
+    "Date is when the help page was checked; launch date to be confirmed. Some Etsy listings can be bought directly in Copilot. US shoppers only, in US dollars; orders are guest checkouts not linked to an Etsy account. Mechanism left empty because it is a commercial partnership.": "Etsy 官方合作：允许美国消费者直接在微软 Copilot 中挑选 Etsy 商品并完成访客结算下单。",
+    "Date is when the page was checked; launch date to be confirmed. Summary (Chinese source): users can authorize Ctrip's official AI travel assistant Wendao for use in OpenClaw by logging in to Ctrip and requesting an authorization code. In beta, with a limited number of codes. The page does not say the access is search-only; scope to be confirmed.": "携程官方旅行 AI 助手“问道”开放对开源智能体 OpenClaw 的内测授权码机制，支持在外部智能体中调用携程行程规划服务。",
+    "Date is when the file was checked; date rule was added unknown. robots.txt disallows the whole site for Manus-User.": "亚马逊在官方 robots.txt 协议中新增对自动化通用智能体 Manus-User 的全站 Disallow 拦截规则。",
+    "PerplexityBot is allowed general access but specifically disallowed from property listings and experiences (/rooms/, /experiences/).": "爱彼迎 (Airbnb) 允许 PerplexityBot 访问一般宣传页面，但明确禁止其抓取房源详情及体验项目页面 (/rooms/, /experiences/)。",
+    "Whole-site Disallow group blocks 7 bots: GPTBot, ClaudeBot, Applebot-Extended, MistralAI-Training, Webzio-Extended, AI2Bot, ImagesiftBot. Additionally, PerplexityBot, anthropic-ai and cohere-ai are disallowed from property listings and experiences (/rooms/, /experiences/, /*/stays/).": "爱彼迎在 robots.txt 中全站封禁 GPTBot、ClaudeBot、Applebot-Extended 等 7 大训练与抓取爬虫，并限制 PerplexityBot、anthropic-ai 等抓取房源与行程详情。"
+  }
+};
+
+function getEventNote(e) {
+  if (!e || !e.notes) return '';
+  if (currentLang === 'zh' && I18N_DATA.events_zh && I18N_DATA.events_zh[e.notes]) return I18N_DATA.events_zh[e.notes];
+  if (currentLang === 'es' && I18N_DATA.events_es && I18N_DATA.events_es[e.notes]) return I18N_DATA.events_es[e.notes];
+  return e.notes;
+}
+
+function getAgentDesc(a) {
+  if (!a) return '';
+  if (currentLang === 'zh' && I18N_DATA.agent_desc_zh && I18N_DATA.agent_desc_zh[a.agent]) return I18N_DATA.agent_desc_zh[a.agent];
+  if (currentLang === 'es' && I18N_DATA.agent_desc_es && I18N_DATA.agent_desc_es[a.agent]) return I18N_DATA.agent_desc_es[a.agent];
+  return a.what_it_does || '';
+}
+
+const MECH_I18N = {
+  'robots.txt': { en: 'robots.txt', es: 'robots.txt', zh: 'robots.txt 协议' },
+  'terms of service': { en: 'Terms of service', es: 'Términos de servicio', zh: '服务条款协议' },
+  'technical block': { en: 'Technical block', es: 'Bloqueo técnico', zh: '技术拦截' },
+  'permission protocol': { en: 'Permission protocol', es: 'Protocolo de permisos', zh: '授权准入协议' },
+  'network/CDN block': { en: 'Network/CDN block', es: 'Bloqueo de red / CDN', zh: '网络/CDN拦截' },
+  'lawsuit': { en: 'Lawsuit', es: 'Demanda judicial', zh: '司法诉讼' },
+};
+
+function getMechLabel(mechKey) {
+  if (!mechKey) return '';
+  const item = MECH_I18N[mechKey];
+  if (item && item[currentLang]) return item[currentLang];
+  return MECH[mechKey] || mechKey;
+}
+
+const TYPE_I18N = {
+  cloud: { en: 'Cloud ☁️', es: 'Nube ☁️', zh: '云端智能体 ☁️' },
+  browser: { en: 'Browser 🌐', es: 'Navegador 🌐', zh: '浏览器智能体 🌐' },
+  phone: { en: 'Phone 📱', es: 'Móvil 📱', zh: '手机助手 📱' },
+  crawler: { en: 'Crawler 🕷️', es: 'Rastreador (Crawler) 🕷️', zh: '网络爬虫 🕷️' },
+  local: { en: 'Local 💻', es: 'Local 💻', zh: '本地设备端 💻' },
+};
+
+function getTypeLabel(typeKey) {
+  if (!typeKey) return '';
+  const item = TYPE_I18N[typeKey];
+  if (item && item[currentLang]) return item[currentLang];
+  return TYPE[typeKey] || typeKey;
+}
+
+const VERIF_I18N = {
+  official: { en: 'Official', es: 'Oficial', zh: '官方认证' },
+  'media report': { en: 'Media report', es: 'Reporte de prensa', zh: '权威媒体报道' },
+  'user reports': { en: 'User reports', es: 'Reporte de usuarios', zh: '社区实测报告' },
+};
+
+function getVerifLabel(verifKey) {
+  if (!verifKey) return '';
+  const item = VERIF_I18N[verifKey];
+  if (item && item[currentLang]) return item[currentLang];
+  return VERIF[verifKey] || verifKey;
+}
+
 const MECH = {
   'robots.txt': 'robots.txt',
   'terms of service': 'Terms of service',
@@ -1395,9 +1727,10 @@ function getConfirmedCountries(e) {
 function getScopeDisplay(e) {
   const isGlobal = e.regionKey === 'global';
   if (isGlobal) {
-    const tip = currentLang === 'es' ? 'Alcance Global (aplica a nivel mundial)' : (currentLang === 'zh' ? '全球适用' : 'Global scope (applies worldwide)');
+    const tip = currentLang === 'es' ? 'Alcance Global (aplica a nivel mundial)' : (currentLang === 'zh' ? '全球适用（国际通用规则）' : 'Global scope (applies worldwide)');
+    const label = currentLang === 'es' ? 'Global' : (currentLang === 'zh' ? '全球通用' : 'Global');
     return {
-      html: '<span class="scope-globe" style="font-size:1.15rem;" title="' + esc(tip) + '">🌐</span>',
+      html: `<span class="scope-globe" title="${esc(tip)}">🌐 ${esc(label)}</span>`,
       tooltip: tip,
       isGlobal: true,
     };
@@ -1406,27 +1739,45 @@ function getScopeDisplay(e) {
   if (!countries.length) {
     return { html: '', tooltip: '', isGlobal: false };
   }
-  const flags = countries.map(getFlagEmoji).join(' ');
-  let tip = '';
+
+  // If platform covers multiple countries in region (like Mercado Libre across 18 countries):
   if (countries.length > 1) {
-    tip = currentLang === 'es'
-      ? `Regla confirmada por fuentes en ${countries.length} países de LATAM: ${countries.join(', ')}`
-      : (currentLang === 'zh'
-          ? `经由来源在拉美 ${countries.length} 个国家/地区确认: ${countries.join(', ')}`
-          : `Rule confirmed by sources across ${countries.length} LATAM countries: ${countries.join(', ')}`);
+    let badgeText = '';
+    let tip = '';
+    if (currentLang === 'es') {
+      badgeText = `🌎 Todos los países soportados (${countries.length})`;
+      tip = `Regla confirmada en todos los países donde opera (${countries.length} países de LATAM): ${countries.join(', ')}`;
+    } else if (currentLang === 'zh') {
+      badgeText = `🌎 所有支持的国家/地区 (${countries.length})`;
+      tip = `已在覆盖的全部 ${countries.length} 个拉美国家/地区确认: ${countries.join(', ')}`;
+    } else {
+      badgeText = `🌎 All supported countries (${countries.length})`;
+      tip = `Rule confirmed across all ${countries.length} operating LATAM countries: ${countries.join(', ')}`;
+    }
+    return {
+      html: `<span class="scope-all-countries" title="${esc(tip)}">${esc(badgeText)}</span>`,
+      tooltip: tip,
+      isGlobal: false,
+    };
   } else {
-    const cName = countryName(countries[0]);
-    tip = currentLang === 'es'
-      ? `Regla confirmada por la fuente en ${cName} (${countries[0]})`
-      : (currentLang === 'zh'
-          ? `来源确认为 ${cName} (${countries[0]})`
-          : `Rule confirmed by source in ${cName} (${countries[0]})`);
+    // Single country
+    const cCode = countries[0];
+    const cName = countryName(cCode);
+    const flag = getFlagEmoji(cCode);
+    let tip = '';
+    if (currentLang === 'es') {
+      tip = `Regla confirmada por la fuente en ${cName} (${cCode})`;
+    } else if (currentLang === 'zh') {
+      tip = `来源确认适用于 ${cName} (${cCode})`;
+    } else {
+      tip = `Rule confirmed by source in ${cName} (${cCode})`;
+    }
+    return {
+      html: `<span class="scope-single-country" title="${esc(tip)}">${flag} ${esc(cCode)}</span>`,
+      tooltip: tip,
+      isGlobal: false,
+    };
   }
-  return {
-    html: `<span class="scope-flags" style="font-size:1.05rem; letter-spacing:1px;" title="${esc(tip)}">${flags}</span>`,
-    tooltip: tip,
-    isGlobal: false,
-  };
 }
 
 function parseCSV(text) {
@@ -1599,16 +1950,22 @@ function tipHTML(text, extra) {
   const list = agentsIn(text);
   const defaultTip = currentLang === 'zh' ? GROUP_TIP_ZH : (currentLang === 'es' ? GROUP_TIP_ES : GROUP_TIP_EN);
   if (!list.length) return `${head}<div>${esc(defaultTip)}</div>`;
-  return head + list.map(a => `<div class="tip-agent">
-    <b>${esc(a.agent)}</b> <span style="color:var(--text-dim)">· ${esc(a.company || 'Unknown')}</span>
-    <p>${esc(a.what_it_does || 'No official description.')}</p>
-  </div>`).join('');
+  const unknownComp = currentLang === 'zh' ? '未知研发公司' : (currentLang === 'es' ? 'Empresa desconocida' : 'Unknown');
+  return head + list.map(a => {
+    const desc = getAgentDesc(a) || (currentLang === 'zh' ? '暂无官方技术说明。' : (currentLang === 'es' ? 'Sin descripción oficial.' : 'No official description.'));
+    return `<div class="tip-agent">
+      <b>${esc(a.agent)}</b> <span style="color:var(--text-dim)">· ${esc(a.company || unknownComp)}</span>
+      <p>${esc(desc)}</p>
+    </div>`;
+  }).join('');
 }
 
 function agentChips(group) {
   return `<div class="agent-chips">${group.map(e => {
     const s = STATUS[e.statusKey];
-    const status = [s ? (currentLang === 'es' ? s.labelEs : s.label) : e.status, MECH[e.mechKey] || e.mechanism].filter(Boolean).join(' · ');
+    const statusLabel = s ? (currentLang === 'zh' ? s.labelZh : (currentLang === 'es' ? s.labelEs : s.label)) : e.status;
+    const mechLabel = getMechLabel(e.mechKey);
+    const status = [statusLabel, mechLabel].filter(Boolean).join(' · ');
     return `<span class="agent-chip ${s ? s.cls : ''}"><span class="dot"></span>${agentName(e.agent, status)}<time>${fmtDate(e.date)}</time></span>`;
   }).join('')}</div>`;
 }
@@ -1700,21 +2057,21 @@ function renderPlatforms() {
       return `<article class="platform-card">
         <div>
           <div class="platform-card-top">
-            <div class="platform-info">
-              <div class="platform-avatar">${initial}</div>
-              <div>
+            <div class="platform-card-header">
+              <div class="platform-info">
+                <div class="platform-avatar">${initial}</div>
                 <div class="platform-name">${esc(e.platform)} <span class="country-pill" title="${esc(countryName(e.countryKey))}">${esc(e.countryKey)}</span></div>
-                <div style="font-size:0.75rem; color:var(--text-dim); margin-top:2px; display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
-                  <span>${esc(countryName(e.countryKey))}</span>
-                  <span style="color:var(--border);">·</span>
-                  <span class="region-pill">${esc(getScopeLabel(e.regionKey))}</span>
-                </div>
-                <div class="confirmed-flags-bar" style="margin-top:5px; min-height:22px; display:flex; align-items:center;">
-                  ${scopeInfo.html}
-                </div>
+              </div>
+              <div class="platform-badge-box">${badge(e)}</div>
+            </div>
+            <div class="platform-meta-row">
+              <span>${esc(countryName(e.countryKey))}</span>
+              <span class="platform-meta-sep">·</span>
+              <span class="region-pill">${esc(getScopeLabel(e.regionKey))}</span>
+              <div class="confirmed-flags-bar">
+                ${scopeInfo.html}
               </div>
             </div>
-            <div>${badge(e)}</div>
           </div>
           <div class="agents-box">
             <div class="agents-box-label">${I18N[currentLang].agents} (${group.length})</div>
@@ -1789,10 +2146,19 @@ function renderTimeline() {
     el.innerHTML = `<div class="empty">${I18N[currentLang].noMatches}</div>`;
     return;
   }
+  const tAgent = currentLang === 'zh' ? '智能体:' : (currentLang === 'es' ? 'Agente:' : 'Agent:');
+  const tType = currentLang === 'zh' ? '类型:' : (currentLang === 'es' ? 'Tipo:' : 'Type:');
+  const tMech = currentLang === 'zh' ? '机制:' : (currentLang === 'es' ? 'Mecanismo:' : 'Mechanism:');
+  const tVerif = currentLang === 'zh' ? '验证:' : (currentLang === 'es' ? 'Verificación:' : 'Verification:');
+
   el.innerHTML = `<ol class="timeline">${list.map(e => {
     const s = STATUS[e.statusKey];
     const cls = s ? s.cls : '';
     const scopeInfo = getScopeDisplay(e);
+    const note = getEventNote(e);
+    const mechText = getMechLabel(e.mechKey);
+    const typeText = getTypeLabel(e.typeKey);
+
     return `<li class="event ${cls}">
       <div class="top">
         <span class="date">${fmtDate(e.date)}</span>
@@ -1800,12 +2166,13 @@ function renderTimeline() {
         ${badge(e)}
       </div>
       <div class="meta">
-        <span>Agent: <b>${agentName(e.agent)}</b></span>
-        ${e.agent_type ? `<span>Type: <b>${esc(TYPE[e.typeKey] || e.agent_type)}</b></span>` : ''}
-        ${e.mechanism ? `<span>Mechanism: <b>${esc(MECH[e.mechKey] || e.mechanism)}</b></span>` : ''}
+        <span>${tAgent} <b>${agentName(e.agent)}</b></span>
+        ${typeText ? `<span>${tType} <b>${esc(typeText)}</b></span>` : ''}
+        ${mechText ? `<span>${tMech} <b>${esc(mechText)}</b></span>` : ''}
+        ${e.verification ? `<span>${tVerif} <b>${esc(getVerifLabel(e.verification))}</b></span>` : ''}
         ${sourceLink(e)}
       </div>
-      ${e.notes ? `<p class="notes">${esc(e.notes)}</p>` : ''}
+      ${note ? `<p class="notes">${esc(note)}</p>` : ''}
     </li>`;
   }).join('')}</ol>`;
 }
@@ -1823,18 +2190,33 @@ function renderAgents() {
   }).sort((a, b) => a.company.localeCompare(b.company) || a.agent.localeCompare(b.agent));
 
   document.getElementById('agents-count').textContent = list.length;
-  el.innerHTML = `<div class="agents-grid">${list.map(a => `<article class="agent-card">
-    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
-      <h3>${esc(a.agent)}</h3>
-      ${a.tracking === 'watchlist' ? '<span class="watch-tag">Watching</span>' : ''}
-    </div>
-    <div style="font-size:0.8rem;color:var(--accent);font-weight:600;margin-top:2px;">${esc(a.company || 'Unknown')} · ${esc(a.type || 'Type unknown')}</div>
-    <p>${esc(a.what_it_does || 'No description.')}</p>
-    <dl>
-      <dt>User-Agent</dt><dd>${esc(a.user_agent || 'Unknown')}</dd>
-      <dt>Availability</dt><dd>${esc(a.available_countries === 'GLOBAL' ? 'Worldwide' : (a.available_countries || 'No data'))}</dd>
-    </dl>
-  </article>`).join('')}</div>`;
+  const watchLabel = currentLang === 'zh' ? '观察名单' : (currentLang === 'es' ? 'En observación' : 'Watching');
+  const userAgentLabel = currentLang === 'zh' ? 'User-Agent (爬虫标识)' : 'User-Agent';
+  const availLabel = currentLang === 'zh' ? '可用地区' : (currentLang === 'es' ? 'Disponibilidad' : 'Availability');
+  const worldwideLabel = currentLang === 'zh' ? '全球范围' : (currentLang === 'es' ? 'Mundial (Global)' : 'Worldwide');
+  const noDataLabel = currentLang === 'zh' ? '暂无官方数据' : (currentLang === 'es' ? 'Sin datos oficiales' : 'No data');
+  const unknownComp = currentLang === 'zh' ? '未知研发公司' : (currentLang === 'es' ? 'Empresa desconocida' : 'Unknown');
+
+  el.innerHTML = `<div class="agents-grid">${list.map(a => {
+    const desc = getAgentDesc(a) || (currentLang === 'zh' ? '暂无官方技术说明。' : (currentLang === 'es' ? 'Sin descripción oficial.' : 'No description.'));
+    const typeLabel = getTypeLabel(norm(a.type));
+    let avail = a.available_countries;
+    if (avail === 'GLOBAL') avail = worldwideLabel;
+    else if (!avail || avail === 'no data') avail = noDataLabel;
+
+    return `<article class="agent-card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
+        <h3>${esc(a.agent)}</h3>
+        ${a.tracking === 'watchlist' ? `<span class="watch-tag">${watchLabel}</span>` : ''}
+      </div>
+      <div style="font-size:0.8rem;color:var(--accent);font-weight:600;margin-top:2px;">${esc(a.company || unknownComp)} · ${esc(typeLabel || a.type || 'Type unknown')}</div>
+      <p>${esc(desc)}</p>
+      <dl>
+        <dt>${userAgentLabel}</dt><dd>${esc(a.user_agent || unknownComp)}</dd>
+        <dt>${availLabel}</dt><dd>${esc(avail)}</dd>
+      </dl>
+    </article>`;
+  }).join('')}</div>`;
 }
 
 function renderAll() {
@@ -1937,6 +2319,14 @@ function renderPlatformTimelineModal(platformKey) {
     const mechText = MECH[e.mechKey] || e.mechanism;
     const typeText = TYPE[e.typeKey] || e.agent_type;
 
+    const note = getEventNote(e);
+    const mechLabel = getMechLabel(e.mechKey);
+    const typeLabel = getTypeLabel(e.typeKey);
+    const tComp = currentLang === 'zh' ? '研发公司' : (currentLang === 'es' ? 'Empresa' : 'Company');
+    const tType = currentLang === 'zh' ? '类型' : (currentLang === 'es' ? 'Tipo' : 'Type');
+    const tMech = currentLang === 'zh' ? '机制' : (currentLang === 'es' ? 'Mecanismo' : 'Mechanism');
+    const tVerif = currentLang === 'zh' ? '验证' : (currentLang === 'es' ? 'Verificación' : 'Verification');
+
     return `<div class="modal-tl-item ${cls}">
       <div class="modal-tl-top">
         <div class="modal-tl-date">
@@ -1949,12 +2339,12 @@ function renderPlatformTimelineModal(platformKey) {
         <span>🤖</span> <span>${agentName(e.agent)}</span>
       </div>
       <div class="modal-tl-meta">
-        ${e.agent_company ? `<span>🏢 <b>${esc(e.agent_company)}</b></span>` : ''}
-        ${typeText ? `<span>🏷️ ${esc(typeText)}</span>` : ''}
-        ${mechText ? `<span>⚙️ ${esc(mechText)}</span>` : ''}
-        ${e.verification ? `<span>🛡️ ${esc(VERIF[e.verification] || e.verification)}</span>` : ''}
+        ${e.agent_company ? `<span>🏢 ${tComp}: <b>${esc(e.agent_company)}</b></span>` : ''}
+        ${typeLabel ? `<span>🏷️ ${tType}: <b>${esc(typeLabel)}</b></span>` : ''}
+        ${mechLabel ? `<span>⚙️ ${tMech}: <b>${esc(mechLabel)}</b></span>` : ''}
+        ${e.verification ? `<span>🛡️ ${tVerif}: <b>${esc(getVerifLabel(e.verification))}</b></span>` : ''}
       </div>
-      ${e.notes ? `<div class="modal-tl-notes">${esc(e.notes)}</div>` : ''}
+      ${note ? `<div class="modal-tl-notes">${esc(note)}</div>` : ''}
       <div style="margin-top:8px;">
         ${sourceBtn}
       </div>
@@ -2107,6 +2497,16 @@ function updateLanguage(lang) {
   document.getElementById('chip-type-all').textContent = t.all;
 
   updateRegionFilters();
+
+  const chipCloud = document.getElementById('chip-type-cloud');
+  if (chipCloud) chipCloud.textContent = currentLang === 'zh' ? '云端' : (currentLang === 'es' ? 'Nube' : 'Cloud');
+  const chipBrowser = document.getElementById('chip-type-browser');
+  if (chipBrowser) chipBrowser.textContent = currentLang === 'zh' ? '浏览器' : (currentLang === 'es' ? 'Navegador' : 'Browser');
+  const chipPhone = document.getElementById('chip-type-phone');
+  if (chipPhone) chipPhone.textContent = currentLang === 'zh' ? '手机' : (currentLang === 'es' ? 'Móvil' : 'Phone');
+  const chipCrawler = document.getElementById('chip-type-crawler');
+  if (chipCrawler) chipCrawler.textContent = currentLang === 'zh' ? '爬虫' : (currentLang === 'es' ? 'Rastreador' : 'Crawler');
+
 
   document.getElementById('txt-sec-platform').textContent = t.secPlatform;
   document.getElementById('txt-sec-timeline').textContent = t.secTimeline;
