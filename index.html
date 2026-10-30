@@ -618,6 +618,286 @@
     border-radius: var(--radius);
   }
   .error { color: var(--block); }
+  /* Platform Timeline Modal */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: rgba(7, 11, 17, 0.82);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+  }
+  .modal-backdrop.open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .modal-dialog {
+    background: #131b26;
+    border: 1px solid #33445e;
+    border-radius: var(--radius-lg);
+    box-shadow: 0 24px 60px -10px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.05);
+    width: 100%;
+    max-width: 680px;
+    max-height: 88vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transform: translateY(12px) scale(0.98);
+    transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .modal-backdrop.open .modal-dialog {
+    transform: translateY(0) scale(1);
+  }
+  .modal-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #1a2434;
+    gap: 12px;
+  }
+  .modal-platform-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+  }
+  .modal-title-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .modal-platform-name {
+    margin: 0;
+    font-size: 1.22rem;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.2;
+  }
+  .modal-subtitle {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 3px;
+  }
+  .modal-close-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.15s ease;
+  }
+  .modal-close-btn:hover {
+    background: var(--surface-hover);
+    color: #fff;
+    border-color: var(--border-light);
+  }
+  .modal-body {
+    padding: 20px 22px 24px;
+    overflow-y: auto;
+  }
+  .modal-footer {
+    padding: 12px 20px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: flex-end;
+    background: #1a2434;
+  }
+  .modal-btn-close {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font: inherit;
+    font-size: 0.84rem;
+    font-weight: 600;
+    padding: 6px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .modal-btn-close:hover {
+    background: var(--border);
+    border-color: var(--border-light);
+    color: #fff;
+  }
+
+  /* Modal Timeline */
+  .modal-timeline {
+    position: relative;
+    padding-left: 22px;
+    margin-left: 8px;
+    border-left: 2px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  .modal-tl-item {
+    position: relative;
+    background: #172130;
+    border: 1px solid #28374d;
+    border-radius: var(--radius);
+    padding: 15px 16px;
+    transition: border-color 0.15s ease;
+  }
+  .modal-tl-item:hover {
+    border-color: var(--border-light);
+  }
+  .modal-tl-item::before {
+    content: "";
+    position: absolute;
+    left: -29px;
+    top: 18px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 2px solid var(--text-dim);
+  }
+  .modal-tl-item.block::before { border-color: var(--block); background: var(--block); }
+  .modal-tl-item.allow::before { border-color: var(--allow); background: var(--allow); }
+  .modal-tl-item.cond::before { border-color: var(--cond); background: var(--cond); }
+  .modal-tl-item.optout::before { border-color: var(--optout); background: var(--optout); }
+
+  .modal-tl-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  .modal-tl-date {
+    font-size: 0.86rem;
+    font-weight: 700;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .modal-tl-agents {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .modal-tl-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 12px;
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    margin-bottom: 10px;
+  }
+  .modal-tl-meta span {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .modal-tl-notes {
+    font-size: 0.86rem;
+    color: #cbd5e1;
+    line-height: 1.5;
+    margin: 0 0 10px;
+    background: rgba(0, 0, 0, 0.22);
+    padding: 10px 12px;
+    border-radius: 8px;
+    border-left: 3px solid var(--border-light);
+  }
+  .modal-tl-source {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--accent);
+    background: rgba(56, 189, 248, 0.08);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    padding: 5px 12px;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: all 0.15s ease;
+  }
+  .modal-tl-source:hover {
+    background: rgba(56, 189, 248, 0.18);
+    border-color: var(--accent);
+    text-decoration: none;
+  }
+
+  /* Card Action Button */
+  .platform-card-actions {
+    margin: 12px 0 10px;
+  }
+  .btn-card-timeline {
+    width: 100%;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 10px;
+    padding: 8px 14px;
+    font: inherit;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.18s ease;
+  }
+  .btn-card-timeline:hover {
+    background: var(--surface-hover);
+    border-color: var(--accent);
+    color: #fff;
+    box-shadow: 0 3px 12px rgba(56, 189, 248, 0.15);
+  }
+  .btn-timeline-count {
+    background: rgba(56, 189, 248, 0.14);
+    color: var(--accent);
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 1px 7px;
+    border-radius: 999px;
+    border: 1px solid rgba(56, 189, 248, 0.3);
+  }
+  .btn-table-timeline {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--accent);
+    border-radius: 6px;
+    padding: 3px 8px;
+    font: inherit;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.15s ease;
+  }
+  .btn-table-timeline:hover {
+    background: var(--border);
+    color: #fff;
+  }
+
 
   footer {
     margin-top: 64px;
@@ -819,6 +1099,34 @@
   </footer>
 </div>
 
+
+<!-- Platform Timeline Modal -->
+<div id="timeline-modal" class="modal-backdrop" hidden>
+  <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="modal-platform-name">
+    <div class="modal-header">
+      <div class="modal-platform-info">
+        <div class="platform-avatar" id="modal-avatar">A</div>
+        <div>
+          <div class="modal-title-row">
+            <h3 id="modal-platform-name" class="modal-platform-name">Airbnb</h3>
+            <span id="modal-country-pill" class="country-pill">US</span>
+            <span id="modal-region-pill" class="region-pill">Norteamérica</span>
+            <span id="modal-badge-slot"></span>
+          </div>
+          <div id="modal-subtitle" class="modal-subtitle">Historial cronológico de accesos y fuentes verificadas</div>
+        </div>
+      </div>
+      <button id="modal-close-btn" class="modal-close-btn" aria-label="Close modal">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="modal-timeline-content" class="modal-timeline"></div>
+    </div>
+    <div class="modal-footer">
+      <button id="modal-close-footer" class="modal-btn-close">Cerrar</button>
+    </div>
+  </div>
+</div>
+
 <!-- Tooltip Container -->
 <div id="agent-tip" class="tip" role="tooltip" hidden></div>
 
@@ -874,6 +1182,10 @@ const I18N = {
     type: "Type",
     platform: "Platform",
     status: "Status",
+    viewTimeline: "View timeline",
+    historySubtitle: "Chronological AI access history and verified sources",
+    closeModal: "Close",
+    eventsCount: "events recorded",
   },
   es: {
     badge: "Monitor de Acceso de Agentes de IA",
@@ -922,6 +1234,10 @@ const I18N = {
     type: "Tipo",
     platform: "Plataforma",
     status: "Estado",
+    viewTimeline: "Ver línea del tiempo",
+    historySubtitle: "Historial cronológico de accesos de IA y fuentes verificadas",
+    closeModal: "Cerrar",
+    eventsCount: "eventos registrados",
   },
   zh: {
     badge: "自主AI智能体访问监测",
@@ -970,6 +1286,10 @@ const I18N = {
     type: "类型",
     platform: "平台",
     status: "状态",
+    viewTimeline: "查看时间线",
+    historySubtitle: "AI智能体访问策略历史演变与权威核实来源",
+    closeModal: "关闭",
+    eventsCount: "条记录",
   }
 };
 
@@ -1194,6 +1514,46 @@ function fmtDate(s) {
   return d.toLocaleDateString(locale, { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' });
 }
 
+
+function formatDetailedSource(e) {
+  if (!/^https?:\/\//i.test(e.source_url)) return '';
+  const url = e.source_url;
+  let label = '';
+  let icon = '🔗';
+
+  if (url.includes('web.archive.org')) {
+    icon = '🏛️';
+    const m = url.match(/\/web\/(\d{4})(\d{2})(\d{2})/);
+    const snapDate = m ? `${m[1]}-${m[2]}-${m[3]}` : (e.date || 'Archive');
+    label = currentLang === 'es'
+      ? `Snapshot histórico (${snapDate}) · Wayback Machine ↗`
+      : (currentLang === 'zh'
+          ? `历史网页快照 (${snapDate}) · Wayback Machine ↗`
+          : `Historical snapshot (${snapDate}) · Wayback Machine ↗`);
+  } else if (url.includes('robots.txt')) {
+    icon = '📄';
+    let host = '';
+    try { host = new URL(url).hostname.replace(/^www\./, ''); } catch { host = 'robots.txt'; }
+    label = currentLang === 'es'
+      ? `robots.txt oficial (${host}) ↗`
+      : (currentLang === 'zh'
+          ? `官方 robots.txt (${host}) ↗`
+          : `Official robots.txt (${host}) ↗`);
+  } else if (url.includes('justia.com') || url.includes('court') || (e.mechanism && e.mechanism.includes('lawsuit'))) {
+    icon = '⚖️';
+    label = currentLang === 'es' ? 'Documento judicial oficial ↗' : (currentLang === 'zh' ? '官方司法裁判记录 ↗' : 'Official court record ↗');
+  } else {
+    let host = '';
+    try { host = new URL(url).hostname.replace(/^www\./, ''); } catch { host = 'Source'; }
+    label = `${host} ↗`;
+  }
+
+  return `<a class="modal-tl-source" href="${esc(url)}" target="_blank" rel="noopener noreferrer">
+    <span>${icon}</span>
+    <span>${esc(label)}</span>
+  </a>`;
+}
+
 function sourceLink(e, text) {
   if (!/^https?:\/\//i.test(e.source_url)) return '';
   let host = text;
@@ -1360,6 +1720,13 @@ function renderPlatforms() {
             <div class="agents-box-label">${I18N[currentLang].agents} (${group.length})</div>
             ${agentChips(group)}
           </div>
+          <div class="platform-card-actions">
+            <button type="button" class="btn-card-timeline" data-platform="${esc(e.platformKey)}" aria-label="${esc(I18N[currentLang].viewTimeline)} - ${esc(e.platform)}">
+              <span>🕒</span>
+              <span>${I18N[currentLang].viewTimeline}</span>
+              <span class="btn-timeline-count">${group.length}</span>
+            </button>
+          </div>
         </div>
         <div class="platform-card-footer">
           <span>${I18N[currentLang].since}: <b>${fmtDate(e.date)}</b></span>
@@ -1382,7 +1749,17 @@ function renderPlatforms() {
         const group = (groups.get(e.platformKey) || [e]).filter(item => !filters.type || item.typeKey === filters.type);
         const scopeInfo = getScopeDisplay(e);
         return `<tr>
-          <td class="platform"><div>${esc(e.platform)} ${countryTag(e)} <span style="margin-left:6px;" title="${esc(scopeInfo.tooltip)}">${scopeInfo.html}</span></div></td>
+          <td class="platform">
+            <div>
+              ${esc(e.platform)} ${countryTag(e)} <span style="margin-left:6px;" title="${esc(scopeInfo.tooltip)}">${scopeInfo.html}</span>
+              <div style="margin-top:6px;">
+                <button type="button" class="btn-table-timeline" data-platform="${esc(e.platformKey)}">
+                  <span>🕒 ${I18N[currentLang].viewTimeline}</span>
+                  <span class="btn-timeline-count">${group.length}</span>
+                </button>
+              </div>
+            </div>
+          </td>
           <td><div>${badge(e)}</div></td>
           <td><div>${agentChips(group)}</div></td>
           <td><div style="white-space:nowrap;font-size:0.85rem;">${fmtDate(e.date)}</div></td>
@@ -1517,6 +1894,128 @@ document.addEventListener('focusout', ev => { if (ev.target === tipFor) hideTip(
 document.addEventListener('click', ev => { const t = nameOf(ev); if (t) showTip(t); else hideTip(); });
 document.addEventListener('keydown', ev => { if (ev.key === 'Escape') hideTip(); });
 
+
+// Platform Timeline Modal Logic
+let currentTimelinePlatform = null;
+
+function renderPlatformTimelineModal(platformKey) {
+  const groups = eventsByPlatform(events);
+  const pEvents = (groups.get(platformKey) || []).slice().sort(byNewest);
+  if (!pEvents.length) return;
+
+  currentTimelinePlatform = platformKey;
+  const latest = pEvents[0];
+  const initial = latest.platform.charAt(0).toUpperCase();
+
+  document.getElementById('modal-avatar').textContent = initial;
+  document.getElementById('modal-platform-name').textContent = latest.platform;
+
+  const cPill = document.getElementById('modal-country-pill');
+  if (latest.countryKey) {
+    cPill.textContent = latest.countryKey;
+    cPill.title = countryName(latest.countryKey);
+    cPill.hidden = false;
+  } else {
+    cPill.hidden = true;
+  }
+
+  const rPill = document.getElementById('modal-region-pill');
+  rPill.textContent = getScopeLabel(latest.regionKey);
+
+  const bSlot = document.getElementById('modal-badge-slot');
+  bSlot.innerHTML = badge(latest);
+
+  const t = I18N[currentLang];
+  document.getElementById('modal-subtitle').textContent = `${pEvents.length} ${t.eventsCount} · ${t.historySubtitle}`;
+  document.getElementById('modal-close-footer').textContent = t.closeModal;
+
+  const content = document.getElementById('modal-timeline-content');
+  content.innerHTML = pEvents.map(e => {
+    const s = STATUS[e.statusKey];
+    const cls = s ? s.cls : '';
+    const sourceBtn = formatDetailedSource(e);
+    const mechText = MECH[e.mechKey] || e.mechanism;
+    const typeText = TYPE[e.typeKey] || e.agent_type;
+
+    return `<div class="modal-tl-item ${cls}">
+      <div class="modal-tl-top">
+        <div class="modal-tl-date">
+          <span>📅</span>
+          <span>${fmtDate(e.date)}</span>
+        </div>
+        <div>${badge(e)}</div>
+      </div>
+      <div class="modal-tl-agents">
+        <span>🤖</span> <span>${agentName(e.agent)}</span>
+      </div>
+      <div class="modal-tl-meta">
+        ${e.agent_company ? `<span>🏢 <b>${esc(e.agent_company)}</b></span>` : ''}
+        ${typeText ? `<span>🏷️ ${esc(typeText)}</span>` : ''}
+        ${mechText ? `<span>⚙️ ${esc(mechText)}</span>` : ''}
+        ${e.verification ? `<span>🛡️ ${esc(VERIF[e.verification] || e.verification)}</span>` : ''}
+      </div>
+      ${e.notes ? `<div class="modal-tl-notes">${esc(e.notes)}</div>` : ''}
+      <div style="margin-top:8px;">
+        ${sourceBtn}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openPlatformTimeline(platformKey) {
+  renderPlatformTimelineModal(platformKey);
+  const modal = document.getElementById('timeline-modal');
+  modal.hidden = false;
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+
+  const url = new URL(window.location);
+  url.searchParams.set('timeline', platformKey);
+  window.history.replaceState({}, '', url);
+}
+
+function closePlatformTimeline() {
+  const modal = document.getElementById('timeline-modal');
+  modal.classList.remove('open');
+  currentTimelinePlatform = null;
+  setTimeout(() => {
+    modal.hidden = true;
+    document.body.style.overflow = '';
+  }, 200);
+
+  const url = new URL(window.location);
+  url.searchParams.delete('timeline');
+  url.searchParams.delete('modal');
+  window.history.replaceState({}, '', url);
+}
+
+document.addEventListener('click', ev => {
+  const btn = ev.target.closest('.btn-card-timeline, .btn-table-timeline');
+  if (btn) {
+    ev.preventDefault();
+    const pKey = btn.dataset.platform;
+    if (pKey) openPlatformTimeline(pKey);
+    return;
+  }
+  if (ev.target.matches('#modal-close-btn, #modal-close-footer') || ev.target.closest('#modal-close-btn, #modal-close-footer')) {
+    closePlatformTimeline();
+    return;
+  }
+  if (ev.target.id === 'timeline-modal') {
+    closePlatformTimeline();
+    return;
+  }
+});
+
+document.addEventListener('keydown', ev => {
+  if (ev.key === 'Escape') {
+    const modal = document.getElementById('timeline-modal');
+    if (modal && !modal.hidden) {
+      closePlatformTimeline();
+    }
+  }
+});
+
 // Controls Event Listeners
 document.querySelector('.filters-group').addEventListener('click', ev => {
   const btn = ev.target.closest('.chip');
@@ -1524,6 +2023,9 @@ document.querySelector('.filters-group').addEventListener('click', ev => {
   const key = btn.dataset.filter;
   filters[key] = btn.dataset.value;
   btn.closest('.filter-row').querySelectorAll('.chip').forEach(b => b.setAttribute('aria-pressed', String(b === btn)));
+  if (currentTimelinePlatform) {
+    renderPlatformTimelineModal(currentTimelinePlatform);
+  }
   renderAll();
 });
 
@@ -1533,6 +2035,9 @@ const searchClear = document.getElementById('search-clear');
 searchInput.addEventListener('input', () => {
   filters.search = searchInput.value.trim();
   searchClear.hidden = !filters.search;
+  if (currentTimelinePlatform) {
+    renderPlatformTimelineModal(currentTimelinePlatform);
+  }
   renderAll();
 });
 searchClear.addEventListener('click', () => {
@@ -1540,6 +2045,9 @@ searchClear.addEventListener('click', () => {
   filters.search = '';
   searchClear.hidden = true;
   searchInput.focus();
+  if (currentTimelinePlatform) {
+    renderPlatformTimelineModal(currentTimelinePlatform);
+  }
   renderAll();
 });
 
@@ -1607,6 +2115,9 @@ function updateLanguage(lang) {
   document.getElementById('btn-view-cards').textContent = t.cardsView;
   document.getElementById('btn-view-table').textContent = t.tableView;
 
+  if (currentTimelinePlatform) {
+    renderPlatformTimelineModal(currentTimelinePlatform);
+  }
   renderAll();
 }
 
@@ -1640,6 +2151,14 @@ Promise.all([loadCSV('data/events.csv'), agentsLoaded])
       if (sClear) sClear.hidden = false;
     }
     updateLanguage(currentLang);
+    const initialTimeline = urlParams.get('timeline') || urlParams.get('modal');
+    if (initialTimeline) {
+      openPlatformTimeline(norm(initialTimeline));
+      if (urlParams.get('scroll') === 'bottom') {
+        const bodyEl = document.querySelector('.modal-body');
+        if (bodyEl) bodyEl.scrollTop = bodyEl.scrollHeight;
+      }
+    }
     if (currentView === 'table') {
       document.querySelectorAll('.view-btn').forEach(b => b.classList.toggle('active', b.dataset.view === 'table'));
     }
