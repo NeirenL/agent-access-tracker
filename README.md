@@ -45,6 +45,7 @@ The data lives in two files. In [`data/events.csv`](data/events.csv), each row i
 |---|---|---|
 | `agent` | Agent name, as written in `events.csv` | e.g. `GPTBot`, `Muse` |
 | `company` | Company behind the agent | e.g. `OpenAI` |
+| `category` | Functional role of the agent | `autonomous` (always-on / proactive / digital worker) · `task_automation` (browser/device task automation) · `conversational` (chat assistant) · `user_proxy` (on-demand web browsing proxy) · `crawler` (training / search indexer) · `unknown` |
 | `type` | Where it works | `cloud` · `local` (on the user's device) · `crawler` · `unknown` |
 | `type_source` | Where `type` comes from | `official` (the source states it) · `inferred` (deduced from the source; the page shows it as "likely") · `unknown` when `type` is `unknown` |
 | `what_it_does` | What it does, in one simple line | Free text |
@@ -58,6 +59,11 @@ The data lives in two files. In [`data/events.csv`](data/events.csv), each row i
 | `availability_notes` | Exceptions the codes can't express (e.g. excluded regions of a country) | Free text, may be empty |
 | `checked_date` | When the availability page was checked | `YYYY-MM-DD` |
 | `tracking` | Why the agent is listed | `event` (named in `events.csv`; the check fails if no event names it) · `watchlist` (watched before any event; the page shows "Watching (no events yet)") |
+
+### 🎨 Brand Assets & Logos
+
+All platform and agent company logos are stored locally in [`assets/logos/`](assets/logos/) as lightweight vector SVGs, optimized for dark mode contrast and offline reliability.
+The maintenance script [`.github/scripts/download_logos.py`](.github/scripts/download_logos.py) automatically builds and updates these assets from Simple Icons and custom brand vectors.
 
 ## 🤝 How to contribute
 

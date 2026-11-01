@@ -37,10 +37,11 @@ COUNTRY_RE = re.compile(r"^(?:[A-Z]{2}|GLOBAL|LATAM)$")
 # data/agents.csv: one row per specific agent named in events.csv (groups of agents get no row).
 # Every value comes from an official source; "unknown" when the source doesn't give it.
 AGENT_COLUMNS = [
-    "agent", "company", "type", "type_source", "what_it_does", "user_agent", "launch_date", "source_url",
+    "agent", "company", "category", "type", "type_source", "what_it_does", "user_agent", "launch_date", "source_url",
     "available_countries", "excluded_countries", "availability_source_url", "availability_source_type",
     "availability_notes", "checked_date", "tracking",
 ]
+AGENT_CATEGORIES = {"autonomous", "task_automation", "conversational", "user_proxy", "crawler", "unknown"}
 AGENT_TYPES = {"cloud", "local", "crawler", "unknown"}
 # type_source: "official" when the source states the type, "inferred" when we deduced it, "unknown" with type unknown.
 TYPE_SOURCES = {"official", "inferred"}
@@ -159,6 +160,9 @@ def validate_agents():
         if name in seen:
             error(line, f'Duplicate agent "{r["agent"]}": already on line {seen[name]}')
         seen.setdefault(name, line)
+
+        if r["category"] and r["category"] not in AGENT_CATEGORIES:
+            error(line, f'category "{r["category"]}" is not allowed. Use one of: ' + ", ".join(f'"{c}"' for c in sorted(AGENT_CATEGORIES)))
 
         if r["type"] and r["type"] not in AGENT_TYPES:
             error(line, f'type "{r["type"]}" is not allowed. Use one of: ' + ", ".join(f'"{t}"' for t in sorted(AGENT_TYPES)))

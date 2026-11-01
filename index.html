@@ -425,9 +425,9 @@
     color: var(--border);
   }
   .platform-avatar {
-    width: 36px;
-    height: 36px;
-    border-radius: 8px;
+    width: 38px;
+    height: 38px;
+    border-radius: 9px;
     background: var(--surface-2);
     border: 1px solid var(--border);
     display: flex;
@@ -437,6 +437,29 @@
     font-weight: 800;
     color: var(--accent);
     flex-shrink: 0;
+    overflow: hidden;
+    position: relative;
+  }
+  .platform-avatar.small {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    font-size: 0.72rem;
+  }
+  .platform-avatar img, .agent-company-logo img {
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+    display: block;
+  }
+  .platform-avatar.small img {
+    width: 14px;
+    height: 14px;
+  }
+  .table-platform-cell {
+    display: flex;
+    align-items: center;
+    gap: 12px;
   }
   .platform-name {
     font-size: 1rem;
@@ -667,17 +690,195 @@
   .event .notes { margin: 10px 0 0; font-size: 0.88rem; color: #cbd5e1; line-height: 1.5; }
 
   /* Agents Directory */
-  .agents-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
-  .agent-card { padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
-  .agent-card h3 { margin: 0; font-size: 1.05rem; color: #fff; }
-  .agent-card p { margin: 8px 0 0; font-size: 0.88rem; color: var(--text-muted); }
-  .agent-card dl { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; margin: 12px 0 0; font-size: 0.82rem; }
+  .agent-categories-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 14px 0 20px;
+  }
+  .category-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .category-chip:hover {
+    background: var(--surface-hover);
+    color: var(--text);
+    border-color: var(--border-light);
+  }
+  .category-chip.active {
+    background: var(--surface-2);
+    color: var(--text);
+    border-color: var(--accent);
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.25);
+  }
+  .category-chip .chip-count {
+    background: rgba(255, 255, 255, 0.08);
+    padding: 1px 7px;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    color: var(--text-dim);
+  }
+  .category-chip.active .chip-count {
+    color: var(--accent);
+    background: rgba(56, 189, 248, 0.15);
+  }
+  .agents-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 16px; }
+  .agent-card {
+    padding: 18px 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    display: flex;
+    flex-direction: column;
+    transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .agent-card:hover {
+    border-color: var(--border-light);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+  }
+  .agent-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+  .agent-card-identity {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+  }
+  .agent-company-logo {
+    width: 38px;
+    height: 38px;
+    border-radius: 9px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+  .agent-company-logo.small {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+  }
+  .agent-company-logo.small img {
+    width: 14px;
+    height: 14px;
+  }
+  .agent-company-logo .avatar-fallback {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--accent);
+  }
+  .agent-company-logo.small .avatar-fallback {
+    font-size: 0.72rem;
+  }
+  .agent-card h3 { margin: 0; font-size: 1.05rem; color: #fff; line-height: 1.25; }
+  .agent-company-name { font-size: 0.8rem; color: var(--text-muted); font-weight: 600; margin-top: 2px; }
+  .agent-badges-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 6px 0 10px;
+  }
+  .category-pill, .runtime-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.74rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 999px;
+    line-height: 1.3;
+  }
+  .category-pill.cat-autonomous {
+    background: rgba(168, 85, 247, 0.15);
+    border: 1px solid rgba(168, 85, 247, 0.35);
+    color: #c084fc;
+  }
+  .category-pill.cat-task_automation {
+    background: rgba(245, 158, 11, 0.15);
+    border: 1px solid rgba(245, 158, 11, 0.35);
+    color: #fbbf24;
+  }
+  .category-pill.cat-conversational {
+    background: rgba(56, 189, 248, 0.15);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    color: #38bdf8;
+  }
+  .category-pill.cat-user_proxy {
+    background: rgba(20, 184, 166, 0.15);
+    border: 1px solid rgba(20, 184, 166, 0.35);
+    color: #2dd4bf;
+  }
+  .category-pill.cat-crawler {
+    background: rgba(148, 163, 184, 0.12);
+    border: 1px solid rgba(148, 163, 184, 0.28);
+    color: #cbd5e1;
+  }
+  .category-pill.cat-unknown {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+  }
+  .runtime-pill {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+  }
+  .agent-card p { margin: 4px 0 0; font-size: 0.88rem; color: var(--text-muted); flex-grow: 1; }
+  .agent-card dl { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; margin: 12px 0 0; font-size: 0.82rem; border-top: 1px solid var(--border); padding-top: 10px; }
   .agent-card dt { color: var(--text-dim); }
   .agent-card dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+  .agent-card .source-link { color: var(--accent); font-weight: 600; }
   .watch-tag {
-    display: inline-block; margin-top: 6px; padding: 2px 8px;
+    display: inline-block; padding: 2px 8px;
     border: 1px dashed var(--accent); border-radius: 999px;
     color: var(--accent); font-size: 0.72rem; font-weight: 600;
+    white-space: nowrap;
+  }
+  .avail-details {
+    display: inline-block;
+    font-size: 0.82rem;
+  }
+  .avail-details summary {
+    cursor: pointer;
+    color: var(--accent);
+    font-weight: 500;
+    user-select: none;
+    outline: none;
+  }
+  .avail-details summary:hover {
+    text-decoration: underline;
+  }
+  .avail-codes-box {
+    margin-top: 6px;
+    padding: 6px 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    max-height: 90px;
+    overflow-y: auto;
+    font-size: 0.74rem;
+    color: var(--text-dim);
+    line-height: 1.45;
+    word-break: break-word;
   }
 
   .empty, .error {
@@ -1153,6 +1354,7 @@
     <p style="color:var(--text-muted); margin: -4px 0 16px; font-size:0.9rem;" id="txt-agents-desc">
       Profiles of AI agents and bots named above, explaining what they do, who built them, and where they operate.
     </p>
+    <div id="agent-categories-bar" class="agent-categories-bar"></div>
     <div id="agents"></div>
   </section>
 
@@ -1257,6 +1459,8 @@ const I18N = {
     historySubtitle: "Chronological AI access history and verified sources",
     closeModal: "Close",
     eventsCount: "events recorded",
+    category: "Category",
+    allCategories: "All Categories",
   },
   es: {
     badge: "Monitor de Acceso de Agentes de IA",
@@ -1309,6 +1513,8 @@ const I18N = {
     historySubtitle: "Historial cronológico de accesos de IA y fuentes verificadas",
     closeModal: "Cerrar",
     eventsCount: "eventos registrados",
+    category: "Categoría",
+    allCategories: "Todas las categorías",
   },
   zh: {
     badge: "自主AI智能体访问监测",
@@ -1361,6 +1567,8 @@ const I18N = {
     historySubtitle: "AI智能体访问策略历史演变与权威核实来源",
     closeModal: "关闭",
     eventsCount: "条记录",
+    category: "分类",
+    allCategories: "全部分类",
   }
 };
 
@@ -1701,6 +1909,13 @@ const I18N_DATA = {
     "Xiaomei": "Asistente de servicios y vida cotidiana de Meituan, utilizado a través de la aplicación Xiaomei.",
     "WeChat AI Agent": "IA de mini-programas de WeChat. Responde a los usuarios en el chat y ejecuta funciones de mini-programas para completar tareas.",
     "A-Bao": "Agente de servicios de vida impulsado por IA de Alipay (lanzado en junio de 2026), capaz de pedir comida, agendar citas y reservar viajes.",
+    "Claude Duet": "Agente autónomo de Anthropic con iniciativa propia: ejecuta tareas delegadas y supervisa aplicaciones conectadas desde su propia máquina virtual en la nube, solicitando aprobación antes de actuar.",
+    "Dots": "Agentes permanentes y siempre activos de OpenAI en ChatGPT. Cada dot cuenta con su propio entorno informático en la nube, aprende tu forma de trabajar y avanza en tus metas en segundo plano entre conversaciones.",
+    "Hermes Agent": "Agente de código abierto de Nous Research que se ejecuta en tu propio servidor o computadora, retiene lo aprendido y amplía sus capacidades a medida que funciona. Se opera vía terminal o mensajería.",
+    "Manus-User": "Identificador de agente que visita páginas web cuando un usuario de Manus ejecuta un flujo de trabajo autónomo o realiza consultas.",
+    "Gemini Spark": "Agente de IA personal 24/7 de Google en la app Gemini. Funciona en la nube, continuando sus tareas incluso con el equipo apagado o el teléfono bloqueado (rebautizado como Task).",
+    "Perplexity Computer": "Trabajador digital de propósito general de Perplexity: ejecuta flujos de trabajo de múltiples pasos utilizando software habitual en un entorno de cómputo aislado con navegador y archivos propios.",
+    "Instinct": "Asistente personal proactivo que comprende tu flujo de trabajo y prioridades, capaz de operar teléfonos y computadoras emulando la interacción humana.",
     "Applebot-Extended": "Rastreador de Apple que recopila datos web utilizados para entrenar modelos fundacionales de Apple Intelligence.",
     "MistralAI-Training": "Rastreador de Mistral AI utilizado para recolectar datos de entrenamiento para sus modelos de lenguaje.",
     "Webzio-Extended": "Rastreador web comercial enfocado en extracción de datos estructurados e indexación para IA.",
@@ -1739,6 +1954,13 @@ const I18N_DATA = {
     "Xiaomei": "美团旗下生活服务智能助手，集成于“小美”应用中提供外卖与到店团购服务。",
     "WeChat AI Agent": "微信小程序生态 AI 智能体，直接在聊天中响应用户并调用对应小程序功能完成服务闭环。",
     "A-Bao": "支付宝推出的 AI 生活管家“阿宝”（2026年6月上线），可代用户完成点外卖、挂号就医及机票酒店预订。",
+    "Claude Duet": "Anthropic 旗下具备自主主动性的智能体：在云端专属虚拟机中处理委托任务并监控关联应用，在关键操作前主动请求用户批准。",
+    "Dots": "OpenAI 在 ChatGPT 中推出的常驻智能体（Dots）。每个 Dot 拥有独立的云端计算机环境，能持续学习工作习惯并在对话间隙自主推进长期目标。",
+    "Hermes Agent": "Nous Research 推出的开源智能体，可部署在用户自建服务器或本地电脑上，具备长期记忆与持续进化能力，支持通过即时通讯与终端交互。",
+    "Manus-User": "当 Manus 用户发起自主多步工作流或网络检索任务时，用于访问目标网页的请求代理标识。",
+    "Gemini Spark": "谷歌在 Gemini 应用中推出的 24/7 个人 AI 智能体。完全运行于云端，即使合上电脑或锁定手机也能持续后台工作（现已更名为 Task）。",
+    "Perplexity Computer": "Perplexity 推出的通用数字工作者：在配备独立浏览器与文件系统的隔离计算环境中，模拟真实用户操作多款软件完成多步骤复杂工作流。",
+    "Instinct": "能够理解用户当前工作上下文与核心诉求的个人智能助手，可像真人一样自主操控手机与电脑界面。",
     "Applebot-Extended": "苹果旗下爬虫，专门用于抓取网页内容以训练 Apple Intelligence 基础大模型。",
     "MistralAI-Training": "Mistral AI 的网络爬虫，用于抓取数据并训练其前沿开源与商用大模型。",
     "Webzio-Extended": "面向结构化数据提取与 AI 索引的商业网络爬虫。",
@@ -1834,13 +2056,199 @@ const VERIF = { official: 'Official', 'media report': 'Media report', 'user repo
 
 const initialRegion = urlParams.get('region') || '';
 const initialSearch = urlParams.get('q') || urlParams.get('search') || '';
-const filters = { status: '', type: '', region: initialRegion, search: initialSearch };
+const filters = { status: '', type: '', region: initialRegion, search: initialSearch, agentCategory: urlParams.get('category') || '' };
 let events = [];
 let agents = [];
 let agentMatchers = [];
 
 const norm = s => (s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').trim().toLowerCase();
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+const LOGO_MAP = {
+  // Platforms
+  'airbnb': 'airbnb.svg',
+  'alibaba.com': 'alibaba.svg',
+  'alipay': 'alipay.svg',
+  'amazon': 'amazon.svg',
+  'cloudflare': 'cloudflare.svg',
+  'ctrip': 'ctrip.svg',
+  'doordash': 'doordash.svg',
+  'douyin': 'douyin.svg',
+  'dow jones & company / nyp holdings': 'dowjones.svg',
+  'dow jones': 'dowjones.svg',
+  'encyclopædia britannica / merriam-webster': 'britannica.svg',
+  'encyclopaedia britannica / merriam-webster': 'britannica.svg',
+  'britannica': 'britannica.svg',
+  'etsy': 'etsy.svg',
+  'facebook': 'facebook.svg',
+  'google': 'google.svg',
+  'instacart': 'instacart.svg',
+  'instagram': 'instagram.svg',
+  'jd.com': 'jd.svg',
+  'jd': 'jd.svg',
+  'kuaishou': 'kuaishou.svg',
+  'linkedin': 'linkedin.svg',
+  'liverpool': 'liverpool.svg',
+  'maoyan': 'maoyan.svg',
+  'mastercard': 'mastercard.svg',
+  'meituan': 'meituan.svg',
+  'mercado libre': 'mercadolibre.svg',
+  'netflix': 'netflix.svg',
+  'paypal': 'paypal.svg',
+  'pinduoduo': 'pinduoduo.svg',
+  'reddit': 'reddit.svg',
+  'reuters': 'reuters.svg',
+  'shopify': 'shopify.svg',
+  'taobao': 'taobao.svg',
+  'target': 'target.svg',
+  'the guardian': 'theguardian.svg',
+  'the new york times': 'nytimes.svg',
+  'visa': 'visa.svg',
+  'walmart': 'walmart.svg',
+  'wechat, taobao, honor of kings and 148 other apps': 'wechat.svg',
+  'wechat': 'wechat.svg',
+  'weibo': 'weibo.svg',
+  'wikipedia': 'wikipedia.svg',
+  'williams-sonoma': 'williamssonoma.svg',
+  'zhihu': 'zhihu.svg',
+  'ebay': 'ebay.svg',
+
+  // Agent Companies
+  'alibaba': 'alibaba.svg',
+  'ant group': 'alipay.svg',
+  'anthropic': 'anthropic.svg',
+  'apple': 'apple.svg',
+  'bytedance': 'bytedance.svg',
+  'cohere': 'cohere.svg',
+  'luckin coffee': 'luckin.svg',
+  'luckin': 'luckin.svg',
+  'manus': 'manus.svg',
+  'meta': 'meta.svg',
+  'microsoft': 'microsoft.svg',
+  'mistral ai': 'mistral.svg',
+  'nous research': 'nousresearch.svg',
+  'openai': 'openai.svg',
+  'openclaw foundation': 'openclaw.svg',
+  'openclaw': 'openclaw.svg',
+  'perplexity': 'perplexity.svg',
+  'spear street technology': 'spearstreet.svg',
+  'spear street': 'spearstreet.svg',
+  'tencent': 'tencent.svg',
+  'xai': 'xai.svg',
+};
+
+const LOGO_KEYS = Object.keys(LOGO_MAP).sort((a, b) => b.length - a.length);
+
+function getLogo(name) {
+  if (!name) return null;
+  const k = norm(name);
+  if (LOGO_MAP[k]) return LOGO_MAP[k];
+  for (const key of LOGO_KEYS) {
+    if (k.includes(key)) return LOGO_MAP[key];
+  }
+  return null;
+}
+
+function platformAvatar(platform, isSmall = false) {
+  const logo = getLogo(platform);
+  const initial = (platform || '?').charAt(0).toUpperCase();
+  const cls = isSmall ? 'platform-avatar small' : 'platform-avatar';
+  if (logo) {
+    return `<div class="${cls}">
+      <img src="assets/logos/${logo}" alt="${esc(platform)}" class="platform-logo" loading="lazy" onerror="this.style.display='none';if(this.nextElementSibling)this.nextElementSibling.style.display='flex';">
+      <span class="avatar-fallback" style="display:none;">${initial}</span>
+    </div>`;
+  }
+  return `<div class="${cls}"><span class="avatar-fallback">${initial}</span></div>`;
+}
+
+function companyAvatar(company, isSmall = false) {
+  const logo = getLogo(company);
+  const initial = (company || '?').charAt(0).toUpperCase();
+  const cls = isSmall ? 'agent-company-logo small' : 'agent-company-logo';
+  if (logo) {
+    return `<div class="${cls}" title="${esc(company)}">
+      <img src="assets/logos/${logo}" alt="${esc(company)}" loading="lazy" onerror="this.style.display='none';if(this.nextElementSibling)this.nextElementSibling.style.display='flex';">
+      <span class="avatar-fallback" style="display:none;">${initial}</span>
+    </div>`;
+  }
+  return `<div class="${cls}" title="${esc(company)}"><span class="avatar-fallback">${initial}</span></div>`;
+}
+
+const AGENT_CATEGORIES_META = {
+  'autonomous': {
+    icon: '🤖',
+    cls: 'cat-autonomous',
+    en: 'Autonomous & Always-on',
+    es: 'Autónomo y Always-on',
+    zh: '自主与常驻智能体'
+  },
+  'task_automation': {
+    icon: '📱',
+    cls: 'cat-task_automation',
+    en: 'Task Automation',
+    es: 'Automatización de Tareas',
+    zh: '任务与设备自动化'
+  },
+  'conversational': {
+    icon: '💬',
+    cls: 'cat-conversational',
+    en: 'Conversational',
+    es: 'Asistente Conversacional',
+    zh: '对话式助手'
+  },
+  'user_proxy': {
+    icon: '🔄',
+    cls: 'cat-user_proxy',
+    en: 'User Request Proxy',
+    es: 'Proxy de Usuario',
+    zh: '用户请求代理'
+  },
+  'crawler': {
+    icon: '🕸️',
+    cls: 'cat-crawler',
+    en: 'Web Crawler',
+    es: 'Rastreador Web',
+    zh: '网络爬虫'
+  },
+  'unknown': {
+    icon: '⚙️',
+    cls: 'cat-unknown',
+    en: 'Uncategorized',
+    es: 'Sin categorizar',
+    zh: '未分类'
+  }
+};
+
+function getCategoryMeta(cat) {
+  return AGENT_CATEGORIES_META[norm(cat)] || AGENT_CATEGORIES_META['unknown'];
+}
+
+function getRuntimeLabel(type) {
+  const t = norm(type);
+  if (t === 'cloud') {
+    return {
+      icon: '☁️',
+      label: currentLang === 'zh' ? '云端运行' : (currentLang === 'es' ? 'Nube' : 'Cloud')
+    };
+  }
+  if (t === 'local') {
+    return {
+      icon: '💻',
+      label: currentLang === 'zh' ? '本地运行' : (currentLang === 'es' ? 'Dispositivo local' : 'Local device')
+    };
+  }
+  if (t === 'crawler') {
+    return {
+      icon: '🕸️',
+      label: currentLang === 'zh' ? '网络抓取' : (currentLang === 'es' ? 'Rastreador' : 'Crawler')
+    };
+  }
+  return {
+    icon: '⚙️',
+    label: currentLang === 'zh' ? '未知环境' : (currentLang === 'es' ? 'Desconocido' : 'Unknown runtime')
+  };
+}
 
 function getEventRegionKey(e) {
   const raw = norm(e.scope || e.alcance || '');
@@ -2127,8 +2535,16 @@ function tipHTML(text, extra) {
   const unknownComp = currentLang === 'zh' ? '未知研发公司' : (currentLang === 'es' ? 'Empresa desconocida' : 'Unknown');
   return head + list.map(a => {
     const desc = getAgentDesc(a) || (currentLang === 'zh' ? '暂无官方技术说明。' : (currentLang === 'es' ? 'Sin descripción oficial.' : 'No official description.'));
+    const catMeta = getCategoryMeta(a.category);
+    const catLabel = currentLang === 'zh' ? catMeta.zh : (currentLang === 'es' ? catMeta.es : catMeta.en);
     return `<div class="tip-agent">
-      <b>${esc(a.agent)}</b> <span style="color:var(--text-dim)">· ${esc(a.company || unknownComp)}</span>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+        ${companyAvatar(a.company, true)}
+        <div>
+          <b>${esc(a.agent)}</b> <span style="color:var(--text-dim)">· ${esc(a.company || unknownComp)}</span>
+          <div style="font-size:0.75rem;color:var(--accent);font-weight:600;">${catMeta.icon} ${esc(catLabel)}</div>
+        </div>
+      </div>
       <p>${esc(desc)}</p>
     </div>`;
   }).join('');
@@ -2226,14 +2642,13 @@ function renderPlatforms() {
   if (currentView === 'cards') {
     container.innerHTML = `<div class="platforms-grid">${filtered.map(e => {
       const group = (groups.get(e.platformKey) || [e]).filter(item => !filters.type || item.typeKey === filters.type);
-      const initial = e.platform.charAt(0).toUpperCase();
       const scopeInfo = getScopeDisplay(e);
       return `<article class="platform-card">
         <div>
           <div class="platform-card-top">
             <div class="platform-card-header">
               <div class="platform-info">
-                <div class="platform-avatar">${initial}</div>
+                ${platformAvatar(e.platform)}
                 <div class="platform-name">${esc(e.platform)} <span class="country-pill" title="${esc(countryName(e.countryKey))}">${esc(e.countryKey)}</span></div>
               </div>
               <div class="platform-badge-box">${badge(e)}</div>
@@ -2281,13 +2696,16 @@ function renderPlatforms() {
         const scopeInfo = getScopeDisplay(e);
         return `<tr>
           <td class="platform">
-            <div>
-              ${esc(e.platform)} ${countryTag(e)} <span style="margin-left:6px;" title="${esc(scopeInfo.tooltip)}">${scopeInfo.html}</span>
-              <div style="margin-top:6px;">
-                <button type="button" class="btn-table-timeline" data-platform="${esc(e.platformKey)}">
-                  <span>🕒 ${I18N[currentLang].viewTimeline}</span>
-                  <span class="btn-timeline-count">${group.length}</span>
-                </button>
+            <div class="table-platform-cell">
+              ${platformAvatar(e.platform, true)}
+              <div>
+                ${esc(e.platform)} ${countryTag(e)} <span style="margin-left:6px;" title="${esc(scopeInfo.tooltip)}">${scopeInfo.html}</span>
+                <div style="margin-top:6px;">
+                  <button type="button" class="btn-table-timeline" data-platform="${esc(e.platformKey)}">
+                    <span>🕒 ${I18N[currentLang].viewTimeline}</span>
+                    <span class="btn-timeline-count">${group.length}</span>
+                  </button>
+                </div>
               </div>
             </div>
           </td>
@@ -2336,7 +2754,7 @@ function renderTimeline() {
     return `<li class="event ${cls}">
       <div class="top">
         <span class="date">${fmtDate(e.date)}</span>
-        <span class="title">${esc(e.platform)} ${countryTag(e)} <span style="margin-left:4px;" title="${esc(scopeInfo.tooltip)}">${scopeInfo.html}</span></span>
+        <span class="title" style="display:inline-flex;align-items:center;gap:8px;">${platformAvatar(e.platform, true)}<span>${esc(e.platform)} ${countryTag(e)} <span style="margin-left:4px;" title="${esc(scopeInfo.tooltip)}">${scopeInfo.html}</span></span></span>
         ${badge(e)}
       </div>
       <div class="meta">
@@ -2351,16 +2769,69 @@ function renderTimeline() {
   }).join('')}</ol>`;
 }
 
+function renderAgentCategoryBar() {
+  const bar = document.getElementById('agent-categories-bar');
+  if (!bar) return;
+
+  const categories = ['autonomous', 'task_automation', 'conversational', 'user_proxy', 'crawler'];
+  const allLabel = currentLang === 'zh' ? '全部分类' : (currentLang === 'es' ? 'Todas las categorías' : 'All Categories');
+
+  const q = norm(filters.search);
+  const baseList = agents.filter(a => {
+    if (!q) return true;
+    return norm(a.agent).includes(q) || norm(a.company).includes(q) || norm(a.what_it_does).includes(q) || norm(a.category).includes(q);
+  });
+
+  const counts = { '': baseList.length };
+  for (const c of categories) {
+    counts[c] = baseList.filter(a => norm(a.category) === c).length;
+  }
+
+  bar.innerHTML = `
+    <button type="button" class="category-chip ${filters.agentCategory === '' ? 'active' : ''}" data-category="">
+      <span>🏷️</span>
+      <span class="chip-label">${esc(allLabel)}</span>
+      <span class="chip-count">${counts['']}</span>
+    </button>
+    ${categories.map(c => {
+      const meta = AGENT_CATEGORIES_META[c];
+      const label = currentLang === 'zh' ? meta.zh : (currentLang === 'es' ? meta.es : meta.en);
+      const active = filters.agentCategory === c ? 'active' : '';
+      return `<button type="button" class="category-chip ${active}" data-category="${c}">
+        <span>${meta.icon}</span>
+        <span class="chip-label">${esc(label)}</span>
+        <span class="chip-count">${counts[c] || 0}</span>
+      </button>`;
+    }).join('')}
+  `;
+
+  bar.querySelectorAll('.category-chip').forEach(btn => {
+    btn.onclick = () => {
+      const cat = btn.dataset.category;
+      filters.agentCategory = (filters.agentCategory === cat) ? '' : cat;
+      renderAgents();
+    };
+  });
+}
+
 function renderAgents() {
   const el = document.getElementById('agents');
   if (!agents.length) {
     el.innerHTML = `<div class="empty">No agents loaded.</div>`;
     return;
   }
+
+  renderAgentCategoryBar();
+
   const q = norm(filters.search);
+  const cat = filters.agentCategory;
   const list = agents.filter(a => {
+    if (cat && norm(a.category) !== cat) return false;
     if (!q) return true;
-    return norm(a.agent).includes(q) || norm(a.company).includes(q) || norm(a.what_it_does).includes(q);
+    return norm(a.agent).includes(q) ||
+           norm(a.company).includes(q) ||
+           norm(a.what_it_does).includes(q) ||
+           norm(a.category).includes(q);
   }).sort((a, b) => a.company.localeCompare(b.company) || a.agent.localeCompare(b.agent));
 
   document.getElementById('agents-count').textContent = list.length;
@@ -2370,24 +2841,76 @@ function renderAgents() {
   const worldwideLabel = currentLang === 'zh' ? '全球范围' : (currentLang === 'es' ? 'Mundial (Global)' : 'Worldwide');
   const noDataLabel = currentLang === 'zh' ? '暂无官方数据' : (currentLang === 'es' ? 'Sin datos oficiales' : 'No data');
   const unknownComp = currentLang === 'zh' ? '未知研发公司' : (currentLang === 'es' ? 'Empresa desconocida' : 'Unknown');
+  const sourceLabel = currentLang === 'zh' ? '官方来源' : (currentLang === 'es' ? 'Fuente oficial' : 'Official source');
+
+  if (!list.length) {
+    el.innerHTML = `<div class="empty"><h3>🔍 ${I18N[currentLang].noMatches}</h3></div>`;
+    return;
+  }
 
   el.innerHTML = `<div class="agents-grid">${list.map(a => {
     const desc = getAgentDesc(a) || (currentLang === 'zh' ? '暂无官方技术说明。' : (currentLang === 'es' ? 'Sin descripción oficial.' : 'No description.'));
-    const typeLabel = getTypeLabel(norm(a.type));
-    let avail = a.available_countries;
-    if (avail === 'GLOBAL') avail = worldwideLabel;
-    else if (!avail || avail === 'no data') avail = noDataLabel;
+    const catMeta = getCategoryMeta(a.category);
+    const catLabel = currentLang === 'zh' ? catMeta.zh : (currentLang === 'es' ? catMeta.es : catMeta.en);
+    const runtime = getRuntimeLabel(a.type);
+    let availHtml = '';
+    const rawAvail = (a.available_countries || '').trim();
+    if (rawAvail === 'GLOBAL') {
+      availHtml = esc(worldwideLabel);
+    } else if (!rawAvail || rawAvail === 'no data') {
+      availHtml = esc(noDataLabel);
+    } else if (rawAvail.includes(';')) {
+      const codes = rawAvail.split(';').map(c => c.trim()).filter(Boolean);
+      if (codes.length > 4) {
+        const countLabel = currentLang === 'zh'
+          ? `${codes.length} 个国家与地区 (点击展开)`
+          : (currentLang === 'es' ? `${codes.length} países y territorios (ver lista)` : `${codes.length} countries & territories (expand)`);
+        availHtml = `<details class="avail-details"><summary>${esc(countLabel)}</summary><div class="avail-codes-box">${esc(codes.join(', '))}</div></details>`;
+      } else {
+        availHtml = esc(codes.join(', '));
+      }
+    } else {
+      availHtml = esc(rawAvail);
+    }
+
+    let srcLink = '';
+    if (a.source_url && a.source_url !== 'unknown') {
+      const urls = a.source_url.split(';').map(u => u.trim()).filter(Boolean);
+      if (urls.length > 0) {
+        srcLink = urls.map(u => {
+          let host = 'Official Source';
+          try { host = new URL(u).hostname.replace(/^www\./, ''); } catch {}
+          return `<a href="${esc(u)}" target="_blank" rel="noopener noreferrer" class="source-link">${esc(host)} ↗</a>`;
+        }).join(' · ');
+      }
+    }
 
     return `<article class="agent-card">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
-        <h3>${esc(a.agent)}</h3>
+      <div class="agent-card-header">
+        <div class="agent-card-identity">
+          ${companyAvatar(a.company)}
+          <div>
+            <h3>${esc(a.agent)}</h3>
+            <div class="agent-company-name">${esc(a.company || unknownComp)}</div>
+          </div>
+        </div>
         ${a.tracking === 'watchlist' ? `<span class="watch-tag">${watchLabel}</span>` : ''}
       </div>
-      <div style="font-size:0.8rem;color:var(--accent);font-weight:600;margin-top:2px;">${esc(a.company || unknownComp)} · ${esc(typeLabel || a.type || 'Type unknown')}</div>
+      <div class="agent-badges-row">
+        <span class="category-pill ${catMeta.cls}">
+          <span>${catMeta.icon}</span>
+          <span>${esc(catLabel)}</span>
+        </span>
+        <span class="runtime-pill">
+          <span>${runtime.icon}</span>
+          <span>${esc(runtime.label)}</span>
+        </span>
+      </div>
       <p>${esc(desc)}</p>
       <dl>
         <dt>${userAgentLabel}</dt><dd>${esc(a.user_agent || unknownComp)}</dd>
-        <dt>${availLabel}</dt><dd>${esc(avail)}</dd>
+        <dt>${availLabel}</dt><dd>${availHtml}</dd>
+        ${srcLink ? `<dt>${sourceLabel}</dt><dd>${srcLink}</dd>` : ''}
       </dl>
     </article>`;
   }).join('')}</div>`;
@@ -2463,7 +2986,15 @@ function renderPlatformTimelineModal(platformKey) {
   const latest = pEvents[0];
   const initial = latest.platform.charAt(0).toUpperCase();
 
-  document.getElementById('modal-avatar').textContent = initial;
+  const modalAvatar = document.getElementById('modal-avatar');
+  if (modalAvatar) {
+    const logo = getLogo(latest.platform);
+    if (logo) {
+      modalAvatar.innerHTML = `<img src="assets/logos/${logo}" alt="${esc(latest.platform)}" class="platform-logo" loading="lazy" onerror="this.style.display='none';if(this.nextElementSibling)this.nextElementSibling.style.display='flex';"><span class="avatar-fallback" style="display:none;">${initial}</span>`;
+    } else {
+      modalAvatar.innerHTML = `<span class="avatar-fallback">${initial}</span>`;
+    }
+  }
   document.getElementById('modal-platform-name').textContent = latest.platform;
 
   const cPill = document.getElementById('modal-country-pill');
@@ -2736,6 +3267,19 @@ Promise.all([loadCSV('data/events.csv'), agentsLoaded])
     if (urlParams.get('scroll') === 'timeline') {
       const tl = document.getElementById('timeline');
       if (tl) tl.scrollIntoView();
+    }
+    if (urlParams.get('scroll') === 'agents') {
+      const el = document.getElementById('txt-sec-agents') || document.getElementById('agents');
+      if (el) el.scrollIntoView();
+    }
+    if (urlParams.get('only') === 'agents') {
+      document.querySelectorAll('section').forEach(s => {
+        if (!s.querySelector('#agents')) s.style.display = 'none';
+      });
+      document.querySelector('.hero')?.remove();
+      document.querySelector('.explainer-box')?.remove();
+      document.querySelector('.stats')?.remove();
+      document.querySelector('.filters')?.remove();
     }
     if (currentView === 'table') {
       document.querySelectorAll('.view-btn').forEach(b => b.classList.toggle('active', b.dataset.view === 'table'));
