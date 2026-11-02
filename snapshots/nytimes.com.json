@@ -1,0 +1,131 @@
+{
+  "url": "https://www.nytimes.com/robots.txt",
+  "all_robots_blocked": false,
+  "ai_rules": {
+    "Amazonbot": [
+      "Disallow: /wirecutter/"
+    ],
+    "anthropic-ai": [
+      "Disallow: /"
+    ],
+    "Applebot-Extended": [
+      "Disallow: /"
+    ],
+    "Brightbot": [
+      "Disallow: /"
+    ],
+    "Bytespider": [
+      "Disallow: /"
+    ],
+    "CCBot": [
+      "Disallow: /"
+    ],
+    "ChatGPT-User": [
+      "Disallow: /"
+    ],
+    "Claude-SearchBot": [
+      "Disallow: /"
+    ],
+    "Claude-User": [
+      "Disallow: /"
+    ],
+    "Claude-Web": [
+      "Disallow: /"
+    ],
+    "ClaudeBot": [
+      "Disallow: /"
+    ],
+    "cohere-ai": [
+      "Disallow: /"
+    ],
+    "Diffbot": [
+      "Disallow: /"
+    ],
+    "Diffbot-User": [
+      "Disallow: /"
+    ],
+    "DuckAssistBot": [
+      "Disallow: /"
+    ],
+    "EchoboxBot": [
+      "Disallow: /"
+    ],
+    "ExaBot": [
+      "Disallow: /"
+    ],
+    "ExaSearchBot": [
+      "Disallow: /"
+    ],
+    "FacebookBot": [
+      "Disallow: /"
+    ],
+    "facebookexternalhit": [
+      "Allow: /*?*smid="
+    ],
+    "FirecrawlAgent": [
+      "Disallow: /"
+    ],
+    "FriendlyCrawler": [
+      "Disallow: /"
+    ],
+    "Google-CloudVertexBot": [
+      "Disallow: /",
+      "Allow: /wirecutter/",
+      "Allow: /athletic/"
+    ],
+    "Google-Extended": [
+      "Disallow: /"
+    ],
+    "GPTBot": [
+      "Disallow: /"
+    ],
+    "ImagesiftBot": [
+      "Disallow: /"
+    ],
+    "Meta-ExternalAgent": [
+      "Disallow: /"
+    ],
+    "Meta-ExternalFetcher": [
+      "Disallow: /"
+    ],
+    "meta-webindexer": [
+      "Disallow: /"
+    ],
+    "MyCentralAIScraperBot": [
+      "Disallow: /"
+    ],
+    "OAI-SearchBot": [
+      "Disallow: /"
+    ],
+    "omgili": [
+      "Disallow: /"
+    ],
+    "omgilibot": [
+      "Disallow: /"
+    ],
+    "Perplexity-User": [
+      "Disallow: /"
+    ],
+    "PerplexityBot": [
+      "Disallow: /"
+    ],
+    "Poseidon Research Crawler": [
+      "Disallow: /"
+    ],
+    "quillbot.com": [
+      "Disallow: /"
+    ],
+    "Scrapy": [
+      "Disallow: /"
+    ],
+    "ShapBot": [
+      "Disallow: /"
+    ],
+    "Timpibot": [
+      "Disallow: /"
+    ],
+    "YouBot": [
+      "Disallow: /"
+    ]
+  }
+}

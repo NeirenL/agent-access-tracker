@@ -1,0 +1,50 @@
+{
+  "url": "https://x.com/robots.txt",
+  "all_robots_blocked": true,
+  "ai_rules": {
+    "FacebookBot": [
+      "Disallow: *"
+    ],
+    "facebookexternalhit": [
+      "Allow: /*?lang=",
+      "Allow: /*?s=",
+      "Allow: /*&s=",
+      "Allow: /*?t=",
+      "Allow: /*?ref_src=",
+      "Allow: /hashtag/*?src=",
+      "Allow: /search?*cashtagRestId=",
+      "Allow: /i/api/",
+      "Allow: /i/api/*",
+      "Disallow: /search?q=",
+      "Disallow: /search/realtime",
+      "Disallow: /search/users",
+      "Disallow: /search/*/grid",
+      "Disallow: /*?",
+      "Disallow: /*/followers",
+      "Disallow: /*/following",
+      "Disallow: /*/verified_followers",
+      "Disallow: /account/deactivated",
+      "Disallow: /settings/deactivated",
+      "Disallow: /*/likes",
+      "Disallow: /*/likes?",
+      "Disallow: /*/retweets",
+      "Disallow: /*/retweets?",
+      "Disallow: /*/media",
+      "Disallow: /*/media?",
+      "Disallow: /*/photo$",
+      "Disallow: /*/photo?"
+    ],
+    "Google-Extended": [
+      "Disallow: *"
+    ],
+    "Meta-ExternalAgent": [
+      "Disallow: *"
+    ],
+    "Meta-ExternalFetcher": [
+      "Disallow: *"
+    ],
+    "meta-webindexer": [
+      "Disallow: *"
+    ]
+  }
+}

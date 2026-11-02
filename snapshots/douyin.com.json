@@ -1,0 +1,70 @@
+{
+  "url": "https://www.douyin.com/robots.txt",
+  "all_robots_blocked": false,
+  "ai_rules": {
+    "Bytespider": [
+      "Disallow: /follow",
+      "Disallow: /user/?enter_from=video_detail&from_gid=*",
+      "Disallow: *seo_topic_aggr*",
+      "Disallow: *general_search*",
+      "Disallow: *enter_from=*",
+      "Disallow: *vid=*"
+    ],
+    "ChatGPT-User": [
+      "Disallow: /follow",
+      "Disallow: /user/?enter_from=video_detail&from_gid=*",
+      "Disallow: *seo_topic_aggr*",
+      "Disallow: *general_search*",
+      "Disallow: *enter_from=*",
+      "Disallow: *vid=*"
+    ],
+    "DeepSeekBot": [
+      "Disallow: /follow",
+      "Disallow: /user/?enter_from=video_detail&from_gid=*",
+      "Disallow: *seo_topic_aggr*",
+      "Disallow: *general_search*",
+      "Disallow: *enter_from=*",
+      "Disallow: *vid=*"
+    ],
+    "Google-Extended": [
+      "Disallow: /follow",
+      "Disallow: /user/?enter_from=video_detail&from_gid=*",
+      "Disallow: *seo_topic_aggr*",
+      "Disallow: *general_search*",
+      "Disallow: *enter_from=*",
+      "Disallow: *vid=*"
+    ],
+    "GPTBot": [
+      "Disallow: /follow",
+      "Disallow: /user/?enter_from=video_detail&from_gid=*",
+      "Disallow: *seo_topic_aggr*",
+      "Disallow: *general_search*",
+      "Disallow: *enter_from=*",
+      "Disallow: *vid=*"
+    ],
+    "OAI-SearchBot": [
+      "Disallow: /follow",
+      "Disallow: /user/?enter_from=video_detail&from_gid=*",
+      "Disallow: *seo_topic_aggr*",
+      "Disallow: *general_search*",
+      "Disallow: *enter_from=*",
+      "Disallow: *vid=*"
+    ],
+    "Perplexity-User": [
+      "Disallow: /follow",
+      "Disallow: /user/?enter_from=video_detail&from_gid=*",
+      "Disallow: *seo_topic_aggr*",
+      "Disallow: *general_search*",
+      "Disallow: *enter_from=*",
+      "Disallow: *vid=*"
+    ],
+    "PerplexityBot": [
+      "Disallow: /follow",
+      "Disallow: /user/?enter_from=video_detail&from_gid=*",
+      "Disallow: *seo_topic_aggr*",
+      "Disallow: *general_search*",
+      "Disallow: *enter_from=*",
+      "Disallow: *vid=*"
+    ]
+  }
+}

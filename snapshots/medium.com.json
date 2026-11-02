@@ -1,0 +1,86 @@
+{
+  "url": "https://medium.com/robots.txt",
+  "all_robots_blocked": false,
+  "ai_rules": {
+    "Amazonbot": [
+      "Disallow: /",
+      "Allow: /about",
+      "Allow: /business",
+      "Allow: /earn",
+      "Allow: /gift",
+      "Allow: /membership",
+      "Allow: /partner-program",
+      "Allow: /verified-authors"
+    ],
+    "Applebot-Extended": [
+      "Disallow: /",
+      "Allow: /about",
+      "Allow: /business",
+      "Allow: /earn",
+      "Allow: /gift",
+      "Allow: /membership",
+      "Allow: /partner-program",
+      "Allow: /verified-authors"
+    ],
+    "Bytespider": [
+      "Disallow: /",
+      "Allow: /about",
+      "Allow: /business",
+      "Allow: /earn",
+      "Allow: /gift",
+      "Allow: /membership",
+      "Allow: /partner-program",
+      "Allow: /verified-authors"
+    ],
+    "ClaudeBot": [
+      "Disallow: /",
+      "Allow: /about",
+      "Allow: /business",
+      "Allow: /earn",
+      "Allow: /gift",
+      "Allow: /membership",
+      "Allow: /partner-program",
+      "Allow: /verified-authors"
+    ],
+    "FacebookBot": [
+      "Disallow: /",
+      "Allow: /about",
+      "Allow: /business",
+      "Allow: /earn",
+      "Allow: /gift",
+      "Allow: /membership",
+      "Allow: /partner-program",
+      "Allow: /verified-authors"
+    ],
+    "GoogleOther": [
+      "Disallow: /",
+      "Allow: /about",
+      "Allow: /business",
+      "Allow: /earn",
+      "Allow: /gift",
+      "Allow: /membership",
+      "Allow: /partner-program",
+      "Allow: /verified-authors"
+    ],
+    "GPTBot": [
+      "Disallow: /",
+      "Allow: /about",
+      "Allow: /business",
+      "Allow: /earn",
+      "Allow: /gift",
+      "Allow: /membership",
+      "Allow: /partner-program",
+      "Allow: /verified-authors"
+    ],
+    "Meta-ExternalAgent": [
+      "Disallow: /",
+      "Allow: /about",
+      "Allow: /business",
+      "Allow: /earn",
+      "Allow: /gift",
+      "Allow: /membership",
+      "Allow: /partner-program",
+      "Allow: /verified-authors"
+    ]
+  }
+}
