@@ -1808,7 +1808,7 @@ Allow: /se/search/shops
 # llms.txt: https://www.etsy.com/llms.txt
 
 #
-# ¿Qué te pasa, calabaza?#   \
+# What's up?#   \
 #
 #    -----
 #   | . . |

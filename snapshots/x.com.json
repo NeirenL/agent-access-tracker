@@ -2,6 +2,9 @@
   "url": "https://x.com/robots.txt",
   "all_robots_blocked": true,
   "ai_rules": {
+    "__usage_ai-training": [
+      "Disallow: /"
+    ],
     "FacebookBot": [
       "Disallow: *"
     ],

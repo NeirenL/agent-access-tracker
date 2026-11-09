@@ -1,4 +1,5 @@
 [
+  "__usage_ai-training",
   "AddSearchBot",
   "AgentDataBot",
   "AgentTimes",
@@ -40,6 +41,7 @@
   "ChatGPT Agent",
   "ChatGPT-User",
   "Claude Duet",
+  "Claude-Agent",
   "Claude-Code",
   "Claude-SearchBot",
   "Claude-User",
