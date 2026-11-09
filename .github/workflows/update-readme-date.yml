@@ -3,7 +3,7 @@ name: Update README date
 on:
   push:
     branches: [main]
-    paths: [data/events.csv]
+    paths: [data/events.csv, data/agents.csv]
   workflow_dispatch: # also allows running it manually from the Actions tab
 
 permissions:

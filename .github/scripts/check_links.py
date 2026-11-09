@@ -12,8 +12,14 @@ CSV_PATH = sys.argv[1] if len(sys.argv) > 1 else "data/events.csv"
 REPORT_PATH = sys.argv[2] if len(sys.argv) > 2 else "report.md"
 AGENTS_PATH = sys.argv[3] if len(sys.argv) > 3 else (os.path.dirname(CSV_PATH) or ".") + "/agents.csv"
 HEADERS = {
-    "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36",
-    "Accept": "text/html,application/xhtml+xml,*/*;q=0.8",
+    "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    "Accept-Language": "en-US,en;q=0.9",
+    "Sec-Fetch-Dest": "document",
+    "Sec-Fetch-Mode": "navigate",
+    "Sec-Fetch-Site": "none",
+    "Sec-Fetch-User": "?1",
+    "Upgrade-Insecure-Requests": "1",
 }
 # Many sites answer automated requests with these codes even when the page exists,
 # so they are reported as "could not verify" instead of broken.
@@ -28,7 +34,7 @@ def check(url):
             with urllib.request.urlopen(req, timeout=20) as resp:
                 return resp.status
         except urllib.error.HTTPError as e:
-            if method == "HEAD" and e.code in (403, 404, 405, 501):
+            if method == "HEAD" and e.code in (400, 403, 404, 405, 501):
                 continue  # some servers reject HEAD; retry with GET
             return e.code
         except Exception as e:  # DNS failure, timeout, TLS error...
