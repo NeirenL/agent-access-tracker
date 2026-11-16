@@ -29,6 +29,24 @@
       "Disallow: /*/sso/",
       "Disallow: /cl/*"
     ],
+    "Meta-ExternalAgent": [
+      "Allow: /",
+      "Disallow: /p/home",
+      "Disallow: /*/p/home",
+      "Disallow: /auth/",
+      "Disallow: /*/auth/",
+      "Disallow: /*/sso/",
+      "Disallow: /cl/*"
+    ],
+    "meta-webindexer": [
+      "Allow: /",
+      "Disallow: /p/home",
+      "Disallow: /*/p/home",
+      "Disallow: /auth/",
+      "Disallow: /*/auth/",
+      "Disallow: /*/sso/",
+      "Disallow: /cl/*"
+    ],
     "OAI-AdsBot": [
       "Allow: /",
       "Disallow: /api/uisprime/track",
