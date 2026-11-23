@@ -1,5 +1,5 @@
 # By accessing OpenTable's website, you agree to OpenTable's Terms of Use: https://www.opentable.com/c/legal/terms-and-conditions/
-# Generated on 2026-11-11T08:43:51
+# Generated on 2026-11-18T08:43:54
 
 # Block all bots by default
 User-agent: *

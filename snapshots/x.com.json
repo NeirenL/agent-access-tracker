@@ -5,6 +5,9 @@
     "__usage_ai-training": [
       "Disallow: /"
     ],
+    "Applebot-Extended": [
+      "Disallow: *"
+    ],
     "FacebookBot": [
       "Disallow: *"
     ],
